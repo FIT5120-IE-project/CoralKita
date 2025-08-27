@@ -24,4 +24,15 @@ public class GlobalExceptionHandler {
         return Result.error(ex.getMessage());
     }
 
+    /**
+     * 捕获运行时异常
+     * @param ex
+     * @return
+     */
+    @ExceptionHandler
+    public Result exceptionHandler(RuntimeException ex){
+        log.error("运行时异常：{}", ex.getMessage());
+        return Result.error(ex.getMessage());
+    }
+
 }
