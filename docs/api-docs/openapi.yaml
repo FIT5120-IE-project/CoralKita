@@ -5,9 +5,9 @@ info:
 servers:
   - url: https://api.example.com/v1
 paths:
-  /hello:
+  /login:
     get:
-      summary: 打个招呼
+      summary: OpenAPI
       responses:
         "200":
           description: OK
