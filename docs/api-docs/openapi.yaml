@@ -1,0 +1,49 @@
+openapi: 3.0.3
+info:
+  title: CoralKita API
+  version: 1.0.0
+servers:
+  - url: https://api.example.com/v1
+paths:
+  /login:
+    post:
+      summary: 用户登录
+      description: 提交用户名和密码以进行登录
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: testuser
+                password:
+                  type: string
+                  example: mypassword
+      responses:
+        "200":
+          description: 登录成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                  message:
+                    type: string
+                    example: "Login successful"
+        "401":
+          description: 用户名或密码错误
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid username or password"
+
