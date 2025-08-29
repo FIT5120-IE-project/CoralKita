@@ -1,0 +1,102 @@
+package com.sky.controller;
+
+import com.sky.dto.TrendQueryDTO;
+import com.sky.dto.TrendCompareDTO;
+import com.sky.result.Result;
+import com.sky.service.TrendService;
+import com.sky.vo.TrendVO;
+import com.sky.vo.TrendCompareVO;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+/**
+ * 趋势数据管理接口
+ */
+@RestController
+@RequestMapping("/trend")
+@Slf4j
+@Api(tags = "趋势数据相关接口")
+public class TrendController {
+
+    @Autowired
+    private TrendService trendService;
+
+
+    /**
+     * 根据岛屿名称查询趋势数据（GET方式）
+     * @param island 岛屿名称
+     * @return 趋势数据列表
+     */
+    @GetMapping("/query/{island}")
+    @ApiOperation(value = "根据岛屿查询趋势数据")
+    public Result<List<TrendVO>> getTrendDataByIslandGet(@PathVariable String island) {
+        log.info("查询趋势数据：{}", island);
+        
+        if (island == null || island.trim().isEmpty()) {
+            return Result.error("岛屿名称不能为空");
+        }
+        
+        List<TrendVO> trendVOList = trendService.getTrendDataByIsland(island);
+        
+        
+        // 检查是否找到数据
+        if (trendVOList.isEmpty()) {
+            return Result.error("无匹配岛屿");
+        }
+
+        return Result.success(trendVOList);
+    }
+
+    /**
+     * 比较多个岛屿的指定指标数据
+     * @param trendCompareDTO 比较参数
+     * @return 比较结果列表
+     */
+    @PostMapping("/compare")
+    @ApiOperation(value = "比较多个岛屿的指定指标数据")
+    public Result<List<TrendCompareVO>> compareTrendData(@RequestBody TrendCompareDTO trendCompareDTO) {
+        log.info("比较趋势数据：{}", trendCompareDTO);
+        
+        // 参数验证
+        if (trendCompareDTO.getIslands() == null || trendCompareDTO.getIslands().isEmpty()) {
+            return Result.error("岛屿列表不能为空");
+        }
+        
+        if (trendCompareDTO.getIndicator() == null || trendCompareDTO.getIndicator().trim().isEmpty()) {
+            return Result.error("比较指标不能为空");
+        }
+        
+        // 验证指标是否有效
+        String indicator = trendCompareDTO.getIndicator().toUpperCase();
+        if (!isValidIndicator(indicator)) {
+            return Result.error("无效的比较指标，支持：LCC, OT, AS, SD, DI, PI");
+        }
+        
+        // 执行比较查询
+        List<TrendCompareVO> compareResult = trendService.compareTrendData(
+                trendCompareDTO.getIslands(), 
+                indicator
+        );
+        
+        // 检查是否找到数据
+        if (compareResult.isEmpty()) {
+            return Result.error("无匹配的岛屿数据");
+        }
+        
+        return Result.success(compareResult);
+    }
+    
+    /**
+     * 验证指标是否有效
+     * @param indicator 指标名称
+     * @return 是否有效
+     */
+    private boolean isValidIndicator(String indicator) {
+        return indicator.matches("^(LCC|OT|AS|SD|DI|PI)$");
+    }
+}
