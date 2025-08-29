@@ -9,7 +9,6 @@ import java.util.List;
  * 趋势数据服务接口
  */
 public interface TrendService {
-
     /**
      * 根据岛屿名称查询趋势数据
      * @param island 岛屿名称
@@ -18,10 +17,9 @@ public interface TrendService {
     List<TrendVO> getTrendDataByIsland(String island);
 
     /**
-     * 比较多个岛屿的指定指标数据
+     * 比较多个岛屿的所有指标数据
      * @param islands 岛屿名称列表
-     * @param indicator 比较指标 (LCC, OT, AS, SD, DI, PI)
      * @return 比较结果列表
      */
-    List<TrendCompareVO> compareTrendData(List<String> islands, String indicator);
+    List<TrendCompareVO> compareTrendData(List<String> islands);
 }

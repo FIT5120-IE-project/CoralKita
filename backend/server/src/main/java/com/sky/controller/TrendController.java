@@ -6,6 +6,7 @@ import com.sky.result.Result;
 import com.sky.service.TrendService;
 import com.sky.vo.TrendVO;
 import com.sky.vo.TrendCompareVO;
+import java.util.ArrayList;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -66,37 +67,15 @@ public class TrendController {
         if (trendCompareDTO.getIslands() == null || trendCompareDTO.getIslands().isEmpty()) {
             return Result.error("岛屿列表不能为空");
         }
-        
-        if (trendCompareDTO.getIndicator() == null || trendCompareDTO.getIndicator().trim().isEmpty()) {
-            return Result.error("比较指标不能为空");
-        }
-        
-        // 验证指标是否有效
-        String indicator = trendCompareDTO.getIndicator().toUpperCase();
-        if (!isValidIndicator(indicator)) {
-            return Result.error("无效的比较指标，支持：LCC, OT, AS, SD, DI, PI");
-        }
-        
         // 执行比较查询
         List<TrendCompareVO> compareResult = trendService.compareTrendData(
-                trendCompareDTO.getIslands(), 
-                indicator
+                trendCompareDTO.getIslands()
         );
-        
         // 检查是否找到数据
         if (compareResult.isEmpty()) {
             return Result.error("无匹配的岛屿数据");
         }
-        
         return Result.success(compareResult);
     }
-    
-    /**
-     * 验证指标是否有效
-     * @param indicator 指标名称
-     * @return 是否有效
-     */
-    private boolean isValidIndicator(String indicator) {
-        return indicator.matches("^(LCC|OT|AS|SD|DI|PI)$");
-    }
+
 }

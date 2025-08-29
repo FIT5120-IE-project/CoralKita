@@ -18,6 +18,11 @@ import java.util.List;
 public class TrendCompareVO {
     
     /**
+     * 指标名称
+     */
+    private String indicator;
+    
+    /**
      * 各岛屿的指标数据
      * key: 岛屿名称, value: 所有年份的指标值列表
      */

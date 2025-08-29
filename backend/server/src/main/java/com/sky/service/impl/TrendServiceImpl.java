@@ -56,14 +56,13 @@ public class TrendServiceImpl implements TrendService {
     }
 
     /**
-     * 比较多个岛屿的指定指标数据
+     * 比较多个岛屿的所有指标数据
      * @param islands 岛屿名称列表
-     * @param indicator 比较指标 (LCC, OT, AS, SD, DI, PI)
      * @return 比较结果列表
      */
     @Override
-    public List<TrendCompareVO> compareTrendData(List<String> islands, String indicator) {
-        log.info("比较岛屿趋势数据：{}，指标：{}", islands, indicator);
+    public List<TrendCompareVO> compareTrendData(List<String> islands) {
+        log.info("比较岛屿趋势数据：{}", islands);
         
         // 查询所有岛屿的数据
         List<Trend> trendList = trendMapper.getByIslands(islands);
@@ -72,46 +71,54 @@ public class TrendServiceImpl implements TrendService {
         Map<String, List<Trend>> islandTrendMap = trendList.stream()
                 .collect(Collectors.groupingBy(Trend::getIsland));
         
-        // 获取所有岛屿的所有年份数据
-        Map<String, List<Double>> islandData = new HashMap<>();
-        Map<String, List<String>> islandDates = new HashMap<>();
+        // 定义所有指标
+        String[] allIndicators = {"LCC", "OT", "AS", "SD", "DI", "PI"};
         
-        for (String island : islands) {
-            List<Trend> islandTrends = islandTrendMap.get(island);
-            if (islandTrends != null && !islandTrends.isEmpty()) {
-                // 按日期降序排列
-                List<Trend> sortedTrends = islandTrends.stream()
-                        .sorted((a, b) -> b.getDate().compareTo(a.getDate()))
-                        .collect(Collectors.toList());
-                
-                // 获取所有年份的指标数据
-                List<Double> values = sortedTrends.stream()
-                        .map(trend -> getIndicatorValue(trend, indicator))
-                        .filter(value -> value != null)
-                        .collect(Collectors.toList());
-                
-                // 获取所有年份的日期数据
-                List<String> dates = sortedTrends.stream()
-                        .map(trend -> trend.getDate().toString())
-                        .collect(Collectors.toList());
-                
-                if (!values.isEmpty()) {
-                    islandData.put(island, values);
-                    islandDates.put(island, dates);
+        // 为每个指标创建比较结果
+        List<TrendCompareVO> compareVOList = new ArrayList<>();
+        
+        for (String indicator : allIndicators) {
+            // 获取所有岛屿的所有年份数据
+            Map<String, List<Double>> islandData = new HashMap<>();
+            Map<String, List<String>> islandDates = new HashMap<>();
+            
+            for (String island : islands) {
+                List<Trend> islandTrends = islandTrendMap.get(island);
+                if (islandTrends != null && !islandTrends.isEmpty()) {
+                    // 按日期降序排列
+                    List<Trend> sortedTrends = islandTrends.stream()
+                            .sorted((a, b) -> b.getDate().compareTo(a.getDate()))
+                            .collect(Collectors.toList());
+                    
+                    // 获取所有年份的指标数据
+                    List<Double> values = sortedTrends.stream()
+                            .map(trend -> getIndicatorValue(trend, indicator))
+                            .filter(value -> value != null)
+                            .collect(Collectors.toList());
+                    
+                    // 获取所有年份的日期数据
+                    List<String> dates = sortedTrends.stream()
+                            .map(trend -> trend.getDate().toString())
+                            .collect(Collectors.toList());
+                    
+                    if (!values.isEmpty()) {
+                        islandData.put(island, values);
+                        islandDates.put(island, dates);
+                    }
                 }
+            }
+            
+            // 转换为VO对象
+            if (!islandData.isEmpty()) {
+                compareVOList.add(TrendCompareVO.builder()
+                        .indicator(indicator)
+                        .islandData(islandData)
+                        .islandDates(islandDates)
+                        .build());
             }
         }
         
-        // 转换为VO对象
-        List<TrendCompareVO> compareVOList = new ArrayList<>();
-        if (!islandData.isEmpty()) {
-            compareVOList.add(TrendCompareVO.builder()
-                    .islandData(islandData)
-                    .islandDates(islandDates)
-                    .build());
-        }
-        
-        log.info("比较结果：{}个岛屿", islandData.size());
+        log.info("比较结果：{}个指标，{}个岛屿", allIndicators.length, islands.size());
         return compareVOList;
     }
     

@@ -9,14 +9,8 @@ import java.util.List;
  */
 @Data
 public class TrendCompareDTO {
-    
     /**
      * 岛屿名称列表
      */
     private List<String> islands;
-    
-    /**
-     * 比较指标 (LCC, OT, AS, SD, DI, PI)
-     */
-    private String indicator;
 }
