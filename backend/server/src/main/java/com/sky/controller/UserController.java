@@ -2,17 +2,12 @@ package com.sky.controller;
 
 
 import com.sky.constant.JwtClaimsConstant;
-import com.sky.dto.EmployeeLoginDTO;
 import com.sky.dto.UserLoginDTO;
 import com.sky.dto.UserRegisterDTO;
-import com.sky.entity.Employee;
-import com.sky.entity.User;
 import com.sky.properties.JwtProperties;
 import com.sky.result.Result;
-import com.sky.service.EmployeeService;
 import com.sky.service.UserService;
 import com.sky.utils.JwtUtil;
-import com.sky.vo.EmployeeLoginVO;
 import com.sky.vo.UserLoginVO;
 import com.sky.vo.UserRegisterVO;
 import io.swagger.annotations.Api;
