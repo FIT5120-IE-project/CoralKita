@@ -85,7 +85,7 @@ public class TrendController {
      * @return 珊瑚数据列表
      */
     @GetMapping("/bleach/{island}")
-    @ApiOperation(value = "根据岛屿查询珊瑚数据")
+    @ApiOperation(value = "根据岛屿查询珊瑚所有生数据(随前端需要使用：可供分析白化趋势,岛屿恢复速度等等)")
     public Result<List<Coral>> getCoralDataByIsland(@PathVariable String island) {
         log.info("查询珊瑚数据：{}", island);
         
