@@ -1,5 +1,6 @@
 package com.sky.service;
 
+import com.sky.entity.Coral;
 import com.sky.vo.TrendVO;
 import com.sky.vo.TrendCompareVO;
 
@@ -22,4 +23,11 @@ public interface TrendService {
      * @return 比较结果列表
      */
     List<TrendCompareVO> compareTrendData(List<String> islands);
+
+    /**
+     * 根据岛屿名称查询珊瑚数据
+     * @param island 岛屿名称
+     * @return 珊瑚数据列表
+     */
+    List<Coral> getCoralDataByIsland(String island);
 }

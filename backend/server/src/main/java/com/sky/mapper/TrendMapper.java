@@ -1,6 +1,7 @@
 package com.sky.mapper;
 
 import com.sky.entity.Trend;
+import com.sky.entity.Coral;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -30,4 +31,12 @@ public interface TrendMapper {
             " order by date desc, island" +
             "</script>")
     List<Trend> getByIslands(List<String> islands);
+
+    /**
+     * 根据岛屿名称查询所有珊瑚数据（按日期排序）
+     * @param island 岛屿名称
+     * @return 珊瑚数据列表
+     */
+    @Select("select * from coral where island = #{island} order by date desc")
+    List<Coral> getCoralByIslandOrderByDate(String island);
 }

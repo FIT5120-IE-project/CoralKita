@@ -2,6 +2,7 @@ package com.sky.controller;
 
 import com.sky.dto.TrendQueryDTO;
 import com.sky.dto.TrendCompareDTO;
+import com.sky.entity.Coral;
 import com.sky.result.Result;
 import com.sky.service.TrendService;
 import com.sky.vo.TrendVO;
@@ -76,6 +77,30 @@ public class TrendController {
             return Result.error("无匹配的岛屿数据");
         }
         return Result.success(compareResult);
+    }
+
+    /**
+     * 根据岛屿名称查询珊瑚数据（bleach接口）
+     * @param island 岛屿名称
+     * @return 珊瑚数据列表
+     */
+    @GetMapping("/bleach/{island}")
+    @ApiOperation(value = "根据岛屿查询珊瑚数据")
+    public Result<List<Coral>> getCoralDataByIsland(@PathVariable String island) {
+        log.info("查询珊瑚数据：{}", island);
+        
+        if (island == null || island.trim().isEmpty()) {
+            return Result.error("岛屿名称不能为空");
+        }
+        
+        List<Coral> coralList = trendService.getCoralDataByIsland(island);
+        
+        // 检查是否找到数据
+        if (coralList.isEmpty()) {
+            return Result.error("无匹配岛屿的珊瑚数据");
+        }
+
+        return Result.success(coralList);
     }
 
 }

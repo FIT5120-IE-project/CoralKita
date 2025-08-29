@@ -1,6 +1,7 @@
 package com.sky.service.impl;
 
 import com.sky.entity.Trend;
+import com.sky.entity.Coral;
 import com.sky.mapper.TrendMapper;
 import com.sky.service.TrendService;
 import com.sky.vo.TrendVO;
@@ -146,5 +147,21 @@ public class TrendServiceImpl implements TrendService {
                 log.warn("未知的指标类型：{}", indicator);
                 return null;
         }
+    }
+
+    /**
+     * 根据岛屿名称查询珊瑚数据
+     * @param island 岛屿名称
+     * @return 珊瑚数据列表
+     */
+    @Override
+    public List<Coral> getCoralDataByIsland(String island) {
+        log.info("查询岛屿珊瑚数据：{}", island);
+        
+        // 查询数据库
+        List<Coral> coralList = trendMapper.getCoralByIslandOrderByDate(island);
+        
+        log.info("查询到{}条珊瑚数据", coralList.size());
+        return coralList;
     }
 }
