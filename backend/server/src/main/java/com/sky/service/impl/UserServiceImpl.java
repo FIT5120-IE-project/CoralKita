@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
                 .points(user.getPoints())
                 .badges(user.getBadges())
                 .level(user.getLevel())
-                .experience(user.getExperience())
+                .experience(user.getExp())
                 .build();
 
         return userLoginVO;
@@ -104,7 +104,7 @@ public class UserServiceImpl implements UserService {
                 .points(savedUser.getPoints())
                 .badges(savedUser.getBadges())
                 .level(savedUser.getLevel())
-                .experience(savedUser.getExperience())
+                .experience(savedUser.getExp())
                 .build();
 
         return userRegisterVO;

@@ -65,9 +65,9 @@ public class User{
     //勋章
     private String badges;
 
-    //等级
+    //等级 (数据库中是text类型)
     private String level;
 
     //经验
-    private int experience;
+    private int exp;
 }
