@@ -4,14 +4,18 @@ import com.aliyun.oss.OSS;
 import com.aliyun.oss.HttpMethod;
 import com.aliyun.oss.model.GeneratePresignedUrlRequest;
 import com.aliyun.oss.model.OSSObject;
+import com.aliyun.oss.model.PutObjectRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class OssService {
@@ -98,5 +102,62 @@ public class OssService {
                 ossObject.close();
             }
         }
+    }
+
+    /**
+     * 上传单个文件到OSS
+     * @param file 要上传的文件
+     * @param objectKey OSS中的对象键
+     * @return 上传后的URL
+     */
+    public String uploadFile(File file, String objectKey) {
+        try {
+            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, objectKey, file);
+            ossClient.putObject(putObjectRequest);
+            
+            // 返回文件的访问URL
+            return "https://" + bucketName + "." + endpoint.replace("https://", "") + "/" + objectKey;
+        } catch (Exception e) {
+            throw new RuntimeException("上传文件失败: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 批量上传文件夹中的所有图片文件
+     * @param folderPath 文件夹路径
+     * @param answer 答案/分类
+     * @return 上传结果列表
+     */
+    public List<String> uploadFolderImages(String folderPath, String answer) {
+        List<String> uploadedUrls = new ArrayList<>();
+        File folder = new File(folderPath);
+        
+        if (!folder.exists() || !folder.isDirectory()) {
+            throw new RuntimeException("文件夹不存在: " + folderPath);
+        }
+        
+        File[] files = folder.listFiles((dir, name) -> {
+            String lowerName = name.toLowerCase();
+            return lowerName.endsWith(".jpg") || lowerName.endsWith(".jpeg") || 
+                   lowerName.endsWith(".png") || lowerName.endsWith(".gif") || 
+                   lowerName.endsWith(".webp");
+        });
+        
+        if (files == null || files.length == 0) {
+            throw new RuntimeException("文件夹中没有找到图片文件");
+        }
+        
+        for (File file : files) {
+            try {
+                // 生成OSS对象键：image/health/文件名
+                String objectKey = "image/" + answer + "/" + file.getName();
+                String url = uploadFile(file, objectKey);
+                uploadedUrls.add(url);
+            } catch (Exception e) {
+                throw new RuntimeException("上传文件 " + file.getName() + " 失败: " + e.getMessage(), e);
+            }
+        }
+        
+        return uploadedUrls;
     }
 }
