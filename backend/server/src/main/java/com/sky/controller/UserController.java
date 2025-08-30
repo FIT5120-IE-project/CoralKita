@@ -33,6 +33,7 @@ public class UserController {
     @Autowired
     private JwtProperties jwtProperties;
 
+
     @PostMapping("/login")
     @ApiOperation(value = "用户登录")
     public Result<UserLoginVO> login(@RequestBody UserLoginDTO userDTO) {
@@ -50,6 +51,8 @@ public class UserController {
 
         //设置token到返回对象中
         userLoginVO.setToken(token);
+        
+
 
         return Result.success(userLoginVO);
     }

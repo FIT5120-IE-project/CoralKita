@@ -34,9 +34,9 @@ public class TrendController {
      * @param island 岛屿名称
      * @return 趋势数据列表
      */
-    @GetMapping("/query/{island}")
+    @GetMapping("/query")
     @ApiOperation(value = "根据岛屿查询趋势数据")
-    public Result<List<TrendVO>> getTrendDataByIslandGet(@PathVariable String island) {
+    public Result<List<TrendVO>> getTrendDataByIslandGet(@RequestParam String island) {
         log.info("查询趋势数据：{}", island);
         
         if (island == null || island.trim().isEmpty()) {
@@ -84,9 +84,9 @@ public class TrendController {
      * @param island 岛屿名称
      * @return 珊瑚数据列表
      */
-    @GetMapping("/bleach/{island}")
+    @GetMapping("/bleach")
     @ApiOperation(value = "根据岛屿查询珊瑚所有生数据(随前端需要使用：可供分析白化趋势,岛屿恢复速度，健康分析等等)")
-    public Result<List<Coral>> getCoralDataByIsland(@PathVariable String island) {
+    public Result<List<Coral>> getCoralDataByIsland(@RequestParam String island) {
         log.info("查询珊瑚数据：{}", island);
         
         if (island == null || island.trim().isEmpty()) {
