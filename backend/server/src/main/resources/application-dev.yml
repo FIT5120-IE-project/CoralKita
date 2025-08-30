@@ -6,3 +6,11 @@ sky:
     database: coralkita_db
     username: root
     password: 1234
+
+# 阿里云OSS配置
+aliyun:
+  oss:
+    endpoint: oss-ap-southeast-3.aliyuncs.com
+    accessKeyId: ${ALIYUN_AK} 
+    accessKeySecret: ${ALIYUN_SK}
+    bucket: coralkita
