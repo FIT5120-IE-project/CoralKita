@@ -18,11 +18,17 @@ public interface TrendService {
     List<TrendVO> getTrendDataByIsland(String island);
 
     /**
-     * 比较多个岛屿的所有指标数据
+     * 比较多个岛屿的指定指标数据
      * @param islands 岛屿名称列表
      * @return 比较结果列表
      */
     List<TrendCompareVO> compareTrendData(List<String> islands);
+
+    /**
+     * 获取所有岛屿列表
+     * @return 岛屿列表
+     */
+    List<String> getAllIslands();
 
     /**
      * 根据岛屿名称查询珊瑚数据

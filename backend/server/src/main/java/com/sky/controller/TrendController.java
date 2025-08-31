@@ -80,6 +80,24 @@ public class TrendController {
     }
 
     /**
+     * 获取所有岛屿列表
+     * @return 岛屿列表
+     */
+    @GetMapping("/islands")
+    @ApiOperation(value = "获取所有岛屿列表")
+    public Result<List<String>> getAllIslands() {
+        log.info("获取所有岛屿列表");
+        
+        List<String> islands = trendService.getAllIslands();
+        
+        if (islands.isEmpty()) {
+            return Result.error("暂无岛屿数据");
+        }
+
+        return Result.success(islands);
+    }
+
+    /**
      * 根据岛屿名称查询珊瑚数据（bleach接口）
      * @param island 岛屿名称
      * @return 珊瑚数据列表

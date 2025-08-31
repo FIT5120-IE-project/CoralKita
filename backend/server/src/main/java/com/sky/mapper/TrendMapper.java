@@ -28,12 +28,19 @@ public interface TrendMapper {
             "<foreach collection='islands' item='island' open='(' separator=',' close=')'>" +
             "#{island}" +
             "</foreach>" +
-            " order by date desc, island" +
+            " order by date desc" +
             "</script>")
     List<Trend> getByIslands(List<String> islands);
 
     /**
-     * 根据岛屿名称查询所有珊瑚数据（按日期排序）
+     * 获取所有岛屿列表
+     * @return 岛屿列表
+     */
+    @Select("select distinct island from trend order by island")
+    List<String> getAllIslands();
+
+    /**
+     * 根据岛屿名称查询珊瑚数据，按日期排序
      * @param island 岛屿名称
      * @return 珊瑚数据列表
      */

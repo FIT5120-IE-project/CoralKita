@@ -164,4 +164,16 @@ public class TrendServiceImpl implements TrendService {
         log.info("查询到{}条珊瑚数据", coralList.size());
         return coralList;
     }
+
+    /**
+     * 获取所有岛屿列表
+     * @return 岛屿列表
+     */
+    @Override
+    public List<String> getAllIslands() {
+        log.info("获取所有岛屿列表");
+        List<String> islands = trendMapper.getAllIslands();
+        log.info("查询到{}个岛屿", islands.size());
+        return islands;
+    }
 }
