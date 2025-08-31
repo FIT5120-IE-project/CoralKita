@@ -229,6 +229,7 @@
 <script>
 import axios from 'axios';
 import { Chart, registerables } from 'chart.js';
+import { API_BASE_URL } from '@/config/config';
 Chart.register(...registerables);
 
 export default {
@@ -281,7 +282,7 @@ export default {
       
       try {
         console.log('正在从后端加载岛屿列表...');
-        const response = await axios.get('http://localhost:8080/trend/islands');
+        const response = await axios.get(`${API_BASE_URL}/trend/islands`);
         console.log('岛屿列表API响应:', response);
         
         if (response.data.code === 1) {
@@ -306,7 +307,7 @@ export default {
       if (!island) return;
       
       console.log('正在加载岛屿趋势数据:', island);
-             const url = `http://localhost:8080/trend/query?island=${encodeURIComponent(island)}`;
+             const url = `${API_BASE_URL}/trend/query?island=${encodeURIComponent(island)}`;
       console.log('趋势数据API地址:', url);
       
       try {
@@ -557,7 +558,7 @@ export default {
       
       try {
         // 使用后端的批量对比接口
-        const response = await axios.post('http://localhost:8080/trend/compare', {
+        const response = await axios.post(`${API_BASE_URL}/trend/compare`, {
           islands: selectedIslands
         });
         
@@ -635,7 +636,7 @@ export default {
       
       for (const island of selectedIslands) {
         try {
-          const response = await axios.get(`http://localhost:8080/trend/query?island=${encodeURIComponent(island)}`);
+          const response = await axios.get(`${API_BASE_URL}/trend/query?island=${encodeURIComponent(island)}`);
           console.log(`${island} 数据响应:`, response.data);
           
           if (response.data && response.data.code === 1 && response.data.data) {

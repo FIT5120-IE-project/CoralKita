@@ -8,127 +8,50 @@
 
     <!-- 主要内容区域 -->
     <div class="education-content">
-      <!-- 未登录状态 -->
-      <div v-if="!isAuthenticated" class="login-section">
-        <div class="login-card">
-          <h2>Welcome to CoralKita Education</h2>
-          <p>Please login or register to access our interactive quizzes and learning materials</p>
-          
-          <!-- 登录表单 -->
-          <div class="login-form">
-            <div class="form-group">
-              <label for="username">用户名</label>
-              <input 
-                type="text" 
-                id="username" 
-                v-model="loginForm.name" 
-                placeholder="请输入用户名"
-                @keyup.enter="handleLogin"
-              >
-            </div>
-            
-            <div class="form-group">
-              <label for="password">密码</label>
-              <input 
-                type="password" 
-                id="password" 
-                v-model="loginForm.password" 
-                placeholder="请输入密码"
-                @keyup.enter="handleLogin"
-              >
-            </div>
-            
-            <div class="form-actions">
-              <button 
-                class="btn-login" 
-                @click="handleLogin"
-                :disabled="loading"
-              >
-                {{ loading ? '登录中...' : '登录' }}
-              </button>
-              
-              <div class="form-links">
-                <span @click="showRegister = true" class="link">还没有账号？立即注册</span>
-              </div>
-            </div>
-          </div>
-          
-          <!-- 注册表单 -->
-          <div v-if="showRegister" class="register-form">
-            <div class="form-header">
-              <h3>用户注册</h3>
-              <span @click="showRegister = false" class="close-btn">&times;</span>
-            </div>
-            
-            <div class="form-group">
-              <label for="reg-username">用户名</label>
-              <input 
-                type="text" 
-                id="reg-username" 
-                v-model="registerForm.name" 
-                placeholder="请输入用户名"
-              >
-            </div>
-            
-            <div class="form-group">
-              <label for="reg-password">密码</label>
-              <input 
-                type="password" 
-                id="reg-password" 
-                v-model="registerForm.password" 
-                placeholder="请输入密码"
-              >
-            </div>
-            
-            <div class="form-group">
-              <label for="reg-confirm-password">确认密码</label>
-              <input 
-                type="password" 
-                id="reg-confirm-password" 
-                v-model="registerForm.confirmPassword" 
-                placeholder="请再次输入密码"
-              >
-            </div>
-            
-            <div class="form-actions">
-              <button 
-                class="btn-register" 
-                @click="handleRegister"
-                :disabled="registerLoading"
-              >
-                {{ registerLoading ? '注册中...' : '注册' }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 已登录状态 -->
-      <div v-else class="authenticated-content">
+      <!-- 学习界面 -->
+      <div class="learning-interface">
         <!-- 用户信息卡片 -->
         <div class="user-info-card">
           <div class="user-avatar">
             <img src="@/assets/icon.png" alt="User Avatar" />
           </div>
           <div class="user-details">
-            <h3>欢迎回来, {{ currentUser.name }}!</h3>
-            <div class="user-stats">
-              <span class="stat-item">
-                <i class="stat-icon">🏆</i>
-                等级: {{ currentUser.level }}
-              </span>
-              <span class="stat-item">
-                <i class="stat-icon">⭐</i>
-                积分: {{ currentUser.points }}
-              </span>
-              <span class="stat-item">
-                <i class="stat-icon">📚</i>
-                经验: {{ currentUser.experience }}
-              </span>
+            <!-- 已登录用户显示欢迎信息 -->
+            <div v-if="isAuthenticated">
+              <h3>欢迎回来, {{ currentUser.name }}!</h3>
+              <div class="user-stats">
+                <span class="stat-item">
+                  <i class="stat-icon">🏆</i>
+                  等级: {{ currentUser.level || 1 }}
+                </span>
+                <span class="stat-item">
+                  <i class="stat-icon">⭐</i>
+                  积分: {{ currentUser.points || 0 }}
+                </span>
+                <span class="stat-item">
+                  <i class="stat-icon">📚</i>
+                  经验: {{ currentUser.experience || 0 }}
+                </span>
+              </div>
+            </div>
+            <!-- 未登录用户显示欢迎信息 -->
+            <div v-else>
+              <h3>欢迎来到CoralKita教育中心</h3>
+              <p>请登录或注册以开始您的学习之旅</p>
             </div>
           </div>
-          <button class="btn-logout" @click="handleLogout">退出登录</button>
+          <div class="user-actions">
+            <!-- 已登录用户显示退出登录按钮 -->
+            <button v-if="isAuthenticated" class="btn-logout" @click="handleLogout">退出登录</button>
+            <!-- 未登录用户显示登录/注册按钮 -->
+            <button v-else class="btn-auth" @click="showAuthForms = true">登录/注册</button>
+          </div>
         </div>
+        
+
+        
+        
+
 
         <!-- 功能区域 -->
         <div class="features-grid">
@@ -148,20 +71,19 @@
             <button class="btn-feature" @click="viewGuide">查看指南</button>
           </div>
 
+          <!-- 奖励系统 -->
+          <div class="feature-card rewards-card">
+            <div class="feature-icon">🎁</div>
+            <h3>奖励系统</h3>
+            <p>完成学习任务获得积分和徽章</p>
+          </div>
+
           <!-- 学习进度 -->
           <div class="feature-card progress-card">
             <div class="feature-icon">📊</div>
             <h3>学习进度</h3>
             <p>跟踪你的学习进度和获得的成就</p>
             <button class="btn-feature" @click="viewProgress">查看进度</button>
-          </div>
-
-          <!-- 奖励系统 -->
-          <div class="feature-card rewards-card">
-            <div class="feature-icon">🎁</div>
-            <h3>奖励系统</h3>
-            <p>完成学习任务获得积分和徽章</p>
-            <button class="btn-feature" @click="viewRewards">查看奖励</button>
           </div>
         </div>
       </div>
@@ -170,6 +92,109 @@
     <!-- 错误提示 -->
     <div v-if="errorMessage" class="error-message">
       {{ errorMessage }}
+    </div>
+    
+    <!-- 独立的登录/注册界面 -->
+    <div v-if="!isAuthenticated && showAuthForms" class="auth-overlay">
+      <div class="auth-modal">
+        <!-- 关闭按钮 -->
+        <div class="auth-header">
+          <h2>用户认证</h2>
+          <button class="close-btn" @click="showAuthForms = false">×</button>
+        </div>
+        
+        <!-- 登录表单 -->
+        <div v-if="!showRegister" class="auth-form">
+          <h3>用户登录</h3>
+          <p>欢迎来到CoralKita教育中心，请登录以开始您的学习之旅</p>
+          
+          <div class="form-group">
+            <label for="username">用户名</label>
+            <input 
+              type="text" 
+              id="username" 
+              v-model="loginForm.name" 
+              placeholder="请输入用户名"
+              @keyup.enter="handleLogin"
+            >
+          </div>
+          
+          <div class="form-group">
+            <label for="password">密码</label>
+            <input 
+              type="password" 
+              id="password" 
+              v-model="loginForm.password" 
+              placeholder="请输入密码"
+              @keyup.enter="handleLogin"
+            >
+          </div>
+          
+          <div class="form-actions">
+            <button 
+              class="btn-submit" 
+              @click="handleLogin"
+              :disabled="loading"
+            >
+              {{ loading ? '登录中...' : '登录' }}
+            </button>
+            
+            <div class="form-links">
+              <span @click="showRegister = true" class="link">还没有账号？立即注册</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 注册表单 -->
+        <div v-if="showRegister" class="auth-form">
+          <h3>用户注册</h3>
+          <p>创建新账号，开始您的珊瑚礁学习之旅</p>
+          
+          <div class="form-group">
+            <label for="reg-username">用户名</label>
+            <input 
+              type="text" 
+              id="reg-username" 
+              v-model="registerForm.name" 
+              placeholder="请输入用户名"
+            >
+          </div>
+          
+          <div class="form-group">
+            <label for="reg-password">密码</label>
+            <input 
+              type="password" 
+              id="reg-password" 
+              v-model="registerForm.password" 
+              placeholder="请输入密码"
+            >
+          </div>
+          
+          <div class="form-group">
+            <label for="reg-confirm-password">确认密码</label>
+            <input 
+              type="password" 
+              id="reg-confirm-password" 
+              v-model="registerForm.confirmPassword" 
+              placeholder="请再次输入密码"
+            >
+          </div>
+          
+          <div class="form-actions">
+            <button 
+              class="btn-submit" 
+              @click="handleRegister"
+              :disabled="registerLoading"
+            >
+              {{ registerLoading ? '注册中...' : '注册' }}
+            </button>
+            
+            <div class="form-links">
+              <span @click="showRegister = false" class="link">已有账号？立即登录</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -192,6 +217,7 @@ export default {
         confirmPassword: ''
       },
       showRegister: false,
+      showAuthForms: false,
       loading: false,
       registerLoading: false,
       errorMessage: ''
@@ -223,6 +249,10 @@ export default {
             user: response.data,
             token: response.data.token
           })
+          
+          // 清空登录表单并隐藏认证表单
+          this.loginForm = { name: '', password: '' }
+          this.showAuthForms = false
           
           // 显示成功消息
           alert('登录成功！欢迎来到CoralKita教育中心')
@@ -334,7 +364,7 @@ export default {
   margin: 0 auto;
 }
 
-/* 登录区域样式 */
+/* 未登录状态样式 */
 .login-section {
   display: flex;
   justify-content: center;
@@ -342,106 +372,70 @@ export default {
   min-height: 60vh;
 }
 
-.login-card {
-  background: white;
+/* 登录表单容器 */
+.login-form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.login-form-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
   border-radius: 20px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   padding: 40px;
-  width: 100%;
-  max-width: 500px;
-  position: relative;
-}
-
-.login-card h2 {
   text-align: center;
-  color: #333;
-  margin-bottom: 20px;
-}
-
-.login-card p {
-  text-align: center;
-  color: #666;
-  margin-bottom: 30px;
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  color: #333;
-  font-weight: 500;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 12px 16px;
-  border: 2px solid #e1e5e9;
-  border-radius: 8px;
-  font-size: 16px;
-  transition: border-color 0.3s ease;
-}
-
-.form-group input:focus {
-  outline: none;
-  border-color: #667eea;
-}
-
-.form-actions {
-  margin-top: 30px;
-}
-
-.btn-login, .btn-register {
-  width: 100%;
-  padding: 14px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.2s ease;
+  max-width: 500px;
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.btn-login:hover, .btn-register:hover {
-  transform: translateY(-2px);
+.login-form-card h2 {
+  font-size: 2rem;
+  margin-bottom: 15px;
+  color: white;
 }
 
-.btn-login:disabled, .btn-register:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: none;
+.login-form-card p {
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+  opacity: 0.9;
+  line-height: 1.6;
 }
 
-.form-links {
-  text-align: center;
-  margin-top: 20px;
+/* 注册表单容器 */
+.register-form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
-.link {
-  color: #667eea;
-  cursor: pointer;
-  text-decoration: underline;
-  font-size: 14px;
-}
-
-.link:hover {
-  color: #764ba2;
-}
-
-.register-form {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: white;
+.register-form-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
   border-radius: 20px;
   padding: 40px;
-  z-index: 10;
+  text-align: center;
+  color: white;
+  max-width: 500px;
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.register-form-card h2 {
+  font-size: 2rem;
+  margin-bottom: 15px;
+  color: white;
+}
+
+.register-form-card p {
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+  opacity: 0.9;
+  line-height: 1.6;
 }
 
 .form-header {
@@ -467,9 +461,292 @@ export default {
   color: #333;
 }
 
-/* 已认证用户内容样式 */
-.authenticated-content {
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
   color: white;
+  font-weight: 500;
+  text-align: left;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  font-size: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.form-group input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.form-actions {
+  margin-top: 30px;
+}
+
+.btn-submit {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.btn-submit:hover {
+  transform: translateY(-2px);
+}
+
+.btn-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.form-links {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.link {
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 14px;
+  transition: color 0.3s ease;
+}
+
+.link:hover {
+  color: white;
+}
+
+/* 学习界面样式 */
+.learning-interface {
+  color: white;
+}
+
+/* 独立登录/注册界面样式 */
+.auth-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.auth-modal {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 25px;
+  padding: 0;
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+}
+
+.auth-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px 30px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.auth-header h2 {
+  color: white;
+  font-size: 1.8rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 28px;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  transform: rotate(90deg);
+}
+
+.auth-form {
+  padding: 30px;
+  color: white;
+}
+
+.auth-form h3 {
+  font-size: 1.6rem;
+  margin-bottom: 15px;
+  color: white;
+  text-align: center;
+}
+
+.auth-form p {
+  font-size: 1rem;
+  margin-bottom: 30px;
+  opacity: 0.9;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.auth-form .form-group {
+  margin-bottom: 20px;
+}
+
+.auth-form .form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: white;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.auth-form .form-group input {
+  width: 100%;
+  padding: 15px 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  font-size: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.auth-form .form-group input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.auth-form .form-group input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.auth-form .form-actions {
+  margin-top: 30px;
+}
+
+.auth-form .btn-submit {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+}
+
+.auth-form .btn-submit:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+}
+
+.auth-form .btn-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.auth-form .form-links {
+  text-align: center;
+}
+
+.auth-form .link {
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 14px;
+  transition: color 0.3s ease;
+}
+
+.auth-form .link:hover {
+  color: white;
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 登录/注册按钮 */
+.btn-auth {
+  padding: 10px 20px;
+  background: rgba(102, 126, 234, 0.8);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.btn-auth:hover {
+  background: rgba(102, 126, 234, 1);
+  transform: translateY(-2px);
 }
 
 .user-info-card {
@@ -514,20 +791,101 @@ export default {
   font-size: 1.2rem;
 }
 
-.btn-logout {
+.user-actions {
   margin-left: auto;
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.btn-login-action {
+  padding: 10px 20px;
+  background: rgba(102, 126, 234, 0.8);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.btn-login-action:hover {
+  background: rgba(102, 126, 234, 1);
+  transform: translateY(-2px);
+}
+
+.btn-logout {
   padding: 10px 20px;
   background: rgba(255, 107, 107, 0.8);
   color: white;
   border: none;
   border-radius: 20px;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .btn-logout:hover {
   background: rgba(255, 107, 107, 1);
+  transform: translateY(-2px);
 }
+
+/* 内联登录表单样式 */
+.login-form-inline {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.form-group-inline {
+  display: flex;
+  align-items: center;
+}
+
+.form-group-inline input {
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 14px;
+  width: 120px;
+  transition: all 0.3s ease;
+}
+
+.form-group-inline input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.form-group-inline input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.btn-login-inline {
+  padding: 8px 16px;
+  background: rgba(102, 126, 234, 0.8);
+  color: white;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.btn-login-inline:hover {
+  background: rgba(102, 126, 234, 1);
+  transform: translateY(-2px);
+}
+
+.btn-login-inline:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+
 
 /* 功能网格 */
 .features-grid {
@@ -613,6 +971,11 @@ export default {
     font-size: 2rem;
   }
   
+  .login-form-card h2,
+  .register-form-card h2 {
+    font-size: 1.5rem;
+  }
+  
   .user-info-card {
     flex-direction: column;
     text-align: center;
@@ -623,9 +986,35 @@ export default {
     flex-wrap: wrap;
   }
   
-  .btn-logout {
+  .user-actions {
     margin-left: 0;
     margin-top: 20px;
+    justify-content: center;
+  }
+  
+  .auth-modal {
+    width: 95%;
+    margin: 20px;
+  }
+  
+  .auth-header {
+    padding: 20px 25px 15px;
+  }
+  
+  .auth-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .auth-form {
+    padding: 25px;
+  }
+  
+  .auth-form h3 {
+    font-size: 1.4rem;
+  }
+  
+  .auth-form .form-group input {
+    padding: 12px 15px;
   }
   
   .features-grid {
