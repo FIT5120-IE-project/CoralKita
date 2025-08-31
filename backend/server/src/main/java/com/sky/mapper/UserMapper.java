@@ -29,7 +29,7 @@ public interface UserMapper {
      * 新增用户
      * @param user
      */
-    @Insert("insert into user(name, password) values(#{name}, #{password})")
+    @Insert("insert into user(name, password, points, level, exp) values(#{name}, #{password}, #{points}, #{level}, #{exp})")
     void insert(User user);
 
     /**

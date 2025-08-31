@@ -90,6 +90,10 @@ public class UserServiceImpl implements UserService {
         user.setName(username);
         // 对密码进行MD5加密
         user.setPassword(password);
+        // 设置初始值
+        user.setPoints(0);
+        user.setLevel("Novice");
+        user.setExp(0);
 
         //4、保存到数据库（只保存name和password，其他字段使用数据库默认值）
         userMapper.insert(user);
