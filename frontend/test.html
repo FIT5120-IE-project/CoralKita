@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>接口测试</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>CoralKita 接口测试</h1>
+    
+    <div>
+        <label for="island">选择岛屿:</label>
+        <select id="island" onchange="loadData()">
+            <option value="">请选择岛屿</option>
+            <option value="Payar">Payar</option>
+            <option value="P Singa">P Singa</option>
+            <option value="Pangkor">Pangkor</option>
+        </select>
+    </div>
+    
+    <div id="result" style="margin-top: 20px;"></div>
+    
+    <canvas id="chart" width="800" height="400" style="margin-top: 20px;"></canvas>
+    
+    <script>
+        let chart = null;
+        
+        async function loadData() {
+            const island = document.getElementById('island').value;
+            const resultDiv = document.getElementById('result');
+            
+            if (!island) {
+                resultDiv.innerHTML = '';
+                return;
+            }
+            
+            try {
+                console.log('正在调用接口:', `http://localhost:8080/trend/query?island=${island}`);
+                
+                const response = await axios.get(`http://localhost:8080/trend/query?island=${encodeURIComponent(island)}`);
+                
+                console.log('接口响应:', response.data);
+                
+                if (response.data.code === 1) {
+                    resultDiv.innerHTML = `
+                        <h3>接口调用成功！</h3>
+                        <p><strong>岛屿:</strong> ${island}</p>
+                        <p><strong>数据条数:</strong> ${response.data.data.length}</p>
+                        <pre style="background: #f5f5f5; padding: 10px; border-radius: 5px; overflow-x: auto;">
+${JSON.stringify(response.data, null, 2)}
+                        </pre>
+                    `;
+                    
+                    // 绘制图表
+                    drawChart(response.data.data);
+                } else {
+                    resultDiv.innerHTML = `<p style="color: red;">接口返回错误: ${response.data.msg}</p>`;
+                }
+            } catch (error) {
+                console.error('接口调用失败:', error);
+                resultDiv.innerHTML = `<p style="color: red;">接口调用失败: ${error.message}</p>`;
+            }
+        }
+        
+        function drawChart(data) {
+            const ctx = document.getElementById('chart').getContext('2d');
+            
+            if (chart) {
+                chart.destroy();
+            }
+            
+            // 准备数据
+            const labels = data.map(item => {
+                const [year, month, day] = item.date;
+                return `${year}-${month.toString().padStart(2, '0')}`;
+            }).reverse();
+            
+            const datasets = [
+                {
+                    label: 'Coral Cover (LCC)',
+                    data: data.map(item => item.lcc).reverse(),
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.1
+                },
+                {
+                    label: 'Water Temperature (OT)',
+                    data: data.map(item => item.ot).reverse(),
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    tension: 0.1
+                },
+                {
+                    label: 'pH Level (PI)',
+                    data: data.map(item => item.pi).reverse(),
+                    borderColor: 'rgb(54, 162, 235)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    tension: 0.1
+                },
+                {
+                    label: 'Bleaching (SD)',
+                    data: data.map(item => item.sd).reverse(),
+                    borderColor: 'rgb(255, 205, 86)',
+                    backgroundColor: 'rgba(255, 205, 86, 0.2)',
+                    tension: 0.1
+                }
+            ];
+            
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 1,
+                            ticks: {
+                                stepSize: 0.1
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '珊瑚礁趋势数据'
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
