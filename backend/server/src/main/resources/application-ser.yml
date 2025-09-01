@@ -1,0 +1,17 @@
+sky:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    host: localhost
+    port: 3306
+    database: coralkita_db
+    username: coralkita_db
+    password: n3rhPBiwmrMhTRrs
+
+
+# 阿里云OSS配置
+aliyun:
+  oss:
+    endpoint: oss-ap-southeast-3.aliyuncs.com
+    accessKeyId: ${ALIYUN_AK} 
+    accessKeySecret: ${ALIYUN_SK}
+    bucket: coralkita

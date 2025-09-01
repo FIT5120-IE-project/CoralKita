@@ -1,0 +1,2330 @@
+<template>
+  <div class="education-container">
+    <!-- Top Navigation -->
+    <div class="top-nav">
+      <div class="nav-left">
+        <!-- Left side logo -->
+        <img src="@/assets/icon.png" alt="logo" class="nav-logo" @click="goToHome" />
+        <h1 class="logo" @click="goToHome">CoralKita</h1>
+      </div>
+      <div class="nav-right">
+        <div class="nav-items">
+          <span class="nav-item" @click="goToMap">Map</span>
+          <span class="nav-item" @click="goToTrends">Trends</span>
+          <span class="nav-item active">Education</span>
+          <span class="nav-item" @click="goToGovernment">Government</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Header -->
+    <div class="education-header">
+      <h1>Education & Responsible Tourism Hub</h1>
+      <p>Learn about coral reefs and become a responsible traveler</p>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="education-content">
+      <!-- Learning Interface -->
+      <div class="learning-interface">
+        <!-- User Info Card -->
+        <div class="user-info-card">
+          <div class="user-avatar">
+            <img src="@/assets/icon.png" alt="User Avatar" />
+          </div>
+          <div class="user-details">
+            <!-- Authenticated User Welcome Message -->
+            <div v-if="isAuthenticated">
+              <h3>Welcome back, {{ currentUser.name }}!</h3>
+              <div class="user-stats">
+                <span class="stat-item">
+                  <i class="stat-icon">🏆</i>
+                  Level: {{ currentUser.level || 1 }}
+                </span>
+                <span class="stat-item">
+                  <i class="stat-icon">⭐</i>
+                  Points: {{ currentUser.points || 0 }}
+                </span>
+                <span class="stat-item">
+                  <i class="stat-icon">📚</i>
+                  Experience: {{ currentUser.experience || 0 }}
+                </span>
+              </div>
+            </div>
+            <!-- Guest User Welcome Message -->
+            <div v-else>
+              <h3>Welcome to CoralKita Education Center</h3>
+              <p>Please log in or register to start your learning journey</p>
+            </div>
+          </div>
+          <div class="user-actions">
+            <!-- Logout Button for Authenticated Users -->
+            <button v-if="isAuthenticated" class="btn-logout" @click="handleLogout">Logout</button>
+            <!-- Login/Register Button for Guest Users -->
+            <button v-else class="btn-auth" @click="showAuthForms = true">Login / Register</button>
+          </div>
+        </div>
+        
+
+        
+        
+
+
+        <!-- Features Section -->
+        <div class="features-grid">
+                    <!-- Coral Reef Learning Video -->
+          <div class="feature-card quiz-card">
+            <div class="feature-icon">
+              <img src="@/assets/icons/icon_video.png" alt="Video Icon" />
+            </div>
+            <h3>Coral Reef Learning Video</h3>
+            <p>Test your knowledge about coral reefs and learn marine ecology</p>
+            <button class="btn-feature" @click="goToQuiz">Start Quiz</button>
+          </div>
+
+          <!-- Responsible Tourism Guide -->
+          <div class="feature-card guide-card">
+              <div class="feature-icon">
+                <img src="@/assets/icons/icon_travel.png" alt="Travel Icon" />
+              </div>
+            <h3>Responsible Tourism Guide</h3>
+            <p>Learn to minimize your impact when visiting coral reefs</p>
+            <button class="btn-feature" @click="viewGuide">View Guide</button>
+          </div>
+
+          <!-- Rewards System -->
+          <div class="feature-card rewards-card">
+              <div class="feature-icon">
+                <img src="@/assets/icons/icon_reward.png" alt="Reward Icon" />
+              </div>
+            <h3>Rewards System</h3>
+            <p>Complete learning tasks to earn points and badges</p>
+          </div>
+
+                      <!-- Travel Checklist -->
+            <div class="feature-card progress-card">
+              <div class="feature-icon">
+                <img src="@/assets/icons/icon_list.png" alt="List Icon" />
+              </div>
+              <h3>Travel Checklist</h3>
+              <p>Help users clearly understand and complete the key steps of responsible travel</p>
+              <button class="btn-feature" @click="openTravelChecklist">Fill Checklist</button>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error Message -->
+    <div v-if="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+    
+    <!-- Authentication Modal -->
+    <div v-if="!isAuthenticated && showAuthForms" class="auth-overlay">
+      <div class="auth-modal">
+        <!-- Close Button -->
+        <div class="auth-header">
+          <h2>User Authentication</h2>
+          <button class="close-btn" @click="showAuthForms = false">×</button>
+        </div>
+          
+          <!-- Login Form -->
+        <div v-if="!showRegister" class="auth-form">
+          <h3>User Login</h3>
+          <p>Welcome to CoralKita Education Center, please log in to start your learning journey</p>
+          
+            <div class="form-group">
+              <label for="username">Username</label>
+              <input 
+                type="text" 
+                id="username" 
+                v-model="loginForm.name" 
+                placeholder="Enter your username"
+                @keyup.enter="handleLogin"
+              >
+            </div>
+            
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input 
+                type="password" 
+                id="password" 
+                v-model="loginForm.password" 
+                placeholder="Enter your password"
+                @keyup.enter="handleLogin"
+              >
+            </div>
+            
+            <div class="form-actions">
+              <button 
+              class="btn-submit" 
+                @click="handleLogin"
+                :disabled="loading"
+              >
+                {{ loading ? 'Logging in...' : 'Login' }}
+              </button>
+              
+              <div class="form-links">
+                <span @click="showRegister = true" class="link">Don't have an account? Register now</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Register Form -->
+        <div v-if="showRegister" class="auth-form">
+              <h3>User Registration</h3>
+          <p>Create a new account and start your coral reef learning journey</p>
+            
+            <div class="form-group">
+              <label for="reg-username">Username</label>
+              <input 
+                type="text" 
+                id="reg-username" 
+                v-model="registerForm.name" 
+                placeholder="Enter your username"
+              >
+            </div>
+            
+            <div class="form-group">
+              <label for="reg-password">Password</label>
+              <input 
+                type="password" 
+                id="reg-password" 
+                v-model="registerForm.password" 
+                placeholder="Enter your password"
+              >
+            </div>
+            
+            <div class="form-group">
+              <label for="reg-password">Confirm Password</label>
+              <input 
+                type="password" 
+                id="reg-confirm-password" 
+                v-model="registerForm.confirmPassword" 
+                placeholder="Re-enter your password"
+              >
+            </div>
+            
+            <div class="form-actions">
+              <button 
+              class="btn-submit" 
+                @click="handleRegister"
+                :disabled="registerLoading"
+              >
+                {{ registerLoading ? 'Registering...' : 'Register' }}
+              </button>
+            
+            <div class="form-links">
+              <span @click="showRegister = false" class="link">Already have an account? Log in</span>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <!-- 测验界面 -->
+    <div v-if="showQuiz" class="quiz-overlay">
+      <div class="quiz-modal">
+        <div class="quiz-header">
+          <h2>珊瑚礁知识测验</h2>
+          <button class="btn-close-quiz" @click="closeQuiz">×</button>
+        </div>
+        
+        <div class="quiz-content">
+          <!-- 视频学习区域 -->
+          <div class="video-section">
+            <h3>视频学习</h3>
+            <div class="video-carousel">
+              <button class="nav-arrow left" @click="prevVideo" :disabled="currentVideoIndex === 0">
+                &#10094;
+              </button>
+              
+              <div class="video-container">
+                <div v-if="loadingVideo" class="loading-placeholder">
+                  <div class="loading-spinner"></div>
+                  <p>加载视频中...</p>
+                </div>
+                <div v-else-if="videoSources.length === 0" class="no-videos">
+                  <p>暂无视频资源</p>
+                </div>
+                <div v-else class="video-grid">
+                  <div 
+                    v-for="(video, index) in visibleVideos" 
+                    :key="video.id" 
+                    class="video-item"
+                    @click="playVideo(video.id)"
+                  >
+                    <div class="video-thumbnail">
+                      <img :src="video.thumbnail" :alt="video.title" />
+                      <div class="play-overlay">
+                        <div class="play-button">
+                          <span class="play-icon">▶</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="video-title">{{ video.title }}</div>
+                  </div>
+                </div>
+              </div>
+              
+              <button class="nav-arrow right" @click="nextVideo" :disabled="currentVideoIndex >= videoSources.length - 4">
+                &#10095;
+              </button>
+            </div>
+            
+            <!-- 视频指示器 -->
+            <div class="video-indicators">
+              <span 
+                v-for="(video, index) in videoSources" 
+                :key="index"
+                class="indicator"
+                :class="{ active: index >= currentVideoIndex && index < currentVideoIndex + 4 }"
+                @click="goToVideo(index)"
+              ></span>
+            </div>
+          </div>
+
+          <!-- 测验题目区域 -->
+          <div class="quiz-section">
+            <div class="quiz-progress">
+              <span class="progress-text">题目 {{ currentQuestionIndex + 1 }} / {{ questions.length }}</span>
+              <div class="progress-bar">
+                <div class="progress-fill" :style="{ width: progressPercentage + '%' }"></div>
+              </div>
+            </div>
+            
+            <div class="question-container">
+              <div v-if="loadingQuestions" class="loading-placeholder">
+                <div class="loading-spinner"></div>
+                <p>加载题目中...</p>
+              </div>
+              <div v-else-if="questions.length === 0" class="no-questions">
+                <p>暂无题目</p>
+              </div>
+              <div v-else-if="showAnswerResult" class="answer-result">
+                <div class="result-icon" :class="isAnswerCorrect ? 'correct' : 'incorrect'">
+                  {{ isAnswerCorrect ? '✓' : '✗' }}
+                </div>
+                <h3 class="result-text">{{ isAnswerCorrect ? '回答正确！' : '回答错误！' }}</h3>
+                <p class="result-explanation" v-if="!isAnswerCorrect">
+                  正确答案：{{ getCorrectAnswerText() }}
+                </p>
+                <button class="btn-next-question" @click="nextQuestion">
+                  {{ currentQuestionIndex < questions.length - 1 ? '下一题' : '完成测验' }}
+                </button>
+              </div>
+              <div v-else class="question-display">
+                <h3 class="question-text">{{ currentQuestion.question }}</h3>
+                <div class="options">
+                  <label 
+                    v-for="(option, optIndex) in currentQuestion.options" 
+                    :key="optIndex" 
+                    class="option"
+                    :class="{ selected: selectedOption === option.id }"
+                  >
+                    <input 
+                      type="radio" 
+                      :name="'currentQuestion'" 
+                      :value="option.id" 
+                      @change="selectOption(option.id)"
+                    />
+                    <span class="option-text">{{ option.text }}</span>
+                  </label>
+                </div>
+                
+                <div class="question-actions">
+                  <button 
+                    class="btn-submit-answer" 
+                    @click="submitAnswer"
+                    :disabled="selectedOption === null"
+                  >
+                    提交答案
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { mapGetters, mapActions } from 'vuex'
+import { userLogin, userRegister } from '@/api/user'
+
+export default {
+  name: 'Education',
+  data() {
+    return {
+      loginForm: {
+        name: '',
+        password: ''
+      },
+      registerForm: {
+        name: '',
+        password: '',
+        confirmPassword: ''
+      },
+      showRegister: false,
+      showAuthForms: false,
+      loading: false,
+      registerLoading: false,
+      errorMessage: '',
+      showQuiz: false, // 控制测验模态框的显示
+      videoSources: [], // 视频源列表
+      loadingVideo: false, // 加载视频源时的状态
+      questions: [], // 测验题目
+      loadingQuestions: false, // 加载题目时的状态
+      selectedOptions: [], // 用户选择的选项
+      quizScore: 0, // 测验得分
+      quizCompleted: false, // 测验是否完成
+      currentVideoIndex: 0, // 当前播放的视频索引
+      currentQuestionIndex: 0, // 当前显示的题目索引
+      selectedOption: null, // 当前选中的选项
+      showAnswerResult: false, // 是否显示答案结果
+      isAnswerCorrect: false, // 答案是否正确
+      answerExplanation: '', // 答案解释
+      quizStartTime: null, // 测验开始时间
+      quizEndTime: null, // 测验结束时间
+      quizDuration: 0 // 测验持续时间 (秒)
+    }
+  },
+  computed: {
+    ...mapGetters(['isAuthenticated', 'currentUser']),
+    
+    // 获取当前可见的视频（显示4个）
+    visibleVideos() {
+      const startIndex = this.currentVideoIndex;
+      const endIndex = Math.min(this.videoSources.length, startIndex + 4);
+      return this.videoSources.slice(startIndex, endIndex);
+    },
+    
+    // 当前显示的题目
+    currentQuestion() {
+      return this.questions[this.currentQuestionIndex] || null;
+    },
+    
+    // 进度百分比
+    progressPercentage() {
+      if (this.questions.length === 0) return 0;
+      return ((this.currentQuestionIndex + 1) / this.questions.length) * 100;
+    }
+  },
+  methods: {
+    ...mapActions(['login', 'logout']),
+    
+    async handleLogin() {
+      if (!this.loginForm.name || !this.loginForm.password) {
+        this.errorMessage = 'Please enter username and password'
+        return
+      }
+      
+      this.loading = true
+      this.errorMessage = ''
+      
+      try {
+        console.log('Sending login request:', this.loginForm)
+        const response = await userLogin(this.loginForm)
+        console.log('Login response:', response)
+        
+        if (response.code === 1) {
+          // Login successful, save user info and token using Vuex
+          this.$store.dispatch('login', {
+            user: response.data,
+            token: response.data.token
+          })
+          
+          // Clear login form and hide auth form
+          this.loginForm = { name: '', password: '' }
+          this.showAuthForms = false
+          
+          // Show success message
+          alert('Login successful! Welcome to CoralKita Education Center')
+        } else {
+          this.errorMessage = response.msg || 'Login failed'
+        }
+      } catch (error) {
+        console.error('Login error:', error)
+        this.errorMessage = 'Login failed, please check your network connection'
+      } finally {
+        this.loading = false
+      }
+    },
+    
+    async handleRegister() {
+      if (!this.registerForm.name || !this.registerForm.password || !this.registerForm.confirmPassword) {
+        this.errorMessage = 'Please fill in complete registration information'
+        return
+      }
+      
+      if (this.registerForm.password !== this.registerForm.confirmPassword) {
+        this.errorMessage = 'The two passwords entered are inconsistent'
+        return
+      }
+      
+      this.registerLoading = true
+      this.errorMessage = ''
+      
+      try {
+        const response = await userRegister({
+          name: this.registerForm.name,
+          password: this.registerForm.password
+        })
+        
+        if (response.code === 1) {
+          // Registration successful, show success message and switch to login form
+          alert('Registration successful! Please log in')
+          this.showRegister = false
+          this.registerForm = {
+            name: '',
+            password: '',
+            confirmPassword: ''
+          }
+        } else {
+          this.errorMessage = response.msg || 'Registration failed'
+        }
+      } catch (error) {
+        console.error('Registration error:', error)
+        this.errorMessage = 'Registration failed, please check your network connection'
+      } finally {
+        this.registerLoading = false
+      }
+    },
+    
+    async handleLogout() {
+      try {
+        await this.logout();
+        alert('Successfully logged out');
+      } catch (error) {
+        console.error('Logout failed:', error);
+      }
+    },
+    
+    goToQuiz() {
+      // Navigate to independent quiz page
+      this.$router.push('/quiz');
+    },
+    
+    viewGuide() {
+      alert('Responsible Tourism Guide feature coming soon!');
+    },
+    
+    viewProgress() {
+      alert('Learning Progress feature coming soon!');
+    },
+
+    openTravelChecklist() {
+      this.$router.push('/travel-checklist');
+    },
+
+    // Navigation methods
+    goToHome() {
+      // Navigate to home page
+      window.location.href = '/';
+    },
+
+    goToMap() {
+      console.log('Navigate to Map page');
+      this.$router.push('/map');
+    },
+
+    goToTrends() {
+      console.log('Navigate to Trends page');
+      this.$router.push('/trends');
+    },
+
+    goToGovernment() {
+      console.log('Navigate to Government page');
+      this.$router.push('/government');
+    },
+    
+    viewRewards() {
+      alert('奖励系统功能即将上线！');
+    },
+
+    async loadVideoSources() {
+      this.loadingVideo = true;
+      try {
+        // 使用后端API获取珊瑚礁图片作为视频源
+        const response = await fetch(`/quiz/coral-pictures?userName=${this.currentUser?.name || 'guest'}`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.code === 1) {
+            // 将珊瑚礁图片转换为视频源格式
+            this.videoSources = data.data.map((pic, index) => ({
+              id: index + 1,
+              title: `珊瑚礁知识视频 ${index + 1}`,
+              thumbnail: pic.signedUrl,
+              description: '了解珊瑚礁生态系统和保护知识'
+            }));
+          } else {
+            throw new Error(data.msg || '获取视频源失败');
+          }
+        } else {
+          throw new Error('获取视频源失败');
+        }
+      } catch (error) {
+        console.error('Error loading video sources:', error);
+        // 如果API失败，使用默认的示例视频源
+        this.videoSources = [
+          {
+            id: 1,
+            title: '珊瑚礁生态系统介绍',
+            thumbnail: 'https://via.placeholder.com/300x200/4facfe/ffffff?text=珊瑚礁视频1',
+            description: '了解珊瑚礁的基本构成和生态功能'
+          },
+          {
+            id: 2,
+            title: '珊瑚礁保护方法',
+            thumbnail: 'https://via.placeholder.com/300x200/00f2fe/ffffff?text=珊瑚礁视频2',
+            description: '学习如何保护珊瑚礁生态系统'
+          },
+          {
+            id: 3,
+            title: '海洋生物多样性',
+            thumbnail: 'https://via.placeholder.com/300x200/667eea/ffffff?text=珊瑚礁视频3',
+            description: '探索珊瑚礁中的海洋生物'
+          },
+          {
+            id: 4,
+            title: '气候变化对珊瑚礁的影响',
+            thumbnail: 'https://via.placeholder.com/300x200/764ba2/ffffff?text=珊瑚礁视频4',
+            description: '了解气候变化如何影响珊瑚礁'
+          },
+          {
+            id: 5,
+            title: '可持续旅游实践',
+            thumbnail: 'https://via.placeholder.com/300x200/4facfe/ffffff?text=珊瑚礁视频5',
+            description: '学习如何在旅游中保护珊瑚礁'
+          }
+        ];
+      } finally {
+        this.loadingVideo = false;
+      }
+    },
+
+    async loadQuestions() {
+      this.loadingQuestions = true;
+      try {
+        // 使用后端API获取测验题目
+        const response = await fetch('/quiz/questions');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.code === 1) {
+            // 随机选择5个题目
+            const allQuestions = data.data;
+            this.questions = this.getRandomQuestions(allQuestions, 5);
+            this.selectedOptions = new Array(this.questions.length).fill(null);
+          } else {
+            throw new Error(data.msg || '获取题目失败');
+          }
+        } else {
+          throw new Error('获取题目失败');
+        }
+      } catch (error) {
+        console.error('Error loading quiz questions:', error);
+        // 如果API失败，使用默认的示例题目
+        this.questions = [
+          {
+            id: 1,
+            question: '珊瑚礁主要由什么构成？',
+            options: [
+              { id: 1, text: '珊瑚虫的骨骼', isCorrect: true },
+              { id: 2, text: '海藻', isCorrect: false },
+              { id: 3, text: '贝壳', isCorrect: false },
+              { id: 4, text: '海星', isCorrect: false }
+            ]
+          },
+          {
+            id: 2,
+            question: '以下哪种行为对珊瑚礁最有害？',
+            options: [
+              { id: 1, text: '触摸珊瑚', isCorrect: false },
+              { id: 2, text: '使用防晒霜', isCorrect: true },
+              { id: 3, text: '观察鱼类', isCorrect: false },
+              { id: 4, text: '拍照留念', isCorrect: false }
+            ]
+          },
+          {
+            id: 3,
+            question: '珊瑚礁被称为海洋中的什么？',
+            options: [
+              { id: 1, text: '沙漠', isCorrect: false },
+              { id: 2, text: '雨林', isCorrect: true },
+              { id: 3, text: '草原', isCorrect: false },
+              { id: 4, text: '山脉', isCorrect: false }
+            ]
+          },
+          {
+            id: 4,
+            question: '珊瑚礁的主要威胁不包括？',
+            options: [
+              { id: 1, text: '海洋酸化', isCorrect: false },
+              { id: 2, text: '过度捕捞', isCorrect: false },
+              { id: 3, text: '海豚数量增加', isCorrect: true },
+              { id: 4, text: '塑料污染', isCorrect: false }
+            ]
+          },
+          {
+            id: 5,
+            question: '保护珊瑚礁最有效的方法是？',
+            options: [
+              { id: 1, text: '减少碳排放', isCorrect: true },
+              { id: 2, text: '增加旅游', isCorrect: false },
+              { id: 3, text: '捕捞更多鱼类', isCorrect: false },
+              { id: 4, text: '建设更多港口', isCorrect: false }
+            ]
+          }
+        ];
+        this.selectedOptions = new Array(this.questions.length).fill(null);
+      } finally {
+        this.loadingQuestions = false;
+      }
+    },
+
+    getRandomQuestions(questions, count) {
+      const shuffled = [...questions].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, count);
+    },
+
+    selectOption(optionId) {
+      this.selectedOption = optionId;
+    },
+
+    async submitAnswer() {
+      if (this.selectedOption === null) {
+        alert('请选择一个答案！');
+        return;
+      }
+
+      const currentQuestion = this.questions[this.currentQuestionIndex];
+      const isCorrect = currentQuestion.options.find(opt => opt.id === this.selectedOption).isCorrect;
+      
+      this.isAnswerCorrect = isCorrect;
+      this.showAnswerResult = true;
+
+      if (isCorrect) {
+        this.quizScore++;
+      }
+
+      this.answerExplanation = isCorrect ? '恭喜你，回答正确！' : `很遗憾，回答错误。正确答案是：${this.getCorrectAnswerText()}`;
+
+      this.quizEndTime = new Date();
+      this.quizDuration = (this.quizEndTime - this.quizStartTime) / 1000;
+
+      // 延迟一段时间后自动进入下一题
+      setTimeout(() => {
+        this.nextQuestion();
+      }, 2000); // 2秒后显示下一题
+    },
+
+    nextQuestion() {
+      this.showAnswerResult = false;
+      this.selectedOption = null;
+      this.currentQuestionIndex++;
+
+      if (this.currentQuestionIndex < this.questions.length) {
+        // 如果还有题目，继续显示当前题目
+        this.currentQuestion = this.questions[this.currentQuestionIndex];
+      } else {
+        // 如果没有题目了，显示完成测验
+        this.quizEndTime = new Date();
+        this.quizDuration = (this.quizEndTime - this.quizStartTime) / 1000;
+        this.showQuiz = false; // 关闭测验模态框
+        alert(`测验完成！\n您的得分：${this.quizScore}/${this.questions.length}\n用时：${this.quizDuration}秒`);
+
+        // 更新用户信息 (模拟)
+        this.$store.dispatch('updateUserStats', {
+          points: this.quizScore * 10, // 假设每题10分
+          experience: this.quizScore * 5, // 假设每题5经验
+          level: Math.floor(this.quizScore / 5) + 1 // 假设每5题升一级
+        });
+      }
+    },
+
+    getCorrectAnswerText() {
+      const currentQuestion = this.questions[this.currentQuestionIndex];
+      const correctOption = currentQuestion.options.find(opt => opt.isCorrect);
+      return correctOption ? correctOption.text : 'N/A';
+    },
+
+    goToVideo(index) {
+      this.currentVideoIndex = index;
+    },
+
+    prevVideo() {
+      if (this.currentVideoIndex > 0) {
+        this.currentVideoIndex--;
+      }
+    },
+
+    nextVideo() {
+      if (this.currentVideoIndex < this.videoSources.length - 4) {
+        this.currentVideoIndex++;
+      }
+    },
+
+    playVideo(videoId) {
+      const video = this.videoSources.find(v => v.id === videoId);
+      if (video) {
+        // 创建全屏视频播放器
+        const videoPlayer = document.createElement('div');
+        videoPlayer.className = 'fullscreen-video-player';
+        videoPlayer.innerHTML = `
+          <div class="video-overlay">
+            <button class="close-video-btn" onclick="this.parentElement.parentElement.remove()">×</button>
+            <video controls autoplay class="fullscreen-video">
+              <source src="${video.videoUrl || video.thumbnail}" type="video/mp4">
+              您的浏览器不支持视频播放
+            </video>
+            <div class="video-info">
+              <h3>${video.title}</h3>
+              <p>${video.description}</p>
+            </div>
+          </div>
+        `;
+        
+        // 添加样式
+        const style = document.createElement('style');
+        style.textContent = `
+          .fullscreen-video-player {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+          .video-overlay {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+          .close-video-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10000;
+          }
+          .fullscreen-video {
+            max-width: 90%;
+            max-height: 80%;
+            border-radius: 10px;
+          }
+          .video-info {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: white;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 300px;
+          }
+          .video-info h3 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+          }
+          .video-info p {
+            margin: 0;
+            font-size: 14px;
+            opacity: 0.9;
+          }
+        `;
+        
+        document.head.appendChild(style);
+        document.body.appendChild(videoPlayer);
+        
+        // 点击背景关闭视频
+        videoPlayer.addEventListener('click', (e) => {
+          if (e.target === videoPlayer) {
+            videoPlayer.remove();
+          }
+        });
+      }
+    },
+
+    closeQuiz() {
+      this.showQuiz = false;
+      this.videoSources = [];
+      this.questions = [];
+      this.selectedOptions = [];
+      this.quizScore = 0;
+      this.quizCompleted = false;
+      this.currentVideoIndex = 0;
+      this.currentQuestionIndex = 0;
+      this.selectedOption = null;
+      this.showAnswerResult = false;
+      this.isAnswerCorrect = false;
+      this.answerExplanation = '';
+      this.quizStartTime = null;
+      this.quizEndTime = null;
+      this.quizDuration = 0;
+    }
+  }
+}
+</script>
+
+<style scoped>
+.education-container {
+  min-height: 100vh;
+  background-image: url('@/assets/bg_login5.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  padding: 0;
+  position: relative;
+}
+
+.education-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 1;
+}
+
+.education-header {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: white;
+  padding: 40px 20px 30px;
+  margin-bottom: 40px;
+  margin-top: 20px;
+}
+
+.education-header h1 {
+  font-size: 3rem;
+  margin-bottom: 15px;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
+  font-weight: 700;
+}
+
+.education-header p {
+  font-size: 1.3rem;
+  opacity: 0.95;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.education-content {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px 40px;
+}
+
+/* 未登录状态样式 */
+.login-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+}
+
+/* 登录表单容器 */
+.login-form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.login-form-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 40px;
+  text-align: center;
+  color: white;
+  max-width: 500px;
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.login-form-card h2 {
+  font-size: 2rem;
+  margin-bottom: 15px;
+  color: white;
+}
+
+.login-form-card p {
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+  opacity: 0.9;
+  line-height: 1.6;
+}
+
+/* 注册表单容器 */
+.register-form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.register-form-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 40px;
+  text-align: center;
+  color: white;
+  max-width: 500px;
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.register-form-card h2 {
+  font-size: 2rem;
+  margin-bottom: 15px;
+  color: white;
+}
+
+.register-form-card p {
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+  opacity: 0.9;
+  line-height: 1.6;
+}
+
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.form-header h3 {
+  color: #333;
+  font-size: 18px;
+}
+
+.close-btn {
+  font-size: 24px;
+  color: #999;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.close-btn:hover {
+  color: #333;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: white;
+  font-weight: 500;
+  text-align: left;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  font-size: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.form-group input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.form-actions {
+  margin-top: 30px;
+}
+
+.btn-submit {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.btn-submit:hover {
+  transform: translateY(-2px);
+}
+
+.btn-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.form-links {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.link {
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 14px;
+  transition: color 0.3s ease;
+}
+
+.link:hover {
+  color: white;
+}
+
+/* 学习界面样式 */
+.learning-interface {
+  color: white;
+}
+
+/* 独立登录/注册界面样式 */
+.auth-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.auth-modal {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 25px;
+  padding: 0;
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+}
+
+.auth-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px 30px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.auth-header h2 {
+  color: white;
+  font-size: 1.8rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 28px;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  transform: rotate(90deg);
+}
+
+.auth-form {
+  padding: 30px;
+  color: white;
+}
+
+.auth-form h3 {
+  font-size: 1.6rem;
+  margin-bottom: 15px;
+  color: white;
+  text-align: center;
+}
+
+.auth-form p {
+  font-size: 1rem;
+  margin-bottom: 30px;
+  opacity: 0.9;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.auth-form .form-group {
+  margin-bottom: 20px;
+}
+
+.auth-form .form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: white;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.auth-form .form-group input {
+  width: 100%;
+  padding: 15px 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  font-size: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.auth-form .form-group input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.auth-form .form-group input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.auth-form .form-actions {
+  margin-top: 30px;
+}
+
+.auth-form .btn-submit {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+}
+
+.auth-form .btn-submit:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+}
+
+.auth-form .btn-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.auth-form .form-links {
+  text-align: center;
+}
+
+.auth-form .link {
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 14px;
+  transition: color 0.3s ease;
+}
+
+.auth-form .link:hover {
+  color: white;
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 登录/注册按钮 */
+.btn-auth {
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.btn-auth:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.user-info-card {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 30px;
+  margin-bottom: 40px;
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(20px);
+  color: white;
+}
+
+.user-avatar img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+}
+
+.user-details h3 {
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+  color: white;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.user-details p {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+}
+
+.user-stats {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 10px 16px;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.stat-icon {
+  font-size: 1.2rem;
+}
+
+.user-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.btn-login-action {
+  padding: 10px 20px;
+  background: rgba(102, 126, 234, 0.8);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.btn-login-action:hover {
+  background: rgba(102, 126, 234, 1);
+  transform: translateY(-2px);
+}
+
+.btn-logout {
+  padding: 12px 24px;
+  background: rgba(255, 107, 107, 0.2);
+  color: white;
+  border: 2px solid rgba(255, 107, 107, 0.4);
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.btn-logout:hover {
+  background: rgba(255, 107, 107, 0.3);
+  border-color: rgba(255, 107, 107, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+}
+
+/* 内联登录表单样式 */
+.login-form-inline {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.form-group-inline {
+  display: flex;
+  align-items: center;
+}
+
+.form-group-inline input {
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 14px;
+  width: 120px;
+  transition: all 0.3s ease;
+}
+
+.form-group-inline input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.form-group-inline input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.btn-login-inline {
+  padding: 8px 16px;
+  background: rgba(102, 126, 234, 0.8);
+  color: white;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.btn-login-inline:hover {
+  background: rgba(102, 126, 234, 1);
+  transform: translateY(-2px);
+}
+
+.btn-login-inline:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+
+
+/* 功能网格 */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.feature-card {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 40px 30px;
+  text-align: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(20px);
+  color: white;
+}
+
+.feature-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.feature-icon {
+  margin-bottom: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80px;
+}
+
+.feature-icon img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  filter: brightness(0) invert(1); /* 将图标转换为白色 */
+  transition: transform 0.3s ease;
+}
+
+.feature-card:hover .feature-icon img {
+  transform: scale(1.1);
+}
+
+.feature-card h3 {
+  margin-bottom: 15px;
+  font-size: 1.4rem;
+  color: white;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.feature-card p {
+  margin-bottom: 30px;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+.btn-feature {
+  padding: 14px 28px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  font-size: 1rem;
+  backdrop-filter: blur(10px);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.btn-feature:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Top Navigation */
+.top-nav {
+  background: linear-gradient(90deg, #1A1D25 0%, #01A2EB 100%);
+  backdrop-filter: blur(10px);
+  color: white;
+  padding: 12px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 10;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-left .logo {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.nav-left .logo:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05);
+  color: #63b3ed;
+}
+
+.nav-logo {
+  height: 46px;
+  cursor: pointer;
+}
+
+/* Navigation Items */
+.nav-items {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+
+.nav-item {
+  padding: 8px 16px;
+  color: rgba(255, 255, 255, 0.7);
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.nav-item:hover {
+  color: white;
+  border-bottom-color: rgba(255, 255, 255, 0.5);
+}
+
+.nav-item.active {
+  color: white;
+  border-bottom-color: #63b3ed;
+}
+
+/* Error Message */
+.error-message {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #ff4757;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .education-header h1 {
+    font-size: 2rem;
+  }
+  
+  .login-form-card h2,
+  .register-form-card h2 {
+    font-size: 1.5rem;
+  }
+  
+  .user-info-card {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .user-stats {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .user-actions {
+    margin-left: 0;
+    margin-top: 20px;
+    justify-content: center;
+  }
+  
+  .auth-modal {
+    width: 95%;
+    margin: 20px;
+  }
+  
+  .auth-header {
+    padding: 20px 25px 15px;
+  }
+  
+  .auth-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .auth-form {
+    padding: 25px;
+  }
+  
+  .auth-form h3 {
+    font-size: 1.4rem;
+  }
+  
+  .auth-form .form-group input {
+    padding: 12px 15px;
+  }
+  
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .feature-card {
+    padding: 30px 25px;
+  }
+  
+  .education-header {
+    padding: 40px 20px;
+  }
+  
+  .education-header h1 {
+    font-size: 2.2rem;
+  }
+  
+  .education-header p {
+    font-size: 1.1rem;
+  }
+  
+  .quiz-modal {
+    width: 95%;
+    margin: 20px;
+  }
+  
+  .quiz-header {
+    padding: 20px 25px 15px;
+  }
+  
+  .quiz-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .quiz-content {
+    padding: 25px;
+  }
+  
+  .quiz-section h3 {
+    font-size: 1.4rem;
+  }
+  
+  .source-selector {
+    text-align: center;
+  }
+  
+  .source-selector label {
+    text-align: center;
+  }
+  
+  .source-selector select {
+    width: 100%;
+  }
+  
+  .video-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .video-item {
+    width: 100%;
+  }
+  
+  .video-thumbnail {
+    height: 100px;
+  }
+  
+  .video-display {
+    overflow-x: hidden;
+  }
+  
+  .nav-arrow {
+    display: none;
+  }
+  
+  .video-indicators {
+    display: none;
+  }
+  
+  .quiz-progress {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .question-container {
+    padding: 20px;
+  }
+  
+  .question-text {
+    font-size: 1.1rem;
+  }
+  
+  .answer-result {
+    padding: 15px;
+  }
+  
+  .result-icon {
+    font-size: 2.5rem;
+  }
+  
+  .result-text {
+    font-size: 1.3rem;
+  }
+}
+
+.video-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.indicator {
+  width: 10px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.indicator.active {
+  background: white;
+  width: 15px;
+  height: 15px;
+}
+
+/* 测验界面样式 */
+.quiz-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.quiz-modal {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 25px;
+  padding: 0;
+  max-width: 900px;
+  width: 95%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.quiz-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px 30px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.quiz-header h2 {
+  color: white;
+  font-size: 1.8rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+.btn-close-quiz {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 28px;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.btn-close-quiz:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  transform: rotate(90deg);
+}
+
+.quiz-content {
+  flex-grow: 1;
+  padding: 30px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.video-section, .quiz-section {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 30px;
+  text-align: center;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.video-section h3, .quiz-section h3 {
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: white;
+}
+
+.quiz-progress {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  color: white;
+  font-size: 1.1rem;
+}
+
+.progress-text {
+  font-weight: 500;
+}
+
+.progress-bar {
+  flex-grow: 1;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  border-radius: 4px;
+  transition: width 0.3s ease-in-out;
+}
+
+.question-container {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 30px;
+  text-align: center;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.question-display {
+  text-align: left;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.question-text {
+  margin-bottom: 25px;
+  font-size: 1.3rem;
+  color: white;
+}
+
+.answer-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.result-icon {
+  font-size: 3rem;
+  color: white;
+}
+
+.result-icon.correct {
+  color: #4CAF50; /* Green for correct */
+}
+
+.result-icon.incorrect {
+  color: #F44336; /* Red for incorrect */
+}
+
+.result-text {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: white;
+}
+
+.result-explanation {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
+  text-align: left;
+  padding: 0 10px;
+}
+
+.btn-next-question {
+  padding: 14px 28px;
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+}
+
+.btn-next-question:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+}
+
+.btn-next-question:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.video-carousel {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.video-container {
+  flex-grow: 1;
+  overflow-x: auto;
+  display: flex;
+  gap: 20px;
+  padding: 10px 0;
+}
+
+.nav-arrow {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  color: white;
+  font-size: 2rem;
+  z-index: 10;
+}
+
+.nav-arrow:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.video-display {
+  flex-grow: 1;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.video-display::-webkit-scrollbar {
+  display: none;
+}
+
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  padding-bottom: 20px;
+}
+
+.video-item {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.video-item:hover {
+  transform: translateY(-5px);
+}
+
+.video-thumbnail {
+  position: relative;
+  width: 100%;
+  height: 150px;
+  overflow: hidden;
+}
+
+.video-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.play-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 15px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.video-item:hover .play-overlay {
+  opacity: 1;
+}
+
+.play-icon {
+  font-size: 2rem;
+  color: white;
+}
+
+.play-button {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid white;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.play-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.video-title {
+  padding: 10px 15px;
+  font-size: 0.9rem;
+  color: white;
+  text-align: left;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 0 0 15px 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.loading-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 50px 0;
+  color: white;
+  font-size: 1.1rem;
+}
+
+.loading-spinner {
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid white;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.no-videos, .no-questions {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.1rem;
+  padding: 20px 0;
+}
+
+.questions-container {
+  text-align: left;
+}
+
+.question-item {
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.question-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.question-item h4 {
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+  color: white;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  padding: 12px 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  color: white;
+}
+
+.option:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+.option.selected {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: #4facfe;
+  box-shadow: 0 0 10px rgba(79, 172, 254, 0.3);
+}
+
+.option input[type="radio"] {
+  margin-right: 15px;
+  width: 20px;
+  height: 20px;
+  accent-color: white;
+}
+
+.option-text {
+  flex-grow: 1;
+}
+
+.quiz-actions {
+  margin-top: 30px;
+  text-align: right;
+}
+
+.btn-submit-quiz {
+  padding: 14px 28px;
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+}
+
+.btn-submit-quiz:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+}
+
+.btn-submit-quiz:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-submit-answer {
+  padding: 14px 28px;
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+}
+
+.btn-submit-answer:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+}
+
+.btn-submit-answer:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.question-actions {
+  margin-top: 30px;
+  text-align: center;
+}
+</style>

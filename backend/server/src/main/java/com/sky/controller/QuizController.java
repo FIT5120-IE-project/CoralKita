@@ -87,7 +87,7 @@ public class QuizController {
      * @return 得分结果
      */
     @PostMapping("/submit-score")
-    @ApiOperation(value = "提交测验得分")
+    @ApiOperation(value = "提交测验得分(已登录)")
     public Result<QuizScoreVO> submitQuizScore(@RequestBody QuizScoreDTO quizScoreDTO) {
         log.info("提交测验得分：{}", quizScoreDTO);
         
