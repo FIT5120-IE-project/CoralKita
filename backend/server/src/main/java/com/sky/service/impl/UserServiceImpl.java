@@ -114,4 +114,15 @@ public class UserServiceImpl implements UserService {
         return userRegisterVO;
     }
 
+    /**
+     * 更新用户徽章
+     *
+     * @param userId 用户ID
+     * @param badge  徽章名称
+     */
+    @Override
+    public void updateUserBadge(Integer userId, String badge) {
+        userMapper.updateUserBadge(userId, badge);
+    }
+
 }

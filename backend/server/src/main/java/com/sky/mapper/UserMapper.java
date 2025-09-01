@@ -39,4 +39,12 @@ public interface UserMapper {
     @Update("update user set points = #{points}, level = #{level}, exp = #{exp} where id = #{id}")
     void updateUserScore(User user);
 
+    /**
+     * 更新用户徽章
+     * @param userId 用户ID
+     * @param badge 徽章名称
+     */
+    @Update("update user set badges = #{badge} where id = #{userId}")
+    void updateUserBadge(Integer userId, String badge);
+
 }

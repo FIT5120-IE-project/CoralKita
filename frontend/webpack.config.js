@@ -31,6 +31,10 @@ module.exports = {
       '/quiz': {
         target: BACKEND_URL,  // 代理测验相关的API
         changeOrigin: true
+      },
+      '/checklist': {
+        target: BACKEND_URL,  // 代理清单相关的API
+        changeOrigin: true
       }
     }
   },

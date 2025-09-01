@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sky.mapper.ChecklistMapper">
+
+    <!-- 根据用户ID查询清单记录 -->
+    <select id="getByUserId" resultType="com.sky.entity.Checklist">
+        SELECT 
+            user_id as userId,
+            q1, q2, q3, q4, q5, q6, q7, q8, q9, q10,
+            q11, q12, q13, q14, q15, q16, q17
+        FROM check_list 
+        WHERE user_id = #{userId}
+    </select>
+
+    <!-- 插入新的清单记录 -->
+    <insert id="insert" parameterType="com.sky.entity.Checklist">
+        INSERT INTO check_list (
+            user_id, q1, q2, q3, q4, q5, q6, q7, q8, q9, q10,
+            q11, q12, q13, q14, q15, q16, q17
+        ) VALUES (
+            #{userId}, #{q1}, #{q2}, #{q3}, #{q4}, #{q5}, #{q6}, #{q7}, #{q8}, #{q9}, #{q10},
+            #{q11}, #{q12}, #{q13}, #{q14}, #{q15}, #{q16}, #{q17}
+        )
+    </insert>
+
+    <!-- 更新清单记录 -->
+    <update id="update" parameterType="com.sky.entity.Checklist">
+        UPDATE check_list SET
+            q1 = #{q1}, q2 = #{q2}, q3 = #{q3}, q4 = #{q4}, q5 = #{q5},
+            q6 = #{q6}, q7 = #{q7}, q8 = #{q8}, q9 = #{q9}, q10 = #{q10},
+            q11 = #{q11}, q12 = #{q12}, q13 = #{q13}, q14 = #{q14}, q15 = #{q15},
+            q16 = #{q16}, q17 = #{q17}
+        WHERE user_id = #{userId}
+    </update>
+
+</mapper>
