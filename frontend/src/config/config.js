@@ -7,7 +7,7 @@ const config = {
   },
   // 生产环境
   production: {
-    baseURL: 'https://your-production-domain.com', // 生产环境地址，请根据实际情况修改
+    baseURL: 'http://8.148.202.1/', // 生产环境地址，请根据实际情况修改
     frontendPort: 80
   }
 };
