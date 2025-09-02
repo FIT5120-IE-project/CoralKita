@@ -16,8 +16,10 @@ import com.sky.vo.UserRegisterVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
@@ -52,6 +54,7 @@ public class UserServiceImpl implements UserService {
         UserLoginVO userLoginVO = UserLoginVO.builder()
                 .id(user.getId())
                 .name(user.getName())
+                .email(user.getEmail())
                 .points(user.getPoints())
                 .badges(user.getBadges())
                 .level(user.getLevel())
@@ -90,6 +93,7 @@ public class UserServiceImpl implements UserService {
         user.setName(username);
         // 对密码进行MD5加密
         user.setPassword(password);
+        user.setEmail(userRegisterDTO.getEmail());
         // 设置初始值
         user.setPoints(0);
         user.setLevel("Novice");
@@ -105,6 +109,7 @@ public class UserServiceImpl implements UserService {
         UserRegisterVO userRegisterVO = UserRegisterVO.builder()
                 .id(savedUser.getId())
                 .name(savedUser.getName())
+                .email(savedUser.getEmail())
                 .points(savedUser.getPoints())
                 .badges(savedUser.getBadges())
                 .level(savedUser.getLevel())
@@ -124,5 +129,4 @@ public class UserServiceImpl implements UserService {
     public void updateUserBadge(Integer userId, String badge) {
         userMapper.updateUserBadge(userId, badge);
     }
-
 }

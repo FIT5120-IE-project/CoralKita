@@ -9,7 +9,6 @@ public interface UserService {
 
     UserLoginVO login(UserLoginDTO userLoginDTO);
 
-
     UserRegisterVO register(UserRegisterDTO userRegisterDTO);
 
     /**
@@ -18,5 +17,4 @@ public interface UserService {
      * @param badge 徽章名称
      */
     void updateUserBadge(Integer userId, String badge);
-
 }

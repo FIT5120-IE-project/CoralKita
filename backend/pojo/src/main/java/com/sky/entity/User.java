@@ -70,4 +70,7 @@ public class User{
 
     //经验
     private int exp;
+
+    //邮箱
+    private String email;
 }

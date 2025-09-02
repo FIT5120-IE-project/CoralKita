@@ -252,6 +252,108 @@ public class QuizController {
     }
 
     /**
+     * 获取指定数量的健康和白化珊瑚图片用于测验
+     * @param healthCount 健康珊瑚图片数量（默认4张）
+     * @param bleachCount 白化珊瑚图片数量（默认2张）
+     * @return 珊瑚图片列表
+     */
+    @GetMapping("/coral-pictures-balanced")
+    @ApiOperation(value = "获取指定数量的健康和白化珊瑚图片")
+    public Result<List<CoralPictureVO>> getBalancedCoralPictures(
+            @RequestParam(defaultValue = "4") int healthCount,
+            @RequestParam(defaultValue = "2") int bleachCount) {
+        log.info("获取平衡的珊瑚图片组合（{}张健康 + {}张白化）", healthCount, bleachCount);
+        
+        // 参数验证
+        if (healthCount < 0 || bleachCount < 0) {
+            return Result.error("图片数量不能为负数");
+        }
+        if (healthCount + bleachCount == 0) {
+            return Result.error("至少需要获取1张图片");
+        }
+        if (healthCount + bleachCount > 20) {
+            return Result.error("单次最多只能获取20张图片");
+        }
+        
+        try {
+            // 获取健康珊瑚图片
+            List<CoralPicture> healthPictures = coralPictureMapper.selectByAnswer("health");
+            if (healthPictures.size() < healthCount) {
+                log.warn("健康珊瑚图片数量不足，请求{}张，只有{}张", healthCount, healthPictures.size());
+                healthCount = healthPictures.size(); // 调整数量为实际可用数量
+            }
+            
+            // 获取白化珊瑚图片
+            List<CoralPicture> bleachPictures = coralPictureMapper.selectByAnswer("bleach");
+            if (bleachPictures.size() < bleachCount) {
+                log.warn("白化珊瑚图片数量不足，请求{}张，只有{}张", bleachCount, bleachPictures.size());
+                bleachCount = bleachPictures.size(); // 调整数量为实际可用数量
+            }
+            
+            // 随机选择指定数量的图片
+            List<CoralPicture> selectedHealthPictures = selectRandomFromList(healthPictures, healthCount);
+            List<CoralPicture> selectedBleachPictures = selectRandomFromList(bleachPictures, bleachCount);
+            
+            // 合并图片列表
+            List<CoralPicture> allPictures = new ArrayList<>();
+            allPictures.addAll(selectedHealthPictures);
+            allPictures.addAll(selectedBleachPictures);
+            
+            if (allPictures.isEmpty()) {
+                return Result.error("没有可用的珊瑚图片");
+            }
+            
+            // 转换为VO并生成签名URL
+            List<CoralPictureVO> pictureVOs = new ArrayList<>();
+            for (CoralPicture picture : allPictures) {
+                // 从原始URL中提取objectKey
+                String originalUrl = picture.getPicture();
+                String objectKey = extractObjectKeyFromUrl(originalUrl);
+                
+                // 生成签名URL
+                String signedUrl = ossService.generateSignedUrl(objectKey, 3600);
+                
+                CoralPictureVO vo = CoralPictureVO.builder()
+                        .pictureUrl(signedUrl)
+                        .answer(picture.getAnswer())
+                        .build();
+                pictureVOs.add(vo);
+            }
+            
+            log.info("成功获取{}张珊瑚图片（{}张健康，{}张白化）", 
+                    pictureVOs.size(), selectedHealthPictures.size(), selectedBleachPictures.size());
+            
+            return Result.success(pictureVOs);
+        } catch (Exception e) {
+            log.error("获取平衡珊瑚图片失败：{}", e.getMessage());
+            return Result.error("获取图片失败：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 从列表中随机选择指定数量的元素
+     * @param list 源列表
+     * @param count 需要选择的数量
+     * @return 随机选择的元素列表
+     */
+    private List<CoralPicture> selectRandomFromList(List<CoralPicture> list, int count) {
+        if (list == null || list.isEmpty()) {
+            return new ArrayList<>();
+        }
+        
+        if (count >= list.size()) {
+            return new ArrayList<>(list);
+        }
+        
+        // 创建副本并随机打乱
+        List<CoralPicture> shuffledList = new ArrayList<>(list);
+        java.util.Collections.shuffle(shuffledList);
+        
+        // 返回前count个元素
+        return shuffledList.subList(0, count);
+    }
+
+    /**
      * 从OSS URL中提取objectKey
      * @param url OSS URL
      * @return objectKey

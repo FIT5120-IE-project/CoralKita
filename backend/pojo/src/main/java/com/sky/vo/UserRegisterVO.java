@@ -15,10 +15,10 @@ public class UserRegisterVO implements Serializable {
 
     private Integer id;
     private String name;
+    private String email;
     private Integer points;
     private String badges;
     private String level;
     private Integer experience;
     private String token;
-
 }

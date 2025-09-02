@@ -89,5 +89,4 @@ public class UserController {
     public Result<String> logout() {
         return Result.success();
     }
-
 }
