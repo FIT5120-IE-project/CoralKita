@@ -83,39 +83,38 @@
 
     <!-- 主要内容区域 -->
     <div class="main-layout">
-      <!-- 左侧轮播图区域 -->
+      <!-- 左侧马来西亚地图区域 -->
       <div class="left-panel">
-        <div class="carousel-display">
-          <div class="carousel-image-container">
-            <img 
-              v-if="carouselImages.length > 0" 
-              :src="carouselImages[currentImageIndex]" 
-              :alt="`Carousel Image ${currentImageIndex + 1}`" 
-              class="carousel-image" 
-            />
-            <div v-else class="image-placeholder">
-              <div class="placeholder-content">
-                <div class="placeholder-icon">🖼️</div>
-                <p>图片轮播区域</p>
-                <small>请添加图片到轮播列表</small>
+        <div class="map-display">
+          <div class="map-header">
+            <h3>Malaysia Coral Reef Locations</h3>
+            <div v-if="selectedIsland" class="location-info">
+              <span class="island-name">{{ selectedIsland }}</span>
+              <div v-if="selectedCoordinates" class="coordinates">
+                <span class="coord-label">Coordinates:</span>
+                <span class="coord-values">{{ selectedCoordinates.lat.toFixed(4) }}°N, {{ selectedCoordinates.lng.toFixed(4) }}°E</span>
           </div>
               </div>
             </div>
-          <div class="carousel-navigation">
-            <button class="nav-arrow" @click="previousImage" :disabled="carouselImages.length === 0">❮</button>
-          <div class="carousel-indicators">
-            <span 
-                v-for="(image, index) in carouselImages" 
-              :key="index"
-                :class="['dot', { active: currentImageIndex === index }]"
-                @click="goToImage(index)"
-            ></span>
-              <!-- 如果没有图片，显示占位指示器 -->
-              <span v-if="carouselImages.length === 0" class="dot placeholder-dot"></span>
-              <span v-if="carouselImages.length === 0" class="dot placeholder-dot"></span>
-              <span v-if="carouselImages.length === 0" class="dot placeholder-dot"></span>
+          
+          <div class="map-container" ref="mapContainer" id="leaflet-map">
+            <!-- Leaflet地图将在这里渲染 -->
           </div>
-            <button class="nav-arrow" @click="nextImage" :disabled="carouselImages.length === 0">❯</button>
+          
+          <!-- 地图图例 -->
+          <div class="map-legend">
+            <div class="legend-item">
+              <div class="legend-marker has-data"></div>
+              <span>Islands with Data</span>
+          </div>
+            <div class="legend-item">
+              <div class="legend-marker no-data"></div>
+              <span>Islands without Data</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-marker selected"></div>
+              <span>Selected Island</span>
+            </div>
           </div>
           </div>
         </div>
@@ -306,7 +305,18 @@
 import axios from 'axios';
 import { Chart, registerables } from 'chart.js';
 import { API_BASE_URL } from '@/config/config';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
 Chart.register(...registerables);
+
+// 修复Leaflet默认图标问题
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+  iconUrl: require('leaflet/dist/images/marker-icon.png'),
+  shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+});
 
 export default {
   name: 'TrendsVisualization',
@@ -318,13 +328,12 @@ export default {
       trendData: [],
       chart: null,
       currentIslandIndex: 0,
-      // 轮播图相关数据
-      carouselImages: [
-        require('@/assets/CarouselImages_1.jpg'),
-        require('@/assets/CarouselImages_2.jpg'),
-        require('@/assets/CarouselImages_3.jpg')
-      ],
-      currentImageIndex: 0,
+      // Leaflet地图相关数据
+      map: null,
+      islandLocations: [],
+      selectedCoordinates: null,
+      markerLayers: [],
+      selectedMarker: null,
       // 对比功能相关数据
       showCompareModal: false,
       selectedCompareIslands: ['', '', '', ''], // 4个下拉框的选择，用数组索引对应列
@@ -351,6 +360,7 @@ export default {
     await Promise.all([
       this.$nextTick(() => {
         this.setupChart();
+        this.initializeLeafletMap();
       }),
       this.loadAvailableIslands()
     ]);
@@ -369,6 +379,8 @@ export default {
         if (response.data.code === 1) {
           this.availableIslands = response.data.data;
           console.log('成功从后端加载岛屿列表:', this.availableIslands);
+          // 立即加载岛屿坐标数据
+          await this.loadIslandCoordinates();
         } else {
           console.error('后端返回错误:', response.data.msg);
           this.availableIslands = [];
@@ -415,7 +427,8 @@ export default {
     onIslandChange() {
       console.log('岛屿选择已更改为:', this.selectedIsland);
       if (this.selectedIsland) {
-        this.loadTrendData(this.selectedIsland);
+        // 通过地图选择函数来处理，确保地图同步
+        this.selectIslandFromMap(this.selectedIsland);
       }
     },
     
@@ -425,8 +438,7 @@ export default {
           island.toLowerCase().includes(this.searchInput.toLowerCase())
         );
         if (matchingIsland) {
-          this.selectedIsland = matchingIsland;
-          this.loadTrendData(matchingIsland);
+          this.selectIslandFromMap(matchingIsland);
         }
       }
     },
@@ -451,40 +463,318 @@ export default {
       }
     },
 
-    // 轮播图独立方法
-    previousImage() {
-      if (this.carouselImages.length === 0) return;
-      this.currentImageIndex = this.currentImageIndex > 0 
-        ? this.currentImageIndex - 1 
-        : this.carouselImages.length - 1;
-    },
-    
-    nextImage() {
-      if (this.carouselImages.length === 0) return;
-      this.currentImageIndex = this.currentImageIndex < this.carouselImages.length - 1 
-        ? this.currentImageIndex + 1 
-        : 0;
-    },
-    
-    goToImage(index) {
-      if (this.carouselImages.length === 0) return;
-      this.currentImageIndex = index;
-    },
-
-    // 添加图片到轮播列表的方法（供后续使用）
-    addCarouselImage(imagePath) {
-      this.carouselImages.push(imagePath);
-      console.log('添加图片到轮播:', imagePath);
-    },
-
-    // 移除轮播图片的方法
-    removeCarouselImage(index) {
-      if (index >= 0 && index < this.carouselImages.length) {
-        this.carouselImages.splice(index, 1);
-        // 调整当前索引
-        if (this.currentImageIndex >= this.carouselImages.length) {
-          this.currentImageIndex = Math.max(0, this.carouselImages.length - 1);
+    // 初始化Leaflet地图
+    initializeLeafletMap() {
+      this.$nextTick(() => {
+        if (this.map) {
+          this.map.remove(); // 清理现有地图
         }
+        
+        // 创建地图实例，聚焦马来西亚
+        this.map = L.map('leaflet-map', {
+          center: [4.2105, 103.7751], // 马来西亚中心点
+          zoom: 6,
+          minZoom: 5,
+          maxZoom: 12,
+          zoomControl: true,
+          attributionControl: true
+        });
+        
+        // 添加美观的地图图层
+        this.addMapLayers();
+        
+        console.log('Leaflet地图初始化完成');
+      });
+    },
+    
+    // 添加地图图层
+    addMapLayers() {
+      // 使用多个地图源以获得最佳效果
+      const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 19
+      });
+      
+      const cartoLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '© CARTO © OpenStreetMap contributors',
+        maxZoom: 19
+      });
+      
+      const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: '© Esri © DigitalGlobe © GeoEye © Earthstar Geographics © CNES/Airbus DS © USDA © USGS © AeroGRID © IGN © IGP',
+        maxZoom: 19
+      });
+      
+      // 默认使用CartoDB Voyager图层（更美观）
+      cartoLayer.addTo(this.map);
+      
+      // 添加图层控制
+      const baseLayers = {
+        "CartoDB Voyager": cartoLayer,
+        "OpenStreetMap": osmLayer,
+        "Satellite": satelliteLayer
+      };
+      
+      L.control.layers(baseLayers).addTo(this.map);
+    },
+    
+    // 加载岛屿坐标数据
+    async loadIslandCoordinates() {
+      try {
+        console.log('开始加载岛屿坐标数据...');
+        const allCoordinates = {};
+        
+        for (const island of this.availableIslands) {
+          try {
+            const response = await axios.get(`${API_BASE_URL}/trend/bleach?island=${encodeURIComponent(island)}`);
+            if (response.data.code === 1 && response.data.data && response.data.data.length > 0) {
+              const coralData = response.data.data[0]; // 取第一条数据获取坐标
+              if (coralData.islandLat && coralData.islandLng) {
+                allCoordinates[island] = {
+                  lat: coralData.islandLat,
+                  lng: coralData.islandLng,
+                  hasData: true
+                };
+              }
+            }
+          } catch (error) {
+            console.warn(`无法获取岛屿 ${island} 的坐标数据:`, error);
+          }
+        }
+        
+        // 存储岛屿位置数据
+        this.islandLocations = Object.entries(allCoordinates).map(([island, coords]) => ({
+          island,
+          lat: coords.lat,
+          lng: coords.lng,
+          hasData: coords.hasData
+        }));
+        
+        console.log('加载的岛屿坐标:', this.islandLocations);
+        
+        // 在地图上添加标记
+        this.addIslandMarkers();
+        
+        // 如果已经有选中的岛屿，立即定位
+        if (this.selectedIsland) {
+          console.log('检测到预选岛屿:', this.selectedIsland);
+          setTimeout(() => {
+            this.selectIslandFromMap(this.selectedIsland);
+          }, 500);
+        }
+        
+      } catch (error) {
+        console.error('加载岛屿坐标失败:', error);
+      }
+    },
+    
+    // 在地图上添加岛屿标记
+    addIslandMarkers() {
+      if (!this.map || this.islandLocations.length === 0) return;
+      
+      // 清除现有标记
+      this.markerLayers.forEach(marker => this.map.removeLayer(marker));
+      this.markerLayers = [];
+      
+      // 创建自定义图标
+      const createCustomIcon = (hasData, isSelected = false) => {
+        const color = isSelected ? '#dc2626' : (hasData ? '#16a34a' : '#6b7280');
+        const size = isSelected ? [35, 45] : [25, 35];
+        const borderColor = isSelected ? '#fef2f2' : '#ffffff';
+        const shadowColor = isSelected ? 'rgba(220, 38, 38, 0.5)' : 'rgba(0,0,0,0.3)';
+        const animation = isSelected ? 'animation: bounce 2s infinite;' : '';
+        
+        return L.divIcon({
+          className: 'custom-coral-marker',
+          html: `
+            <div style="
+              background: ${color};
+              width: ${size[0]}px;
+              height: ${size[1]}px;
+              border-radius: 50% 50% 50% 0;
+              border: 4px solid ${borderColor};
+              box-shadow: 0 4px 15px ${shadowColor};
+              transform: rotate(-45deg);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              position: relative;
+              ${animation}
+            ">
+              <div style="
+                color: white;
+                font-size: ${isSelected ? '14px' : '12px'};
+                font-weight: bold;
+                transform: rotate(45deg);
+                text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+              ">🪸</div>
+            </div>
+          `,
+          iconSize: size,
+          iconAnchor: [size[0]/2, size[1]],
+          popupAnchor: [0, -size[1]]
+        });
+      };
+      
+      // 为每个岛屿添加标记
+      this.islandLocations.forEach(location => {
+        const marker = L.marker(
+          [location.lat, location.lng],
+          { 
+            icon: createCustomIcon(location.hasData),
+            title: location.island
+          }
+        );
+        
+        // 创建弹出窗口内容
+        const isCurrentlySelected = location.island === this.selectedIsland;
+        const popupContent = `
+          <div style="text-align: center; font-family: Arial, sans-serif;">
+            <h4 style="margin: 0 0 8px 0; color: ${isCurrentlySelected ? '#dc2626' : '#2563eb'}; font-size: 16px;">
+              ${isCurrentlySelected ? '🔴 ' : ''}${location.island}
+            </h4>
+            <p style="margin: 0 0 8px 0; font-size: 14px; color: #64748b;">
+              📍 ${location.lat.toFixed(4)}°N, ${location.lng.toFixed(4)}°E
+            </p>
+            <div style="
+              padding: 4px 8px; 
+              border-radius: 12px; 
+              font-size: 12px; 
+              font-weight: bold;
+              background: ${location.hasData ? '#dcfce7' : '#f1f5f9'};
+              color: ${location.hasData ? '#166534' : '#475569'};
+              margin-bottom: 8px;
+            ">
+              ${location.hasData ? '✅ Data Available' : '❌ No Data'}
+            </div>
+            ${isCurrentlySelected ? 
+              '<div style="background: #fee2e2; color: #dc2626; padding: 4px 8px; border-radius: 8px; font-size: 12px; font-weight: bold; margin-bottom: 8px;">🎯 Currently Selected</div>' : 
+              '<button onclick="window.selectIslandFromMap(\'' + location.island + '\')" style="background: #3b82f6; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold;">Select Island</button>'
+            }
+          </div>
+        `;
+        
+        marker.bindPopup(popupContent, {
+          maxWidth: 250,
+          className: 'custom-popup'
+        });
+        
+        // 点击事件
+        marker.on('click', () => {
+          this.selectIslandFromMap(location.island);
+        });
+        
+        marker.addTo(this.map);
+        this.markerLayers.push(marker);
+      });
+      
+      // 全局函数，供弹出窗口按钮调用
+      window.selectIslandFromMap = (island) => {
+        this.selectIslandFromMap(island);
+      };
+    },
+    
+    // 从地图选择岛屿
+    selectIslandFromMap(island) {
+      console.log('从地图选择岛屿:', island);
+      this.selectedIsland = island;
+      this.searchInput = island;
+      
+      // 更新选中岛屿的坐标
+      const location = this.islandLocations.find(loc => loc.island === island);
+      if (location && this.map) {
+        this.selectedCoordinates = {
+          lat: location.lat,
+          lng: location.lng
+        };
+        
+        console.log(`定位到岛屿 ${island}:`, location.lat, location.lng);
+        
+        // 地图飞到选中位置并放大
+        this.map.flyTo([location.lat, location.lng], 10, {
+          duration: 2,
+          easeLinearity: 0.3
+        });
+        
+        // 延迟更新标记样式，确保地图动画开始后再更新
+        setTimeout(() => {
+          this.updateMarkerStyles(island);
+        }, 100);
+        
+        // 打开选中岛屿的弹窗
+        setTimeout(() => {
+          this.openSelectedIslandPopup(island);
+        }, 2000);
+      } else if (!this.map) {
+        console.warn('地图尚未初始化');
+        // 如果地图还没初始化，保存选择状态，稍后处理
+        this.selectedCoordinates = location ? {
+          lat: location.lat,
+          lng: location.lng
+        } : null;
+      }
+      
+      // 加载趋势数据
+      this.loadTrendData(island);
+    },
+    
+    // 更新标记样式
+    updateMarkerStyles(selectedIsland) {
+      this.markerLayers.forEach((marker, index) => {
+        const location = this.islandLocations[index];
+        const isSelected = location.island === selectedIsland;
+        
+        const createCustomIcon = (hasData, isSelected = false) => {
+          const color = isSelected ? '#dc2626' : (hasData ? '#16a34a' : '#6b7280');
+          const size = isSelected ? [35, 45] : [25, 35];
+          const borderColor = isSelected ? '#fef2f2' : '#ffffff';
+          const shadowColor = isSelected ? 'rgba(220, 38, 38, 0.5)' : 'rgba(0,0,0,0.3)';
+          const animation = isSelected ? 'animation: bounce 2s infinite;' : '';
+          
+          return L.divIcon({
+            className: 'custom-coral-marker',
+            html: `
+              <div style="
+                background: ${color};
+                width: ${size[0]}px;
+                height: ${size[1]}px;
+                border-radius: 50% 50% 50% 0;
+                border: 4px solid ${borderColor};
+                box-shadow: 0 4px 15px ${shadowColor};
+                transform: rotate(-45deg);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+                ${animation}
+              ">
+                <div style="
+                  color: white;
+                  font-size: ${isSelected ? '14px' : '12px'};
+                  font-weight: bold;
+                  transform: rotate(45deg);
+                  text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+                ">🪸</div>
+              </div>
+            `,
+            iconSize: size,
+            iconAnchor: [size[0]/2, size[1]],
+            popupAnchor: [0, -size[1]]
+          });
+        };
+        
+        marker.setIcon(createCustomIcon(location.hasData, isSelected));
+      });
+    },
+    
+    // 打开选中岛屿的弹窗
+    openSelectedIslandPopup(selectedIsland) {
+      if (!this.map) return;
+      
+      const markerIndex = this.islandLocations.findIndex(loc => loc.island === selectedIsland);
+      if (markerIndex >= 0 && this.markerLayers[markerIndex]) {
+        const marker = this.markerLayers[markerIndex];
+        marker.openPopup();
       }
     },
     
@@ -1155,6 +1445,19 @@ export default {
     selectedCompareAttribute: {
       handler: 'onAttributeFilterChange'
     }
+  },
+  
+  beforeDestroy() {
+    // 清理Leaflet地图实例
+    if (this.map) {
+      this.map.remove();
+      this.map = null;
+    }
+    
+    // 清理全局函数
+    if (window.selectIslandFromMap) {
+      delete window.selectIslandFromMap;
+    }
   }
 };
 </script>
@@ -1725,117 +2028,210 @@ export default {
 
 
 
-.carousel-display {
+/* 地图显示区域 */
+.map-display {
   text-align: center;
-}
-
-.carousel-image-container {
-  position: relative;
-  width: 100%;
-  height: 280px;
-  margin-bottom: 16px;
-  border-radius: 8px;
-  overflow: hidden;
-  background: #f7fafc;
-}
-
-.carousel-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.image-placeholder {
-  width: 100%;
   height: 100%;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
-  border: 2px dashed #cbd5e0;
+  flex-direction: column;
 }
 
-.placeholder-content {
-  text-align: center;
-  color: #718096;
+.map-header {
+  margin-bottom: 16px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  backdrop-filter: blur(5px);
 }
 
-.placeholder-icon {
-  font-size: 3rem;
-  margin-bottom: 12px;
-  opacity: 0.6;
+.map-header h3 {
+  margin: 0 0 12px 0;
+  color: #333;
+  font-size: 18px;
+  font-weight: 600;
 }
 
-.placeholder-content p {
-  margin: 8px 0 4px 0;
+.location-info {
+  text-align: left;
+}
+
+.island-name {
   font-size: 16px;
+  font-weight: 600;
+  color: #2d3748;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.coordinates {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.coord-label {
+  font-size: 12px;
+  color: #718096;
   font-weight: 500;
 }
 
-.placeholder-content small {
-  font-size: 12px;
-  opacity: 0.8;
+.coord-values {
+  font-size: 14px;
+  color: #4a5568;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
 }
 
-.carousel-navigation {
+/* Leaflet地图容器 */
+.map-container {
+  position: relative;
+  flex: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  border: 2px solid #e2e8f0;
+  min-height: 400px;
+}
+
+#leaflet-map {
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+  border-radius: 10px;
+}
+
+/* 自定义Leaflet控件样式 */
+.leaflet-control-layers {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(10px) !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.leaflet-control-zoom {
+  border: none !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.leaflet-control-zoom a {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(10px) !important;
+  border: none !important;
+  color: #374151 !important;
+  font-weight: bold !important;
+  transition: all 0.3s ease !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background: rgba(59, 130, 246, 0.9) !important;
+  color: white !important;
+  transform: scale(1.05) !important;
+}
+
+/* 自定义弹出窗口样式 */
+.leaflet-popup-content-wrapper {
+  background: white !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+.leaflet-popup-tip {
+  background: white !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+.custom-popup .leaflet-popup-content {
+  margin: 16px !important;
+  min-width: 200px !important;
+}
+
+/* 自定义标记动画 */
+.custom-coral-marker {
+  transition: all 0.3s ease;
+}
+
+.custom-coral-marker:hover {
+  transform: scale(1.1) !important;
+  z-index: 1000 !important;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0) rotate(-45deg);
+  }
+  40% {
+    transform: translateY(-10px) rotate(-45deg);
+  }
+  60% {
+    transform: translateY(-5px) rotate(-45deg);
+  }
+}
+
+/* 地图加载状态 */
+.leaflet-container {
+  background: linear-gradient(135deg, #e0f2fe 0%, #b3e5fc 100%) !important;
+}
+
+.leaflet-tile-loaded {
+  transition: opacity 0.3s ease !important;
+}
+
+/* 地图归属信息样式优化 */
+.leaflet-control-attribution {
+  background: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(5px) !important;
+  border-radius: 4px !important;
+  font-size: 10px !important;
+  color: #6b7280 !important;
+}
+
+/* 地图图例 */
+.map-legend {
+  margin-top: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.legend-item {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 16px;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 12px;
+  color: #4a5568;
 }
 
-.nav-arrow {
-  background: #e2e8f0;
-  border: none;
-  width: 32px;
-  height: 32px;
+.legend-item:last-child {
+  margin-bottom: 0;
+}
+
+.legend-marker {
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s;
+  border: 2px solid;
 }
 
-.nav-arrow:hover:not(:disabled) {
-  background: #cbd5e0;
-  transform: scale(1.05);
+.legend-marker.has-data {
+  background: #48bb78;
+  border-color: #38a169;
 }
 
-.nav-arrow:disabled {
-  background: #f7fafc;
-  color: #cbd5e0;
-  cursor: not-allowed;
+.legend-marker.no-data {
+  background: #a0a0a0;
+  border-color: #707070;
 }
 
-.carousel-indicators {
-  display: flex;
-  gap: 6px;
-}
-
-.dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #cbd5e0;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.dot:hover {
-  transform: scale(1.2);
-}
-
-.dot.active {
-  background: #4299e1;
-  transform: scale(1.3);
-}
-
-.dot.placeholder-dot {
-  background: #e2e8f0;
-  cursor: default;
-}
-
-.dot.placeholder-dot:hover {
-  transform: none;
+.legend-marker.selected {
+  background: #ff6b6b;
+  border-color: #fff;
+  box-shadow: 0 0 0 1px #ff6b6b;
 }
 
 /* 右侧面板 */
