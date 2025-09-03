@@ -2,5 +2,5 @@ CoralKita is a web-based platform designed to provide tourists, divers, and the 
 
 
 
-License
+License  
 This project is for academic purposes under Monash University Malaysia’s course requirements. Not intended for commercial use.
