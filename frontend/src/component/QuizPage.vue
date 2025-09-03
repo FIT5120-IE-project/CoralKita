@@ -12,9 +12,8 @@
         <h1>Coral Reef Knowledge Quiz</h1>
       </div>
       <div class="header-right">
-        <div v-if="isAuthenticated" class="user-info">
-          <span class="user-name">{{ currentUser.name }}</span>
-          <span class="user-level">Level: {{ currentUser.level || 1 }}</span>
+        <div class="app-info">
+          <span class="app-name">CoralKita知识问答</span>
         </div>
       </div>
     </div>
@@ -95,22 +94,12 @@
         
         <!-- Quiz Type Selection -->
         <div class="quiz-type-selection">
-          <div class="quiz-type-card">
-            <h3>Single-choice Questions</h3>
+          <div class="quiz-type-card single-quiz-card">
+            <h3>Coral Reef Knowledge Quiz</h3>
             <p>Test your knowledge with multiple choice questions about coral reefs</p>
             <div class="quiz-type-buttons">
               <button class="btn-quiz-type" @click="startSingleChoiceQuiz">
-                Start Single-choice Question
-              </button>
-            </div>
-          </div>
-          
-          <div class="quiz-type-card">
-            <h3>Image Classification</h3>
-            <p>Identify coral species and reef types from images</p>
-            <div class="quiz-type-buttons">
-              <button class="btn-quiz-type" @click="startImageClassificationQuiz">
-                Start Image Classification
+                Start Quiz
               </button>
             </div>
           </div>
@@ -144,9 +133,12 @@
                 {{ isAnswerCorrect ? '✓' : '✗' }}
               </div>
               <h3 class="result-text">{{ isAnswerCorrect ? 'Correct Answer!' : 'Wrong Answer!' }}</h3>
-              <p class="result-explanation" v-if="!isAnswerCorrect && currentQuestion">
-                Correct Answer: {{ getCorrectAnswerText() }}
-              </p>
+              <div v-if="!isAnswerCorrect && currentQuestion" class="result-explanation">
+                <p class="correct-answer">Correct Answer: {{ getCorrectAnswerText() }}</p>
+                <div v-if="currentQuestion.explanation" class="explanation-text">
+                  <p>{{ currentQuestion.explanation }}</p>
+                </div>
+              </div>
               <div class="result-actions">
                 <button class="btn-next-question" @click="nextQuestion">
                   {{ currentQuestionIndex < questions.length - 1 ? 'Next Question' : 'Complete Quiz' }}
@@ -154,8 +146,12 @@
               </div>
             </div>
             <div v-else-if="quizCompleted" class="quiz-completed">
-              <div class="completion-icon">🎉</div>
-              <h3>Quiz Completed!</h3>
+              <!-- Medal Display -->
+              <div v-if="medalInfo" class="medal-display">
+                <div class="medal-icon" :style="{ color: medalInfo.color }">{{ medalInfo.icon }}</div>
+                <h2 class="medal-title">{{ medalInfo.title }}</h2>
+                <p class="medal-message">{{ medalInfo.message }}</p>
+              </div>
               
               <!-- Detailed Statistics -->
               <div class="quiz-statistics">
@@ -220,7 +216,42 @@
               <!-- Guest User Prompt -->
               <div v-else-if="!isAuthenticated" class="login-prompt">
                 <p class="prompt-text">💡 Login to earn experience points and rewards!</p>
-                <router-link to="/education" class="login-suggestion">Login Now</router-link>
+                <router-link to="/education" class="login-suggestion" @click.native="setNavigationFlag">Login Now</router-link>
+              </div>
+
+              <!-- Share Section - Show when user gets 5 or more correct answers -->
+              <div v-if="correctAnswers >= 5" class="share-section">
+                <div class="share-header">
+                  <h3>🎉 Share Your Achievement!</h3>
+                  <p>You did great! Share your {{ medalInfo.title }} with friends</p>
+                </div>
+                
+                <div class="share-options">
+                  <button class="btn-share twitter" @click="shareToTwitter">
+                    <i class="share-icon">🐦</i>
+                    <span>Twitter</span>
+                  </button>
+                  
+                  <button class="btn-share facebook" @click="shareToFacebook">
+                    <i class="share-icon">📘</i>
+                    <span>Facebook</span>
+                  </button>
+                  
+                  <button class="btn-share copy" @click="copyShareLink">
+                    <i class="share-icon">🔗</i>
+                    <span>Copy Link</span>
+                  </button>
+                  
+                  <button class="btn-share download" @click="downloadBadge">
+                    <i class="share-icon">📱</i>
+                    <span>Download Badge</span>
+                  </button>
+                </div>
+                
+                <!-- Share Link Copied Notification -->
+                <div v-if="showCopyNotification" class="copy-notification">
+                  ✅ Share link copied to clipboard!
+                </div>
               </div>
 
               <div class="completion-actions">
@@ -229,22 +260,8 @@
               </div>
             </div>
                       <div v-else class="question-display">
-            <!-- 图片分类题目显示 -->
-            <div v-if="currentQuestion.type === 'image_classification'" class="image-question">
-              <div class="question-image-container">
-                <img 
-                  :src="currentQuestion.imageUrl" 
-                  :alt="'Coral Image ' + (currentQuestionIndex + 1)"
-                  class="question-image"
-                  @error="handleImageError"
-                />
-              </div>
-              <h3 class="question-text">{{ currentQuestion.question }}</h3>
-              <p v-if="currentQuestion.description" class="question-description">{{ currentQuestion.description }}</p>
-            </div>
-            
-            <!-- 普通选择题显示 -->
-            <div v-else>
+            <!-- 题目显示 -->
+            <div>
               <h3 class="question-text">{{ currentQuestion.question }}</h3>
             </div>
               <div class="options">
@@ -253,8 +270,7 @@
                   :key="optIndex" 
                   class="option"
                   :class="{ 
-                    selected: selectedOption === option.id,
-                    disabled: !isAuthenticated
+                    selected: selectedOption === option.id
                   }"
                   @click="selectOption(option.id)"
                 >
@@ -262,7 +278,7 @@
                     type="radio" 
                     :name="'question_' + currentQuestionIndex" 
                     :value="option.id" 
-                    :disabled="!isAuthenticated"
+
                     v-model="selectedOption"
                   />
                   <span class="option-text">{{ option.text }}</span>
@@ -273,13 +289,11 @@
                 <button 
                   class="btn-submit-answer" 
                   @click="submitAnswer"
-                  :disabled="selectedOption === null || !isAuthenticated"
+                  :disabled="selectedOption === null"
                 >
-                  {{ isAuthenticated ? 'Submit Answer' : 'Login Required to Answer' }}
+Submit Answer
                 </button>
-                <div v-if="!isAuthenticated" class="login-hint">
-                  <p>You need to <router-link to="/education" class="login-link">login</router-link> to participate in the quiz and earn rewards</p>
-                </div>
+
               </div>
             </div>
           </div>
@@ -361,6 +375,13 @@ export default {
       correctAnswers: 0,
       wrongAnswers: 0,
       totalQuestions: 0,
+      
+      // Medal system
+      medalInfo: null,
+      showMedal: false,
+
+      // Share system
+      showCopyNotification: false,
 
       // Other
       errorMessage: '',
@@ -396,7 +417,14 @@ export default {
   methods: {
     // Go back to previous page
     goBack() {
+      // 设置导航标记，表示这是路由导航而不是页面刷新
+      localStorage.setItem('hasNavigatedToEducation', 'true');
       this.$router.push('/education')
+    },
+
+    // Set navigation flag for router-link clicks
+    setNavigationFlag() {
+      localStorage.setItem('hasNavigatedToEducation', 'true');
     },
 
     // Load video sources
@@ -547,32 +575,20 @@ export default {
       }
     },
 
-    // Load random questions
+    // Load random questions (10 questions from all quiz banks)
     async loadRandomQuestions() {
-      console.log('loadRandomQuestions called, sourceTitles:', this.sourceTitles)
-      
-      if (this.sourceTitles.length === 0) {
-        this.errorMessage = 'No quiz sources available, please refresh the page and try again'
-        console.error('No source titles available')
-        return
-      }
+      console.log('Loading 10 random questions from all quiz banks')
 
       this.loadingQuestions = true
       this.errorMessage = ''
       try {
-        // Randomly select a source title
-        const randomTitle = this.sourceTitles[Math.floor(Math.random() * this.sourceTitles.length)]
-        console.log('Loading questions for source:', randomTitle)
-        
-        const response = await axios.get('/quiz/questions', {
-          params: { sourceTitle: randomTitle }
-        })
-
-        console.log('Questions response:', response.data)
+        const response = await axios.get('/quiz/random')
+        console.log('Random questions response:', response.data)
 
         if (response.data.code === 1 && response.data.data) {
           console.log('Raw questions data:', response.data.data)
-          this.questions = response.data.data.map(q => {
+          // 随机选择10道题
+          const allQuestions = response.data.data.map(q => {
             return {
               ...q,
               options: [
@@ -583,7 +599,11 @@ export default {
               ].filter(opt => opt.text && opt.text.trim() !== '')
             }
           })
-          console.log('Processed questions:', this.questions)
+          
+          // 随机选择10道题
+          this.questions = this.getRandomQuestions(allQuestions, 10)
+          
+          console.log('Final questions array (10 random):', this.questions)
           this.resetQuiz()
           this.quizStartTime = new Date()
         } else {
@@ -594,8 +614,8 @@ export default {
         console.error('加载题目失败:', error)
         console.error('Error details:', error.response?.data)
         
-        // 使用备用题目数据，确保功能可用
-        this.questions = [
+        // 使用备用题目数据，确保功能可用（10道题）
+        const fallbackQuestions = [
           {
             id: 1,
             question: "What is a coral reef primarily made of?",
@@ -604,6 +624,7 @@ export default {
             optionC: "Seaweed", 
             optionD: "Sand",
             correctOption: "B",
+            explanation: "Coral reefs are built by tiny coral polyps that secrete calcium carbonate to form their hard skeletons. Over time, these skeletons accumulate to create the reef structure we see today.",
             sourceTitle: "Coral Reefs 101 | National Geographic",
             options: [
               { id: 'A', text: 'Rocks' },
@@ -620,6 +641,7 @@ export default {
             optionC: "Animals",
             optionD: "Rocks",
             correctOption: "C",
+            explanation: "Despite their plant-like appearance, corals are actually animals. They belong to the phylum Cnidaria, the same group as jellyfish and sea anemones.",
             sourceTitle: "Coral Reefs 101 | National Geographic",
             options: [
               { id: 'A', text: 'Plants' },
@@ -636,6 +658,7 @@ export default {
             optionC: "By forming sand",
             optionD: "By growing as separate individuals",
             correctOption: "B",
+            explanation: "Coral polyps extract calcium carbonate from seawater and secrete it to form hard limestone skeletons. These skeletons provide the structural foundation of coral reefs.",
             sourceTitle: "Coral Reefs 101 | National Geographic",
             options: [
               { id: 'A', text: 'By photosynthesizing' },
@@ -652,6 +675,7 @@ export default {
             optionC: "25%",
             optionD: "50%",
             correctOption: "C",
+            explanation: "About 25% of all marine species depend on coral reefs at some point in their lives. This makes coral reefs some of the most biodiverse ecosystems on Earth, despite covering less than 1% of the ocean floor.",
             sourceTitle: "Coral Reefs 101 | National Geographic",
             options: [
               { id: 'A', text: '5%' },
@@ -668,6 +692,7 @@ export default {
             optionC: "They bleach (evict algae)",
             optionD: "They move to cooler waters",
             correctOption: "A",
+            explanation: "Zooxanthellae are symbiotic algae that live inside coral tissues. They perform photosynthesis and provide up to 90% of the coral's energy needs, significantly boosting their growth rate.",
             sourceTitle: "Coral Reefs 101 | National Geographic",
             options: [
               { id: 'A', text: 'Zooxanthellae (algae) within their tissues' },
@@ -675,15 +700,107 @@ export default {
               { id: 'C', text: 'They bleach (evict algae)' },
               { id: 'D', text: 'They move to cooler waters' }
             ]
+          },
+          {
+            id: 6,
+            question: "What is coral bleaching?",
+            optionA: "Corals turning white when healthy",
+            optionB: "Corals expelling algae due to stress",
+            optionC: "Natural coral reproduction",
+            optionD: "Corals growing faster",
+            correctOption: "B",
+            explanation: "Coral bleaching occurs when stressed corals expel their symbiotic algae, turning white.",
+            sourceTitle: "Coral Bleaching",
+            options: [
+              { id: 'A', text: 'Corals turning white when healthy' },
+              { id: 'B', text: 'Corals expelling algae due to stress' },
+              { id: 'C', text: 'Natural coral reproduction' },
+              { id: 'D', text: 'Corals growing faster' }
+            ]
+          },
+          {
+            id: 7,
+            question: "What is the main cause of coral bleaching?",
+            optionA: "Ocean pollution",
+            optionB: "Rising water temperatures",
+            optionC: "Overfishing",
+            optionD: "Ocean acidification",
+            correctOption: "B",
+            explanation: "Rising water temperatures due to climate change is the primary cause of mass coral bleaching events.",
+            sourceTitle: "Climate Change and Corals",
+            options: [
+              { id: 'A', text: 'Ocean pollution' },
+              { id: 'B', text: 'Rising water temperatures' },
+              { id: 'C', text: 'Overfishing' },
+              { id: 'D', text: 'Ocean acidification' }
+            ]
+          },
+          {
+            id: 8,
+            question: "How long can some corals live?",
+            optionA: "100 years",
+            optionB: "500 years",
+            optionC: "1,000 years",
+            optionD: "5,000 years",
+            correctOption: "C",
+            explanation: "Some coral colonies can live for thousands of years, making them among the longest-living organisms on Earth.",
+            sourceTitle: "Coral Longevity",
+            options: [
+              { id: 'A', text: '100 years' },
+              { id: 'B', text: '500 years' },
+              { id: 'C', text: '1,000 years' },
+              { id: 'D', text: '5,000 years' }
+            ]
+          },
+          {
+            id: 9,
+            question: "What do coral reefs protect coastlines from?",
+            optionA: "Marine pollution",
+            optionB: "Storm waves and erosion",
+            optionC: "Overfishing",
+            optionD: "Ocean acidification",
+            correctOption: "B",
+            explanation: "Coral reefs act as natural barriers, protecting coastlines from storm waves and erosion.",
+            sourceTitle: "Reef Protection Services",
+            options: [
+              { id: 'A', text: 'Marine pollution' },
+              { id: 'B', text: 'Storm waves and erosion' },
+              { id: 'C', text: 'Overfishing' },
+              { id: 'D', text: 'Ocean acidification' }
+            ]
+          },
+          {
+            id: 10,
+            question: "What percentage of the world's coral reefs are at risk?",
+            optionA: "25%",
+            optionB: "50%",
+            optionC: "75%",
+            optionD: "Over 90%",
+            correctOption: "D",
+            explanation: "Over 90% of the world's coral reefs are threatened by human activities and climate change.",
+            sourceTitle: "Coral Conservation",
+            options: [
+              { id: 'A', text: '25%' },
+              { id: 'B', text: '50%' },
+              { id: 'C', text: '75%' },
+              { id: 'D', text: 'Over 90%' }
+            ]
           }
         ]
         
+        this.questions = fallbackQuestions
         this.resetQuiz()
         this.quizStartTime = new Date()
         this.errorMessage = ''
       } finally {
         this.loadingQuestions = false
       }
+    },
+    
+    // 随机选择指定数量的题目
+    getRandomQuestions(questions, count) {
+      const shuffled = [...questions].sort(() => 0.5 - Math.random())
+      return shuffled.slice(0, count)
     },
 
     // 重置测验
@@ -697,44 +814,28 @@ export default {
       this.correctAnswers = 0
       this.wrongAnswers = 0
       this.totalQuestions = this.questions.length
+      this.medalInfo = null
+      this.showMedal = false
+      this.showCopyNotification = false
     },
 
     // 选择选项
     selectOption(optionId) {
-      if (!this.isAuthenticated) {
-        this.errorMessage = '请先登录才能参与答题'
-        setTimeout(() => {
-          this.errorMessage = ''
-        }, 3000)
-        return
-      }
       this.selectedOption = optionId
     },
 
     // 提交答案
     submitAnswer() {
-      if (!this.isAuthenticated) {
-        this.errorMessage = '请先登录才能参与答题'
-        return
-      }
-
       if (this.selectedOption === null) return
 
       const currentQ = this.currentQuestion
       
       let isCorrect = false
       
-      if (currentQ.type === 'image_classification') {
-        // 图片分类题目：直接比较选项文本与正确答案
-        const selectedOption = currentQ.options.find(opt => opt.id === this.selectedOption)
-        const selectedText = selectedOption ? selectedOption.text : ''
-        isCorrect = selectedText.toLowerCase() === currentQ.correctAnswer
-      } else {
         // 普通选择题：比较选项ID与正确答案
         const selectedAnswer = String(this.selectedOption).trim().toUpperCase()
         const correctAnswer = String(currentQ.correctOption || currentQ.correctAnswer).trim().toUpperCase()
         isCorrect = selectedAnswer === correctAnswer
-      }
       
       this.isAnswerCorrect = isCorrect
 
@@ -765,30 +866,48 @@ export default {
     // 完成测验
     async completeQuiz() {
       this.quizEndTime = new Date()
-      this.showAnswerResult = false  // 关键修复：隐藏答案结果界面
+      this.showAnswerResult = false
       this.quizCompleted = true
+      this.totalQuestions = this.questions.length
 
-      if (this.isAuthenticated) {
-        try {
-          const response = await axios.post('/quiz/submit-score', {
-            userName: this.currentUser.name,
-            score: this.quizScore
-          })
+      // 计算奖章
+      this.medalInfo = this.calculateMedal(this.correctAnswers, this.totalQuestions)
+      this.showMedal = true
+    },
 
-          if (response.data.code === 1) {
-            this.scoreResult = response.data.data
-            
-            // 更新本地用户信息
-            this.$store.commit('UPDATE_USER_STATS', {
-              level: this.scoreResult.level,
-              experience: this.scoreResult.experience,
-              points: this.scoreResult.points
-            })
-          } else {
-            this.errorMessage = '提交得分失败：' + (response.data.msg || '未知错误')
-          }
-        } catch (error) {
-          this.errorMessage = '提交得分失败：' + (error.response?.data?.msg || error.message)
+    // 计算奖章
+    calculateMedal(correctCount, totalCount) {
+      if (correctCount < 3) {
+        return {
+          type: 'participation',
+          title: 'Thank You for Participating',
+          message: 'Thank you for participating in the CoralKita knowledge quiz! Keep learning and you\'ll get even better!',
+          icon: '🌊',
+          color: '#6c757d'
+        }
+      } else if (correctCount >= 3 && correctCount <= 5) {
+        return {
+          type: 'bronze',
+          title: 'Bronze Medal',
+          message: 'Congratulations on earning the Bronze Medal! You have gained basic knowledge about coral reefs!',
+          icon: '🥉',
+          color: '#CD7F32'
+        }
+      } else if (correctCount >= 6 && correctCount <= 9) {
+        return {
+          type: 'silver',
+          title: 'Silver Medal',
+          message: 'Congratulations on earning the Silver Medal! You have performed excellently in coral reef conservation!',
+          icon: '🥈',
+          color: '#C0C0C0'
+        }
+      } else if (correctCount === 10) {
+        return {
+          type: 'gold',
+          title: 'Gold Medal',
+          message: 'Congratulations on earning the Gold Medal! You are a true coral reef conservation expert!',
+          icon: '🥇',
+          color: '#FFD700'
         }
       }
     },
@@ -798,19 +917,121 @@ export default {
       this.loadRandomQuestions()
     },
 
+    // 分享功能方法
+    shareToTwitter() {
+      const shareText = `🎉 I just earned a ${this.medalInfo.title} on CoralKita Quiz! 🐠\n\nScore: ${this.correctAnswers}/${this.totalQuestions} (${Math.round((this.correctAnswers / this.totalQuestions) * 100)}%)\n\nTest your coral reef knowledge too! 🌊`;
+      const shareUrl = this.generateShareUrl();
+      const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+      window.open(twitterUrl, '_blank', 'width=550,height=420');
+    },
+
+    shareToFacebook() {
+      const shareUrl = this.generateShareUrl();
+      const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+      window.open(facebookUrl, '_blank', 'width=580,height=400');
+    },
+
+    async copyShareLink() {
+      const shareUrl = this.generateShareUrl();
+      const shareText = `🎉 I just earned a ${this.medalInfo.title} on CoralKita Quiz! 🐠\n\nScore: ${this.correctAnswers}/${this.totalQuestions} (${Math.round((this.correctAnswers / this.totalQuestions) * 100)}%)\n\nTest your coral reef knowledge too! 🌊\n\n${shareUrl}`;
+      
+      try {
+        await navigator.clipboard.writeText(shareText);
+        this.showCopyNotification = true;
+        setTimeout(() => {
+          this.showCopyNotification = false;
+        }, 3000);
+      } catch (err) {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = shareText;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        this.showCopyNotification = true;
+        setTimeout(() => {
+          this.showCopyNotification = false;
+        }, 3000);
+      }
+    },
+
+    downloadBadge() {
+      // Create a canvas to generate badge image
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      // Set canvas size
+      canvas.width = 400;
+      canvas.height = 300;
+      
+      // Background gradient
+      const gradient = ctx.createLinearGradient(0, 0, 400, 300);
+      gradient.addColorStop(0, 'rgba(26, 29, 37, 0.9)');
+      gradient.addColorStop(1, 'rgba(1, 162, 235, 0.8)');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 400, 300);
+      
+      // Border
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(10, 10, 380, 280);
+      
+      // Title
+      ctx.fillStyle = 'white';
+      ctx.font = 'bold 24px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('CoralKita Quiz Achievement', 200, 50);
+      
+      // Medal icon (using emoji)
+      ctx.font = '60px Arial';
+      ctx.fillText(this.medalInfo.icon, 200, 120);
+      
+      // Medal title
+      ctx.font = 'bold 20px Arial';
+      ctx.fillText(this.medalInfo.title, 200, 160);
+      
+      // Score
+      ctx.font = '16px Arial';
+      ctx.fillText(`Score: ${this.correctAnswers}/${this.totalQuestions} (${Math.round((this.correctAnswers / this.totalQuestions) * 100)}%)`, 200, 190);
+      
+      // Date
+      const date = new Date().toLocaleDateString();
+      ctx.font = '14px Arial';
+      ctx.fillText(`Achieved on ${date}`, 200, 220);
+      
+      // CoralKita branding
+      ctx.font = '12px Arial';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+      ctx.fillText('CoralKita - Learn about coral reefs', 200, 260);
+      
+      // Download the image
+      const link = document.createElement('a');
+      link.download = `CoralKita-${this.medalInfo.type}-badge-${Date.now()}.png`;
+      link.href = canvas.toDataURL();
+      link.click();
+    },
+
+    generateShareUrl() {
+      // Generate a share URL with achievement info
+      const baseUrl = window.location.origin;
+      const params = new URLSearchParams({
+        achievement: this.medalInfo.type,
+        score: `${this.correctAnswers}/${this.totalQuestions}`,
+        accuracy: Math.round((this.correctAnswers / this.totalQuestions) * 100)
+      });
+      return `${baseUrl}/quiz?${params.toString()}`;
+    },
+
     // 获取正确答案文本
     getCorrectAnswerText() {
       if (!this.currentQuestion) return ''
       
-      if (this.currentQuestion.type === 'image_classification') {
-        // 图片分类题目：返回正确答案的英文选项文本
-        return this.currentQuestion.correctAnswer === 'health' ? 'Health' : 'Bleach'
-      } else {
         // 普通选择题：通过选项ID查找选项文本
         const correctAnswer = this.currentQuestion.correctOption || this.currentQuestion.correctAnswer
         const correctOption = this.currentQuestion.options.find(opt => opt.id === correctAnswer)
         return correctOption ? correctOption.text : ''
-      }
     },
 
     // Start single-choice quiz
@@ -818,56 +1039,7 @@ export default {
       this.loadRandomQuestions()
     },
 
-    // Start image classification quiz
-    startImageClassificationQuiz() {
-      if (!this.isAuthenticated) {
-        this.errorMessage = '请先登录才能参与图片分类测验'
-        setTimeout(() => {
-          this.errorMessage = ''
-        }, 3000)
-        return
-      }
-      
-      this.loadImageClassificationQuestions()
-    },
 
-    // Load image classification questions
-    async loadImageClassificationQuestions() {
-      this.loadingQuestions = true
-      this.errorMessage = ''
-      
-      try {
-        const response = await axios.get('/quiz/coral-pictures', {
-          params: { userName: this.currentUser.name }
-        })
-
-        if (response.data.code === 1 && response.data.data) {
-          // 转换图片分类题目格式
-          this.questions = response.data.data.map((picture, index) => ({
-            id: index + 1,
-            type: 'image_classification',
-            imageUrl: picture.pictureUrl,
-            question: `Please identify the health status of the coral in this image:`,
-            description: `Choose "Health" for healthy coral, choose "Bleach" for bleached coral`,
-            correctAnswer: picture.answer,
-            options: [
-              { id: 'A', text: 'Health' },
-              { id: 'B', text: 'Bleach' }
-            ]
-          }))
-          
-          this.resetQuiz()
-          this.quizStartTime = new Date()
-        } else {
-          this.errorMessage = '获取图片分类题目失败：' + (response.data.msg || '未知错误')
-        }
-      } catch (error) {
-        console.error('加载图片分类题目失败:', error)
-        this.errorMessage = '加载图片分类题目失败：' + (error.response?.data?.msg || error.message)
-      } finally {
-        this.loadingQuestions = false
-      }
-    }
   }
 }
 </script>
@@ -1131,6 +1303,12 @@ export default {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
   margin-bottom: 30px;
+  justify-content: center;
+}
+
+.single-quiz-card {
+  max-width: 500px;
+  margin: 0 auto;
 }
 
 .quiz-type-card {
@@ -1297,13 +1475,17 @@ export default {
 }
 
 .question-text {
-  font-size: 20px;
+  font-size: 22px;
   color: white;
-  margin-bottom: 15px;
-  line-height: 1.6;
+  margin-bottom: 20px;
+  line-height: 1.7;
   text-align: center;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-  font-weight: 600;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
+  font-weight: 700;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 15px 20px;
+  border-radius: 10px;
+  backdrop-filter: blur(5px);
 }
 
 .question-description {
@@ -1370,11 +1552,12 @@ export default {
 }
 
 .option-text {
-  font-size: 16px;
+  font-size: 17px;
   color: white;
   flex: 1;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
-  font-weight: 500;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+  font-weight: 600;
+  line-height: 1.5;
 }
 
 .question-actions {
@@ -1426,6 +1609,11 @@ export default {
 .answer-result {
   text-align: center;
   padding: 40px 20px;
+  background: linear-gradient(135deg, rgba(26, 29, 37, 0.9) 0%, rgba(1, 162, 235, 0.8) 100%);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .result-icon {
@@ -1439,6 +1627,7 @@ export default {
   font-weight: bold;
   margin: 0 auto 20px;
   color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .result-icon.correct {
@@ -1450,31 +1639,69 @@ export default {
 }
 
 .result-text {
-  font-size: 24px;
-  margin-bottom: 15px;
-  color: #333;
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: white;
+  font-weight: 700;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
 
 .result-explanation {
+  text-align: left;
+  margin: 20px auto 30px;
+  max-width: 600px;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 25px;
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(15px);
+}
+
+.correct-answer {
+  font-size: 18px;
+  color: white;
+  margin-bottom: 15px;
+  font-weight: 700;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+  line-height: 1.5;
+}
+
+.explanation-text h4 {
   font-size: 16px;
-  color: #666;
-  margin-bottom: 30px;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 10px;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.explanation-text p {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.7;
+  margin: 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  font-weight: 500;
 }
 
 .btn-next-question {
   padding: 15px 30px;
-  background: #667eea;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
   border-radius: 25px;
   font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .btn-next-question:hover {
-  background: #5a6fd8;
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a5acd 100%);
   transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
 /* 测验完成样式 */
@@ -1492,6 +1719,57 @@ export default {
   font-size: 28px;
   color: #333;
   margin-bottom: 30px;
+}
+
+/* 奖章显示样式 */
+.medal-display {
+  background: linear-gradient(135deg, rgba(26, 29, 37, 0.85) 0%, rgba(1, 162, 235, 0.75) 100%);
+  border-radius: 20px;
+  padding: 40px;
+  margin-bottom: 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  text-align: center;
+}
+
+.medal-icon {
+  font-size: 80px;
+  margin-bottom: 20px;
+  animation: bounceIn 0.6s ease-out;
+}
+
+.medal-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: white;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+.medal-message {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.6;
+  margin: 0;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 /* 统计信息样式 */
@@ -1578,27 +1856,34 @@ export default {
 }
 
 .score-summary {
-  background: rgba(102, 126, 234, 0.1);
+  background: linear-gradient(135deg, rgba(26, 29, 37, 0.8) 0%, rgba(1, 162, 235, 0.7) 100%);
   border-radius: 15px;
   padding: 20px;
   margin-top: 20px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .score-summary h4 {
-  color: #333;
+  color: white;
   margin-bottom: 15px;
   font-size: 18px;
+  font-weight: 600;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .score-text, .accuracy-text {
   font-size: 16px;
-  color: #333;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  font-weight: 500;
   margin-bottom: 8px;
 }
 
 .score-number, .accuracy-number {
   font-weight: bold;
-  color: #667eea;
+  color: #FFD700;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
   font-size: 20px;
 }
 
@@ -1772,6 +2057,156 @@ export default {
 .btn-back-home:hover {
   background: #5a6268;
   transform: translateY(-2px);
+}
+
+/* 分享功能样式 */
+.share-section {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border-radius: 20px;
+  padding: 30px;
+  margin: 30px 0;
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  text-align: center;
+}
+
+.share-header h3 {
+  color: white;
+  font-size: 24px;
+  margin-bottom: 10px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.share-header p {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+  margin-bottom: 25px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.share-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.btn-share {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 15px;
+  border: none;
+  border-radius: 15px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-share:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.btn-share.twitter {
+  background: linear-gradient(135deg, #1da1f2 0%, #0d8bd9 100%);
+}
+
+.btn-share.twitter:hover {
+  background: linear-gradient(135deg, #0d8bd9 0%, #0a7bc4 100%);
+}
+
+.btn-share.facebook {
+  background: linear-gradient(135deg, #4267b2 0%, #365899 100%);
+}
+
+.btn-share.facebook:hover {
+  background: linear-gradient(135deg, #365899 0%, #2d4373 100%);
+}
+
+.btn-share.copy {
+  background: linear-gradient(135deg, #28a745 0%, #20953b 100%);
+}
+
+.btn-share.copy:hover {
+  background: linear-gradient(135deg, #20953b 0%, #1e7e34 100%);
+}
+
+.btn-share.download {
+  background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%);
+}
+
+.btn-share.download:hover {
+  background: linear-gradient(135deg, #5a32a3 0%, #4c2a85 100%);
+}
+
+.share-icon {
+  font-size: 24px;
+  margin-bottom: 5px;
+}
+
+.copy-notification {
+  background: linear-gradient(135deg, #28a745 0%, #20953b 100%);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 25px;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+  animation: slideInUp 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+  margin-top: 15px;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .share-options {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .btn-share {
+    padding: 15px 10px;
+    font-size: 12px;
+  }
+  
+  .share-icon {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .share-options {
+    grid-template-columns: 1fr;
+  }
+  
+  .share-section {
+    padding: 20px;
+    margin: 20px 0;
+  }
 }
 
 /* 视频模态框样式 */

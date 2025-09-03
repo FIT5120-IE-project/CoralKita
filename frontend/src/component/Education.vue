@@ -27,41 +27,16 @@
     <div class="education-content">
       <!-- Learning Interface -->
       <div class="learning-interface">
-        <!-- User Info Card -->
+        <!-- Welcome Info Card -->
         <div class="user-info-card">
           <div class="user-avatar">
-            <img src="@/assets/icon.png" alt="User Avatar" />
+            <img src="@/assets/icon.png" alt="CoralKita Avatar" />
           </div>
           <div class="user-details">
-            <!-- Authenticated User Welcome Message -->
-            <div v-if="isAuthenticated">
-              <h3>Welcome back, {{ currentUser.name }}!</h3>
-              <div class="user-stats">
-                <span class="stat-item">
-                  <i class="stat-icon">🏆</i>
-                  Level: {{ currentUser.level || 1 }}
-                </span>
-                <span class="stat-item">
-                  <i class="stat-icon">⭐</i>
-                  Points: {{ currentUser.points || 0 }}
-                </span>
-                <span class="stat-item">
-                  <i class="stat-icon">📚</i>
-                  Experience: {{ currentUser.experience || 0 }}
-                </span>
+            <div>
+              <h3>Welcome to CoralKita Knowledge Q&A Interface</h3>
+              <p>Explore coral reef knowledge, learn marine conservation, and participate in sustainable tourism</p>
               </div>
-            </div>
-            <!-- Guest User Welcome Message -->
-            <div v-else>
-              <h3>Welcome to CoralKita Education Center</h3>
-              <p>Please log in or register to start your learning journey</p>
-            </div>
-          </div>
-          <div class="user-actions">
-            <!-- Logout Button for Authenticated Users -->
-            <button v-if="isAuthenticated" class="btn-logout" @click="handleLogout">Logout</button>
-            <!-- Login/Register Button for Guest Users -->
-            <button v-else class="btn-auth" @click="showAuthForms = true">Login / Register</button>
           </div>
         </div>
         
@@ -82,25 +57,6 @@
             <button class="btn-feature" @click="goToQuiz">Start Quiz</button>
           </div>
 
-          <!-- Responsible Tourism Guide -->
-          <div class="feature-card guide-card">
-              <div class="feature-icon">
-                <img src="@/assets/icons/icon_travel.png" alt="Travel Icon" />
-              </div>
-            <h3>Responsible Tourism Guide</h3>
-            <p>Learn to minimize your impact when visiting coral reefs</p>
-            <button class="btn-feature" @click="viewGuide">View Guide</button>
-          </div>
-
-          <!-- Rewards System -->
-          <div class="feature-card rewards-card">
-              <div class="feature-icon">
-                <img src="@/assets/icons/icon_reward.png" alt="Reward Icon" />
-              </div>
-            <h3>Rewards System</h3>
-            <p>Complete learning tasks to earn points and badges</p>
-          </div>
-
                       <!-- Travel Checklist -->
             <div class="feature-card progress-card">
               <div class="feature-icon">
@@ -114,126 +70,97 @@
       </div>
     </div>
 
-    <!-- Error Message -->
-    <div v-if="errorMessage" class="error-message">
-      {{ errorMessage }}
+    <!-- 验证界面 -->
+    <div v-if="showVerification" class="verification-overlay">
+      <div class="verification-modal">
+        <div class="verification-header">
+          <h2>Coral Reef Health Verification</h2>
+          <p>Please identify whether the coral reefs in the following 6 images are healthy</p>
     </div>
     
-    <!-- Authentication Modal -->
-    <div v-if="!isAuthenticated && showAuthForms" class="auth-overlay">
-      <div class="auth-modal">
-        <!-- Close Button -->
-        <div class="auth-header">
-          <h2>User Authentication</h2>
-          <button class="close-btn" @click="showAuthForms = false">×</button>
+        <div class="verification-content">
+          <div v-if="loadingVerification" class="loading-verification">
+            <div class="loading-spinner"></div>
+            <p>Loading verification images...</p>
         </div>
           
-          <!-- Login Form -->
-        <div v-if="!showRegister" class="auth-form">
-          <h3>User Login</h3>
-          <p>Welcome to CoralKita Education Center, please log in to start your learning journey</p>
-          
-            <div class="form-group">
-              <label for="username">Username</label>
-              <input 
-                type="text" 
-                id="username" 
-                v-model="loginForm.name" 
-                placeholder="Enter your username"
-                @keyup.enter="handleLogin"
-              >
+          <div v-else-if="!verificationCompleted" class="images-grid">
+            <!-- Selection Progress -->
+            <div class="selection-progress">
+              <h4>Please select 4 healthy coral reef images</h4>
+              <p>Selected: {{ selectedImages.length }} / {{ maxSelections }}</p>
+              <p>Remaining selections: {{ maxSelections - selectedImages.length }}</p>
             </div>
             
-            <div class="form-group">
-              <label for="password">Password</label>
-              <input 
-                type="password" 
-                id="password" 
-                v-model="loginForm.password" 
-                placeholder="Enter your password"
-                @keyup.enter="handleLogin"
-              >
+            <div 
+              v-for="image in verificationImages" 
+              :key="image.id"
+              class="image-item"
+              :class="{ 
+                'selected-correct': image.isSelected && image.isCorrect === true,
+                'selected-incorrect': image.isSelected && image.isCorrect === false,
+                'disabled': verificationCompleted
+              }"
+              @click="selectHealthyImage(image.id)"
+            >
+              <div class="image-container">
+                <img 
+                  :src="image.imageUrl" 
+                  :alt="'Coral Reef Image ' + image.id"
+                  class="verification-image"
+                  @error="handleImageError"
+                />
+                <div class="image-number">{{ image.id }}</div>
+                
+                <!-- Selection Result -->
+                <div v-if="image.isSelected" class="selection-indicator">
+                  <span v-if="image.isCorrect === true" class="correct-indicator">✓ Correct</span>
+                  <span v-else-if="image.isCorrect === false" class="incorrect-indicator">✗ Incorrect</span>
+                </div>
             </div>
             
-            <div class="form-actions">
-              <button 
-              class="btn-submit" 
-                @click="handleLogin"
-                :disabled="loading"
-              >
-                {{ loading ? 'Logging in...' : 'Login' }}
-              </button>
-              
-              <div class="form-links">
-                <span @click="showRegister = true" class="link">Don't have an account? Register now</span>
+              <!-- Click Hint -->
+              <div class="click-hint">
+                <span v-if="!image.isSelected">Click to select</span>
+                <span v-else-if="image.isCorrect === true">Correct selection</span>
+                <span v-else-if="image.isCorrect === false">Incorrect selection</span>
               </div>
             </div>
           </div>
           
-          <!-- Register Form -->
-        <div v-if="showRegister" class="auth-form">
-              <h3>User Registration</h3>
-          <p>Create a new account and start your coral reef learning journey</p>
-            
-            <div class="form-group">
-              <label for="reg-username">Username</label>
-              <input 
-                type="text" 
-                id="reg-username" 
-                v-model="registerForm.name" 
-                placeholder="Enter your username"
-              >
+                    <!-- Verification Result -->
+          <div v-if="verificationCompleted && verificationResult" class="verification-result">
+            <div class="result-icon" :class="verificationResult.success ? 'success' : 'failure'">
+              {{ verificationResult.success ? '🎉' : '😔' }}
             </div>
-            
-            <div class="form-group">
-              <label for="reg-password">Password</label>
-              <input 
-                type="password" 
-                id="reg-password" 
-                v-model="registerForm.password" 
-                placeholder="Enter your password"
-              >
-            </div>
-            
-            <div class="form-group">
-              <label for="reg-password">Confirm Password</label>
-              <input 
-                type="password" 
-                id="reg-confirm-password" 
-                v-model="registerForm.confirmPassword" 
-                placeholder="Re-enter your password"
-              >
-            </div>
-            
-            <div class="form-actions">
-              <button 
-              class="btn-submit" 
-                @click="handleRegister"
-                :disabled="registerLoading"
-              >
-                {{ registerLoading ? 'Registering...' : 'Register' }}
-              </button>
-            
-            <div class="form-links">
-              <span @click="showRegister = false" class="link">Already have an account? Log in</span>
+            <h3>{{ verificationResult.success ? 'Verification Successful!' : 'Verification Failed' }}</h3>
+            <p>{{ verificationResult.message }}</p>
             </div>
             </div>
-          </div>
-        </div>
+            
+
+            </div>
+            </div>
+
+    <!-- Error Message -->
+    <div v-if="errorMessage" class="error-message">
+      {{ errorMessage }}
       </div>
+    
+
 
     <!-- 测验界面 -->
     <div v-if="showQuiz" class="quiz-overlay">
       <div class="quiz-modal">
         <div class="quiz-header">
-          <h2>珊瑚礁知识测验</h2>
+          <h2>Coral Reef Knowledge Quiz</h2>
           <button class="btn-close-quiz" @click="closeQuiz">×</button>
         </div>
         
         <div class="quiz-content">
           <!-- 视频学习区域 -->
           <div class="video-section">
-            <h3>视频学习</h3>
+            <h3>Video Learning</h3>
             <div class="video-carousel">
               <button class="nav-arrow left" @click="prevVideo" :disabled="currentVideoIndex === 0">
                 &#10094;
@@ -242,10 +169,10 @@
               <div class="video-container">
                 <div v-if="loadingVideo" class="loading-placeholder">
                   <div class="loading-spinner"></div>
-                  <p>加载视频中...</p>
+                  <p>Loading videos...</p>
                 </div>
                 <div v-else-if="videoSources.length === 0" class="no-videos">
-                  <p>暂无视频资源</p>
+                  <p>No video resources available</p>
                 </div>
                 <div v-else class="video-grid">
                   <div 
@@ -287,7 +214,7 @@
           <!-- 测验题目区域 -->
           <div class="quiz-section">
             <div class="quiz-progress">
-              <span class="progress-text">题目 {{ currentQuestionIndex + 1 }} / {{ questions.length }}</span>
+              <span class="progress-text">Question {{ currentQuestionIndex + 1 }} / {{ questions.length }}</span>
               <div class="progress-bar">
                 <div class="progress-fill" :style="{ width: progressPercentage + '%' }"></div>
               </div>
@@ -296,21 +223,21 @@
             <div class="question-container">
               <div v-if="loadingQuestions" class="loading-placeholder">
                 <div class="loading-spinner"></div>
-                <p>加载题目中...</p>
+                <p>Loading questions...</p>
               </div>
               <div v-else-if="questions.length === 0" class="no-questions">
-                <p>暂无题目</p>
+                <p>No questions available</p>
               </div>
               <div v-else-if="showAnswerResult" class="answer-result">
                 <div class="result-icon" :class="isAnswerCorrect ? 'correct' : 'incorrect'">
                   {{ isAnswerCorrect ? '✓' : '✗' }}
                 </div>
-                <h3 class="result-text">{{ isAnswerCorrect ? '回答正确！' : '回答错误！' }}</h3>
+                <h3 class="result-text">{{ isAnswerCorrect ? 'Correct Answer!' : 'Wrong Answer!' }}</h3>
                 <p class="result-explanation" v-if="!isAnswerCorrect">
-                  正确答案：{{ getCorrectAnswerText() }}
+                  Correct Answer: {{ getCorrectAnswerText() }}
                 </p>
                 <button class="btn-next-question" @click="nextQuestion">
-                  {{ currentQuestionIndex < questions.length - 1 ? '下一题' : '完成测验' }}
+                  {{ currentQuestionIndex < questions.length - 1 ? 'Next Question' : 'Complete Quiz' }}
                 </button>
               </div>
               <div v-else class="question-display">
@@ -338,7 +265,7 @@
                     @click="submitAnswer"
                     :disabled="selectedOption === null"
                   >
-                    提交答案
+                    Submit Answer
                   </button>
                 </div>
               </div>
@@ -351,27 +278,23 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
-import { userLogin, userRegister } from '@/api/user'
+import { mapGetters } from 'vuex'
+import axios from 'axios'
 
 export default {
   name: 'Education',
   data() {
     return {
-      loginForm: {
-        name: '',
-        password: ''
-      },
-      registerForm: {
-        name: '',
-        password: '',
-        confirmPassword: ''
-      },
-      showRegister: false,
-      showAuthForms: false,
-      loading: false,
-      registerLoading: false,
-      errorMessage: '',
+      // 验证系统相关
+      showVerification: false, // 控制验证界面的显示 - 只在页面刷新时显示
+      verificationImages: [], // 验证图片列表
+      loadingVerification: false, // 加载验证图片状态
+      selectedImages: [], // 用户选择的图片ID列表（最多4个）
+      maxSelections: 4, // 最大选择次数
+      verificationCompleted: false, // 验证是否完成
+      verificationResult: null, // 验证结果
+      
+      // 原有的quiz相关数据（现在主要用于测验模态框）
       showQuiz: false, // 控制测验模态框的显示
       videoSources: [], // 视频源列表
       loadingVideo: false, // 加载视频源时的状态
@@ -413,135 +336,42 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['login', 'logout']),
-    
-    async handleLogin() {
-      if (!this.loginForm.name || !this.loginForm.password) {
-        this.errorMessage = 'Please enter username and password'
-        return
-      }
-      
-      this.loading = true
-      this.errorMessage = ''
-      
-      try {
-        console.log('Sending login request:', this.loginForm)
-        const response = await userLogin(this.loginForm)
-        console.log('Login response:', response)
-        
-        if (response.code === 1) {
-          // Login successful, save user info and token using Vuex
-          this.$store.dispatch('login', {
-            user: response.data,
-            token: response.data.token
-          })
-          
-          // Clear login form and hide auth form
-          this.loginForm = { name: '', password: '' }
-          this.showAuthForms = false
-          
-          // Show success message
-          alert('Login successful! Welcome to CoralKita Education Center')
-        } else {
-          this.errorMessage = response.msg || 'Login failed'
-        }
-      } catch (error) {
-        console.error('Login error:', error)
-        this.errorMessage = 'Login failed, please check your network connection'
-      } finally {
-        this.loading = false
-      }
-    },
-    
-    async handleRegister() {
-      if (!this.registerForm.name || !this.registerForm.password || !this.registerForm.confirmPassword) {
-        this.errorMessage = 'Please fill in complete registration information'
-        return
-      }
-      
-      if (this.registerForm.password !== this.registerForm.confirmPassword) {
-        this.errorMessage = 'The two passwords entered are inconsistent'
-        return
-      }
-      
-      this.registerLoading = true
-      this.errorMessage = ''
-      
-      try {
-        const response = await userRegister({
-          name: this.registerForm.name,
-          password: this.registerForm.password
-        })
-        
-        if (response.code === 1) {
-          // Registration successful, show success message and switch to login form
-          alert('Registration successful! Please log in')
-          this.showRegister = false
-          this.registerForm = {
-            name: '',
-            password: '',
-            confirmPassword: ''
-          }
-        } else {
-          this.errorMessage = response.msg || 'Registration failed'
-        }
-      } catch (error) {
-        console.error('Registration error:', error)
-        this.errorMessage = 'Registration failed, please check your network connection'
-      } finally {
-        this.registerLoading = false
-      }
-    },
-    
-    async handleLogout() {
-      try {
-        await this.logout();
-        alert('Successfully logged out');
-      } catch (error) {
-        console.error('Logout failed:', error);
-      }
-    },
     
     goToQuiz() {
       // Navigate to independent quiz page
+      localStorage.setItem('hasNavigatedToEducation', 'true');
       this.$router.push('/quiz');
     },
     
-    viewGuide() {
-      alert('Responsible Tourism Guide feature coming soon!');
-    },
     
-    viewProgress() {
-      alert('Learning Progress feature coming soon!');
-    },
 
     openTravelChecklist() {
+      localStorage.setItem('hasNavigatedToEducation', 'true');
       this.$router.push('/travel-checklist');
     },
 
     // Navigation methods
     goToHome() {
-      // Navigate to home page
+      // Navigate to home page - 页面刷新，不设置localStorage
       window.location.href = '/';
     },
 
     goToMap() {
       console.log('Navigate to Map page');
+      localStorage.setItem('hasNavigatedToEducation', 'true');
       this.$router.push('/map');
     },
 
     goToTrends() {
       console.log('Navigate to Trends page');
+      localStorage.setItem('hasNavigatedToEducation', 'true');
       this.$router.push('/trends');
     },
 
     goToGovernment() {
       console.log('Navigate to Government page');
+      localStorage.setItem('hasNavigatedToEducation', 'true');
       this.$router.push('/government');
-    },
-    
-    viewRewards() {
-      alert('奖励系统功能即将上线！');
     },
 
     async loadVideoSources() {
@@ -877,6 +707,247 @@ export default {
       this.quizStartTime = null;
       this.quizEndTime = null;
       this.quizDuration = 0;
+    },
+
+    // 验证相关方法
+    async checkFirstTimeVisit() {
+      // 使用localStorage而不是sessionStorage来持久化标记
+      // 但每次页面刷新时都清除这个标记
+      const wasRefresh = sessionStorage.getItem('pageWasRefreshed');
+      const hasNavigated = localStorage.getItem('hasNavigatedToEducation');
+      
+      console.log('页面加载检查:', { 
+        wasRefresh, 
+        hasNavigated,
+        showVerification: this.showVerification
+      });
+      
+      // 如果没有导航标记，说明是页面刷新或首次访问
+      if (!hasNavigated) {
+        console.log('检测到页面刷新或首次访问，显示验证界面');
+        this.showVerification = true;
+        await this.loadVerificationImages();
+      } else {
+        console.log('检测到路由导航，不显示验证界面');
+        this.showVerification = false;
+        // 清除导航标记，为下次刷新做准备
+        localStorage.removeItem('hasNavigatedToEducation');
+      }
+      
+      // 设置页面刷新标记
+      sessionStorage.setItem('pageWasRefreshed', 'true');
+    },
+
+    async loadVerificationImages() {
+      this.loadingVerification = true;
+      try {
+        const response = await axios.get('/quiz/coral-pictures-balanced');
+        console.log('API Response:', response.data);
+        
+        // 记录从后端获取的图片信息
+        if (response.data.code === 1 && response.data.data) {
+          console.log('从后端获取的图片顺序:');
+          response.data.data.forEach((item, index) => {
+            console.log(`位置${index + 1}: ${item.answer} - ${item.pictureUrl.substring(item.pictureUrl.lastIndexOf('/') + 1, item.pictureUrl.indexOf('?'))}`);
+          });
+        }
+        
+        if (response.data.code === 1 && response.data.data) {
+          // 先创建图片数组
+          let imageArray = response.data.data.map((item, index) => ({
+            id: index + 1,
+            imageUrl: item.pictureUrl,
+            correctAnswer: item.answer, // 'health' 或 'bleach'
+            isSelected: false, // 是否被用户选择
+            isCorrect: null // null=未判断, true=选择正确, false=选择错误
+          }));
+          
+          // 打乱图片顺序
+          imageArray = this.shuffleArray(imageArray);
+          
+          // 重新分配ID（保持1-6的顺序显示）
+          this.verificationImages = imageArray.map((item, index) => ({
+            ...item,
+            id: index + 1
+          }));
+          
+          this.selectedImages = [];
+          
+          console.log('图片顺序已打乱，健康图片位置:', 
+            this.verificationImages.map((img, idx) => 
+              img.correctAnswer === 'health' ? (idx + 1) : null
+            ).filter(pos => pos !== null)
+          );
+        } else {
+          console.error('Failed to load verification images:', response.data.msg);
+          // 添加测试数据，以防API失败
+          let fallbackImageArray = Array.from({length: 6}, (_, index) => ({
+            id: index + 1,
+            imageUrl: `https://via.placeholder.com/300x200/4facfe/ffffff?text=Coral${index + 1}`,
+            correctAnswer: index < 4 ? 'health' : 'bleach', // 前4个健康，后2个不健康
+            isSelected: false,
+            isCorrect: null
+          }));
+          
+          // 打乱fallback数据顺序
+          fallbackImageArray = this.shuffleArray(fallbackImageArray);
+          
+          // 重新分配ID
+          this.verificationImages = fallbackImageArray.map((item, index) => ({
+            ...item,
+            id: index + 1
+          }));
+        }
+      } catch (error) {
+        console.error('Error loading verification images:', error);
+        // 添加测试数据，以防API失败
+        let testImageArray = Array.from({length: 6}, (_, index) => ({
+          id: index + 1,
+          imageUrl: `https://via.placeholder.com/300x200/4facfe/ffffff?text=Coral${index + 1}`,
+          correctAnswer: index < 4 ? 'health' : 'bleach', // 前4个健康，后2个不健康
+          isSelected: false,
+          isCorrect: null
+        }));
+        
+        // 打乱测试数据顺序
+        testImageArray = this.shuffleArray(testImageArray);
+        
+        // 重新分配ID
+        this.verificationImages = testImageArray.map((item, index) => ({
+          ...item,
+          id: index + 1
+        }));
+      } finally {
+        this.loadingVerification = false;
+      }
+    },
+
+    selectHealthyImage(imageId) {
+      const image = this.verificationImages.find(img => img.id === imageId);
+      if (!image) return;
+
+      // 如果已经验证完成，不允许继续选择
+      if (this.verificationCompleted) return;
+
+      // 如果图片已经被选择，取消选择
+      if (image.isSelected) {
+        image.isSelected = false;
+        image.isCorrect = null;
+        this.selectedImages = this.selectedImages.filter(id => id !== imageId);
+        return;
+      }
+
+      // 如果已经选择了4张图片，不允许继续选择
+      if (this.selectedImages.length >= this.maxSelections) {
+        alert(`You can only select ${this.maxSelections} images maximum!`);
+        return;
+      }
+
+      // 选择图片并立即判断正确性
+      image.isSelected = true;
+      image.isCorrect = (image.correctAnswer === 'health');
+      this.selectedImages.push(imageId);
+
+      console.log(`选择图片${imageId}, 正确答案: ${image.correctAnswer}, 选择结果: ${image.isCorrect ? '正确' : '错误'}`);
+
+      // 播放选择动画
+      this.playSelectionAnimation(imageId, image.isCorrect);
+
+      // 如果选择了4张图片，自动提交验证
+      if (this.selectedImages.length === this.maxSelections) {
+        setTimeout(() => {
+          this.submitVerification();
+        }, 1000); // 延迟1秒让用户看到最后的选择结果
+      }
+    },
+
+    playSelectionAnimation(imageId, isCorrect) {
+      // 简化版本：只打印日志，不进行DOM操作
+      console.log(`播放${isCorrect ? '正确' : '错误'}选择动画 - 图片${imageId}`);
+    },
+
+    // 数组打乱方法（Fisher-Yates洗牌算法）
+    shuffleArray(array) {
+      const shuffled = [...array]; // 创建副本，不修改原数组
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    },
+
+    submitVerification() {
+      console.log('开始验证结果...');
+      
+      // 检查是否已选择4张图片
+      if (this.selectedImages.length < this.maxSelections) {
+        alert(`Please select ${this.maxSelections} healthy coral reef images!`);
+        return;
+      }
+
+      // 计算选择的正确数量（选中的图片中有多少是真正健康的）
+      let correctSelections = 0;
+      const selectedImages = this.verificationImages.filter(img => img.isSelected);
+      
+      selectedImages.forEach(image => {
+        if (image.correctAnswer === 'health') {
+          correctSelections++;
+        }
+      });
+
+      // 还需要检查是否漏选了健康的图片
+      const totalHealthyImages = this.verificationImages.filter(img => img.correctAnswer === 'health').length;
+      
+      console.log(`选择了${this.selectedImages.length}张图片，其中${correctSelections}张是健康的`);
+      console.log(`总共有${totalHealthyImages}张健康图片`);
+
+      // 只有选择的4张图片全部是健康的，并且没有漏选健康图片才算成功
+      const allCorrect = (correctSelections === this.maxSelections) && (correctSelections === totalHealthyImages);
+
+      if (allCorrect) {
+        this.verificationResult = {
+          success: true,
+          message: 'Congratulations! You got them all correct. Welcome to the CoralKita knowledge quiz interface!'
+        };
+      } else {
+        this.verificationResult = {
+          success: false,
+          message: 'Unfortunately, you didn\'t get them all correct. Please enter our interface to learn more about coral reef knowledge and quizzes.'
+        };
+      }
+
+      this.verificationCompleted = true;
+      
+      // 3秒后关闭验证界面
+      setTimeout(() => {
+        this.closeVerification();
+      }, 3000);
+    },
+
+    closeVerification() {
+      this.showVerification = false;
+      // 重置验证状态，为下次验证做准备
+      this.verificationCompleted = false;
+      this.verificationResult = null;
+      this.verificationImages = [];
+      this.selectedImages = [];
+      // 不清除localStorage标记，让它在导航时保持
+    },
+
+    handleImageError(event) {
+      console.warn('图片加载失败:', event.target.src);
+      event.target.src = '/api/placeholder/300/200?text=Image+Load+Failed';
+    }
+  },
+
+  async mounted() {
+    // 页面加载时检查是否需要显示验证
+    console.log('Education组件已挂载，开始检查验证');
+    try {
+      await this.checkFirstTimeVisit();
+      console.log('验证检查完成');
+    } catch (error) {
+      console.error('验证检查出错:', error);
     }
   }
 }
@@ -1115,215 +1186,7 @@ export default {
   color: white;
 }
 
-/* 独立登录/注册界面样式 */
-.auth-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(5px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  animation: fadeIn 0.3s ease;
-}
-
-.auth-modal {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 25px;
-  padding: 0;
-  max-width: 500px;
-  width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  animation: slideUp 0.3s ease;
-}
-
-.auth-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 25px 30px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.auth-header h2 {
-  color: white;
-  font-size: 1.8rem;
-  margin: 0;
-  font-weight: 600;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 28px;
-  cursor: pointer;
-  padding: 5px;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
-
-.close-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  transform: rotate(90deg);
-}
-
-.auth-form {
-  padding: 30px;
-  color: white;
-}
-
-.auth-form h3 {
-  font-size: 1.6rem;
-  margin-bottom: 15px;
-  color: white;
-  text-align: center;
-}
-
-.auth-form p {
-  font-size: 1rem;
-  margin-bottom: 30px;
-  opacity: 0.9;
-  line-height: 1.6;
-  text-align: center;
-}
-
-.auth-form .form-group {
-  margin-bottom: 20px;
-}
-
-.auth-form .form-group label {
-  display: block;
-  margin-bottom: 8px;
-  color: white;
-  font-weight: 500;
-  font-size: 0.95rem;
-}
-
-.auth-form .form-group input {
-  width: 100%;
-  padding: 15px 18px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 12px;
-  font-size: 16px;
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  transition: all 0.3s ease;
-  box-sizing: border-box;
-}
-
-.auth-form .form-group input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.auth-form .form-group input:focus {
-  outline: none;
-  border-color: rgba(255, 255, 255, 0.8);
-  background: rgba(255, 255, 255, 0.15);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-}
-
-.auth-form .form-actions {
-  margin-top: 30px;
-}
-
-.auth-form .btn-submit {
-  width: 100%;
-  padding: 16px;
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
-}
-
-.auth-form .btn-submit:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
-}
-
-.auth-form .btn-submit:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-.auth-form .form-links {
-  text-align: center;
-}
-
-.auth-form .link {
-  color: rgba(255, 255, 255, 0.9);
-  cursor: pointer;
-  text-decoration: underline;
-  font-size: 14px;
-  transition: color 0.3s ease;
-}
-
-.auth-form .link:hover {
-  color: white;
-}
-
-/* 动画效果 */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px) scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* 登录/注册按钮 */
-.btn-auth {
-  padding: 12px 24px;
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 25px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: 600;
-  backdrop-filter: blur(10px);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-}
-
-.btn-auth:hover {
-  background: rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.5);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-}
+/* 移除了登录认证相关样式 */
 
 .user-info-card {
   background: rgba(255, 255, 255, 0.15);
@@ -1405,81 +1268,7 @@ export default {
   transform: translateY(-2px);
 }
 
-.btn-logout {
-  padding: 12px 24px;
-  background: rgba(255, 107, 107, 0.2);
-  color: white;
-  border: 2px solid rgba(255, 107, 107, 0.4);
-  border-radius: 25px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: 600;
-  backdrop-filter: blur(10px);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-}
-
-.btn-logout:hover {
-  background: rgba(255, 107, 107, 0.3);
-  border-color: rgba(255, 107, 107, 0.6);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
-}
-
-/* 内联登录表单样式 */
-.login-form-inline {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.form-group-inline {
-  display: flex;
-  align-items: center;
-}
-
-.form-group-inline input {
-  padding: 8px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 15px;
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  font-size: 14px;
-  width: 120px;
-  transition: all 0.3s ease;
-}
-
-.form-group-inline input::placeholder {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.form-group-inline input:focus {
-  outline: none;
-  border-color: rgba(255, 255, 255, 0.8);
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.btn-login-inline {
-  padding: 8px 16px;
-  background: rgba(102, 126, 234, 0.8);
-  color: white;
-  border: none;
-  border-radius: 15px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: 500;
-  font-size: 14px;
-}
-
-.btn-login-inline:hover {
-  background: rgba(102, 126, 234, 1);
-  transform: translateY(-2px);
-}
-
-.btn-login-inline:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: none;
-}
+/* 移除了更多登录相关样式 */
 
 
 
@@ -2326,5 +2115,344 @@ export default {
 .question-actions {
   margin-top: 30px;
   text-align: center;
+}
+
+/* 验证界面样式 */
+.verification-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.verification-modal {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 25px;
+  padding: 0;
+  max-width: 900px;
+  width: 95%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease forwards;
+}
+
+.verification-header {
+  text-align: center;
+  padding: 30px 30px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.verification-header h2 {
+  color: white;
+  font-size: 2rem;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.verification-header p {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.verification-header::after {
+  content: "Click to select 4 healthy coral reef images";
+  display: block;
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+}
+
+.verification-content {
+  padding: 30px;
+}
+
+.loading-verification {
+  text-align: center;
+  color: white;
+  padding: 40px 20px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+.images-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.selection-progress {
+  grid-column: 1 / -1;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.selection-progress h4 {
+  margin: 0 0 10px 0;
+  font-size: 1.2rem;
+  color: white;
+}
+
+.selection-progress p {
+  margin: 5px 0;
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+.image-item {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 15px;
+  text-align: center;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.image-item:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.image-item.selected-correct {
+  border-color: #4CAF50;
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
+  background: rgba(76, 175, 80, 0.15);
+}
+
+.image-item.selected-incorrect {
+  border-color: #F44336;
+  box-shadow: 0 0 20px rgba(244, 67, 54, 0.6);
+  background: rgba(244, 67, 54, 0.15);
+}
+
+/* 只在刚选择时播放动画 */
+.image-item.just-selected-correct {
+  animation: correctSelection 0.5s ease forwards;
+}
+
+.image-item.just-selected-incorrect {
+  animation: incorrectSelection 0.5s ease forwards;
+}
+
+.image-item.disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+@keyframes correctSelection {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes incorrectSelection {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+  100% { transform: translateX(0); }
+}
+
+.image-container {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.verification-image {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.image-number {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+
+
+/* 选择状态指示器 */
+.selection-indicator {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: bold;
+  backdrop-filter: blur(10px);
+  z-index: 10;
+}
+
+.correct-indicator {
+  background: rgba(76, 175, 80, 0.9);
+  color: white;
+}
+
+.incorrect-indicator {
+  background: rgba(244, 67, 54, 0.9);
+  color: white;
+}
+
+/* 点击提示 */
+.click-hint {
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+}
+
+.image-item.selected-correct .click-hint {
+  color: #4CAF50;
+  font-weight: bold;
+}
+
+.image-item.selected-incorrect .click-hint {
+  color: #F44336;
+  font-weight: bold;
+}
+
+.verification-result {
+  text-align: center;
+  color: white;
+  padding: 40px 20px;
+}
+
+.verification-result .result-icon {
+  font-size: 80px;
+  margin-bottom: 20px;
+  animation: bounceIn 0.6s ease-out;
+}
+
+.verification-result .result-icon.success {
+  color: #4CAF50;
+}
+
+.verification-result .result-icon.failure {
+  color: #FF9800;
+}
+
+.verification-result h3 {
+  font-size: 28px;
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+
+.verification-result p {
+  font-size: 16px;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .verification-modal {
+    width: 95%;
+    margin: 20px;
+  }
+  
+  .images-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+  
+  .verification-image {
+    height: 120px;
+  }
+  
+  .verification-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .verification-content {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .images-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .verification-image {
+    height: 180px;
+  }
 }
 </style>

@@ -13,10 +13,10 @@
         <p>Complete key steps for sustainable tourism</p>
       </div>
       <div class="header-right">
-        <div class="user-stats" v-if="isAuthenticated">
+        <div class="app-stats">
           <span class="stat-item">
-            <i class="stat-icon">⭐</i>
-            Points: {{ currentUser.points || 0 }}
+            <i class="stat-icon">🌊</i>
+            CoralKita Conservation Action
           </span>
         </div>
       </div>
@@ -72,7 +72,6 @@
              </div>
             <div class="item-content">
               <h4>{{ item.title }}</h4>
-              <div class="item-points">+2 points</div>
             </div>
           </div>
         </div>
@@ -81,37 +80,29 @@
              <!-- Submit Section -->
        <div class="submit-section">
          <div class="submit-info">
-           <div class="total-points">
-             New Points Earned: {{ getTotalPoints() }}
-           </div>
            <div class="completion-status">
              New Completed: {{ getNewCompletedCount() }} | Total Completed: {{ getTotalCompleted() }}/{{ getTotalItems() }} items
            </div>
          </div>
          
-         <!-- 全部完成时显示祝贺消息 -->
+         <!-- Show congratulation message when all completed -->
          <div v-if="isAllCompleted()" class="completion-message">
            <div class="badge-icon">🏆</div>
            <h3>You have completed all tasks!</h3>
            <p>Congratulations on earning the badge <strong>"Coral Guardian"</strong>!</p>
          </div>
          
-         <!-- 未全部完成时显示提交按钮 -->
+         <!-- Show submit button when not all completed -->
          <button 
            v-else
            class="btn-submit" 
-           @click="submitChecklist" 
-           :disabled="!isAuthenticated"
+           @click="submitChecklist"
          >
-           {{ isAuthenticated ? 'Submit Checklist' : 'Login to Submit' }}
+           Submit Checklist
          </button>
        </div>
 
-      <!-- Login Reminder -->
-      <div v-if="!isAuthenticated" class="login-reminder">
-        <p>Please log in to save your progress and earn points</p>
-        <button class="btn-login" @click="goToEducation">Go to Login</button>
-      </div>
+
     </div>
 
     <!-- Feedback Modal -->
@@ -123,9 +114,9 @@
         </div>
         <div class="feedback-content">
           <div class="feedback-summary">
-            <div class="points-earned">
-              <h3>Points Earned: {{ getTotalPoints() }}</h3>
-              <p>Great job on completing {{ getTotalCompleted() }} items!</p>
+            <div class="completion-earned">
+              <h3>Great Progress!</h3>
+              <p>You completed {{ getTotalCompleted() }} out of {{ getTotalItems() }} items!</p>
             </div>
           </div>
           
@@ -155,6 +146,117 @@
         </div>
       </div>
     </div>
+
+    <!-- Completion Results Modal -->
+    <div v-if="showCompletionModal" class="completion-overlay">
+      <div class="completion-modal">
+        <div class="completion-header">
+          <h2>🌊 Travel Checklist Results</h2>
+          <button class="close-btn" @click="closeCompletionModal">×</button>
+        </div>
+        <div class="completion-content">
+          <!-- Overall Medal Display -->
+          <div v-if="medalInfo" class="medal-display">
+            <div class="medal-icon" :style="{ color: medalInfo.color }">{{ medalInfo.icon }}</div>
+            <h2 class="medal-title">{{ medalInfo.title }}</h2>
+            <p class="medal-message">{{ medalInfo.message }}</p>
+          </div>
+
+          <!-- Phase Medals -->
+          <div v-if="completionMedals.length > 0" class="phase-medals">
+            <h3>🎖️ Phase Completion Medals</h3>
+            <div class="phase-medals-grid">
+              <div v-for="medal in completionMedals" :key="medal.type" class="phase-medal">
+                <div class="phase-medal-icon" :style="{ color: medal.color }">{{ medal.icon }}</div>
+                <h4>{{ medal.title }}</h4>
+                <p>{{ medal.message }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Statistics -->
+          <div class="completion-statistics">
+            <div class="stats-grid">
+              <div class="stat-card completed">
+                <div class="stat-icon">✓</div>
+                <div class="stat-info">
+                  <span class="stat-number">{{ getTotalCompleted() }}</span>
+                  <span class="stat-label">Completed</span>
+                </div>
+              </div>
+              <div class="stat-card remaining">
+                <div class="stat-icon">○</div>
+                <div class="stat-info">
+                  <span class="stat-number">{{ getTotalItems() - getTotalCompleted() }}</span>
+                  <span class="stat-label">Remaining</span>
+                </div>
+              </div>
+              <div class="stat-card total">
+                <div class="stat-icon">📊</div>
+                <div class="stat-info">
+                  <span class="stat-number">{{ getTotalItems() }}</span>
+                  <span class="stat-label">Total</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="completion-summary">
+              <h4>Checklist Results</h4>
+              <p class="completion-text">Completed: <span class="completion-number">{{ getTotalCompleted() }}</span> / {{ getTotalItems() }}</p>
+              <p class="progress-text">Progress: <span class="progress-number">{{ Math.round((getTotalCompleted() / getTotalItems()) * 100) }}%</span></p>
+            </div>
+          </div>
+
+          <!-- Uncompleted Items Summary -->
+          <div v-if="getUncompletedItems().length > 0" class="uncompleted-summary">
+            <h4>💡 Items to Consider for Next Time</h4>
+            <p class="uncompleted-count">{{ getUncompletedItems().length }} items not completed yet</p>
+            <div class="uncompleted-list">
+              <div v-for="item in getUncompletedItems().slice(0, 3)" :key="item.id" class="uncompleted-item">
+                <span class="uncompleted-title">{{ item.title }}</span>
+              </div>
+              <div v-if="getUncompletedItems().length > 3" class="more-items">
+                +{{ getUncompletedItems().length - 3 }} more items...
+              </div>
+            </div>
+          </div>
+
+          <!-- Share Section -->
+          <div class="share-section">
+            <div class="share-header">
+              <h3>🎉 Share Your Progress!</h3>
+              <p>Inspire others to practice sustainable coral reef tourism</p>
+            </div>
+            
+            <div class="share-options">
+              <button class="btn-share twitter" @click="shareToTwitter">
+                <i class="share-icon">🐦</i>
+                <span>Twitter</span>
+              </button>
+              
+              <button class="btn-share facebook" @click="shareToFacebook">
+                <i class="share-icon">📘</i>
+                <span>Facebook</span>
+              </button>
+              
+              <button class="btn-share copy" @click="copyShareLink">
+                <i class="share-icon">🔗</i>
+                <span>Copy Link</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="completion-actions">
+            <button class="btn-back-education" @click="goToEducation">
+              Back to Education
+            </button>
+            <button class="btn-close-modal" @click="closeCompletionModal">
+              Stay on Checklist
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -167,7 +269,10 @@ export default {
     return {
       currentPhase: 0,
       showFeedback: false,
-      // 问题映射：将前端的phases结构映射到后端的q1-q17
+      showCompletionModal: false,
+      medalInfo: null,
+      completionMedals: [],
+      // Question mapping: map frontend phases structure to backend q1-q17
       questionMapping: [
         // Plan & Prepare (phase 0)
         { phase: 0, itemIndex: 0, qNumber: 1 },  // Research and book eco-friendly operators
@@ -343,14 +448,8 @@ export default {
     ...mapGetters(['isAuthenticated', 'currentUser'])
   },
   async mounted() {
-    // 页面加载时获取用户清单数据
-    console.log('组件已挂载，检查认证状态:', this.isAuthenticated);
-    if (this.isAuthenticated && this.currentUser && this.currentUser.id) {
-      console.log('用户已认证，开始加载清单数据');
-      await this.loadUserChecklist();
-    } else {
-      console.log('用户未认证或缺少用户信息');
-    }
+    // Page load, initialize local data
+    console.log('Component mounted, initializing checklist data');
   },
   methods: {
     goBack() {
@@ -358,72 +457,51 @@ export default {
     },
     
     goToEducation() {
+      // Set navigation marker to indicate this is route navigation not page refresh
+      localStorage.setItem('hasNavigatedToEducation', 'true');
       this.$router.push('/education');
     },
 
-    // 加载用户清单数据
-    async loadUserChecklist() {
-      try {
-        const userId = this.currentUser.id;
-        console.log('正在加载用户清单数据，用户ID:', userId);
-        const response = await fetch(`/checklist/${userId}`);
-        console.log('API响应状态:', response.status);
-        
-        if (response.ok) {
-          const result = await response.json();
-          console.log('API响应数据:', result);
-          
-          if (result.code === 1 && result.data) {
-            this.updatePhasesFromBackend(result.data);
-          }
-        } else {
-          console.error('API请求失败:', response.status, response.statusText);
-        }
-      } catch (error) {
-        console.error('加载用户清单数据失败:', error);
-      }
-    },
-
-    // 根据后端数据更新前端phases
+    // Update frontend phases based on local data
     updatePhasesFromBackend(checklistData) {
-      console.log('更新前端phases，后端数据:', checklistData);
+      console.log('Updating frontend phases, backend data:', checklistData);
       this.questionMapping.forEach(mapping => {
         const phase = this.phases[mapping.phase];
         const item = phase.items[mapping.itemIndex];
         const qValue = checklistData[`q${mapping.qNumber}`];
         
-        // 设置完成状态（0=未完成，1=已完成）
+        // Set completion status (0=not completed, 1=completed)
         item.completed = qValue === 1;
         
-        // 如果已完成，禁用复选框
+        // If completed, disable checkbox
         if (item.completed) {
           item.disabled = true;
         }
       });
     },
 
-    // 将前端phases数据转换为后端q1-q17格式
+    // Convert frontend phases data to backend q1-q17 format
     convertPhasesToBackendFormat() {
       const checklistData = {
         userId: this.currentUser.id
       };
       
-      // 初始化所有q字段为0
+      // Initialize all q fields to 0
       for (let i = 1; i <= 17; i++) {
         checklistData[`q${i}`] = 0;
       }
       
-      // 根据映射关系设置完成状态
+      // Set completion status based on mapping relationship
       this.questionMapping.forEach(mapping => {
         const phase = this.phases[mapping.phase];
         const item = phase.items[mapping.itemIndex];
         const qNumber = mapping.qNumber;
         
-        // 提交所有完成状态（包括之前已完成的）
+        // Submit all completion status (including previously completed)
         checklistData[`q${qNumber}`] = item.completed ? 1 : 0;
       });
       
-      console.log('转换为后端格式:', checklistData);
+      console.log('Converted to backend format:', checklistData);
       return checklistData;
     },
     
@@ -450,7 +528,7 @@ export default {
     },
     
     getNewCompletedCount() {
-      // 计算新完成的项目数量（未禁用的已完成项目）
+      // Calculate newly completed items count (completed items that are not disabled)
       let newCompletedCount = 0;
       this.phases.forEach(phase => {
         phase.items.forEach(item => {
@@ -460,11 +538,6 @@ export default {
         });
       });
       return newCompletedCount;
-    },
-    
-         getTotalPoints() {
-       // 只计算新完成的项目积分
-       return this.getNewCompletedCount() * 2;
      },
      
      // 检查是否全部完成
@@ -489,11 +562,6 @@ export default {
     },
     
     submitChecklist() {
-      if (!this.isAuthenticated) {
-        alert('Please log in to submit your checklist');
-        return;
-      }
-      
       const uncompletedItems = this.getUncompletedItems();
       if (uncompletedItems.length > 0) {
         this.showFeedback = true;
@@ -506,7 +574,7 @@ export default {
       try {
         // 转换为后端格式并提交数据
         const checklistData = this.convertPhasesToBackendFormat();
-        console.log('准备提交数据:', checklistData);
+        console.log('Ready to submit data:', checklistData);
         
         const response = await fetch('/checklist/submit', {
           method: 'POST',
@@ -516,45 +584,185 @@ export default {
           body: JSON.stringify(checklistData)
         });
         
-        console.log('提交响应状态:', response.status);
+        console.log('Submit response status:', response.status);
         
         if (response.ok) {
           const result = await response.json();
-          console.log('提交成功，响应:', result);
-          
-          const pointsEarned = this.getTotalPoints();
-          
-          // Update user points in Vuex
-          if (pointsEarned > 0) {
-            this.$store.dispatch('updateUserStats', {
-              points: (this.currentUser.points || 0) + pointsEarned
-            });
-          }
-          
-                     // Show success message
-           if (pointsEarned > 0) {
-             alert(`Checklist submitted successfully! You earned ${pointsEarned} points for ${this.getNewCompletedCount()} new completed items.`);
-           } else {
-             alert('Checklist submitted successfully! No new items completed.');
-           }
+          console.log('Submit successful, response:', result);
           
                      this.closeFeedback();
            
-           // 提交成功后跳转到教育页面
-           this.$router.push('/education');
+          // 显示奖章和结果
+          this.showCompletionResults();
         } else {
           const errorText = await response.text();
-          console.error('提交失败:', response.status, errorText);
-          alert(`提交失败: ${response.status} - ${errorText}`);
+          console.error('Submit failed:', response.status, errorText);
+          alert(`Submit failed: ${response.status} - ${errorText}`);
         }
       } catch (error) {
-        console.error('提交清单失败:', error);
-        alert('提交失败，请检查网络连接');
+        console.error('Submit checklist failed:', error);
+        alert('Submit failed, please check network connection');
       }
     },
     
     closeFeedback() {
       this.showFeedback = false;
+    },
+
+    // 计算总体奖章（根据完成数量）
+    calculateOverallMedal(completedCount) {
+      if (completedCount >= 3 && completedCount <= 8) {
+        return {
+          type: 'bronze',
+          title: 'Bronze Conservation Guardian',
+          message: 'You\'ve taken the first steps towards responsible coral reef tourism! Keep building your sustainable travel practices.',
+          icon: '🥉',
+          color: '#CD7F32'
+        }
+      } else if (completedCount >= 9 && completedCount <= 14) {
+        return {
+          type: 'silver',
+          title: 'Silver Reef Protector',
+          message: 'Excellent progress! You demonstrate strong commitment to coral reef conservation during your travels.',
+          icon: '🥈',
+          color: '#C0C0C0'
+        }
+      } else if (completedCount >= 15 && completedCount <= 17) {
+        return {
+          type: 'gold',
+          title: 'Gold Coral Champion',
+          message: 'Outstanding! You are a true coral reef conservation champion, leading by example in sustainable tourism.',
+          icon: '🥇',
+          color: '#FFD700'
+        }
+      }
+      return null;
+    },
+
+    // 计算阶段奖章（每个大项完成获得）
+    calculatePhaseMedals() {
+      const medals = [];
+      this.phases.forEach((phase, index) => {
+        const completedInPhase = this.getCompletedCount(index);
+        const totalInPhase = phase.items.length;
+        
+        if (completedInPhase === totalInPhase) {
+          let medal = null;
+          switch (index) {
+            case 0: // Plan & Prepare
+              medal = {
+                type: 'planning',
+                title: 'Master Planner',
+                message: 'You\'ve mastered the art of sustainable travel planning!',
+                icon: '📋',
+                color: '#4CAF50'
+              };
+              break;
+            case 1: // On-Site Behaviors
+              medal = {
+                type: 'behavior',
+                title: 'Reef Guardian',
+                message: 'Your on-site behavior protects coral reefs and marine life!',
+                icon: '🤿',
+                color: '#2196F3'
+              };
+              break;
+            case 2: // Post-Trip Action
+              medal = {
+                type: 'advocacy',
+                title: 'Conservation Advocate',
+                message: 'You continue making a difference even after your trip ends!',
+                icon: '🌍',
+                color: '#FF9800'
+              };
+              break;
+          }
+          if (medal) medals.push(medal);
+        }
+      });
+      return medals;
+    },
+
+    // 提交后显示奖章和结果
+    showCompletionResults() {
+      const completedCount = this.getTotalCompleted();
+      this.medalInfo = this.calculateOverallMedal(completedCount);
+      this.completionMedals = this.calculatePhaseMedals();
+      this.showCompletionModal = true;
+    },
+
+    closeCompletionModal() {
+      this.showCompletionModal = false;
+    },
+
+    // 分享功能方法
+    shareToTwitter() {
+      const completedCount = this.getTotalCompleted();
+      const totalCount = this.getTotalItems();
+      let shareText = `🌊 I just completed ${completedCount}/${totalCount} items on the CoralKita Responsible Travel Checklist! 🐠\n\n`;
+      
+      if (this.medalInfo) {
+        shareText += `Earned: ${this.medalInfo.title} ${this.medalInfo.icon}\n`;
+      }
+      
+      if (this.completionMedals.length > 0) {
+        shareText += `Phase medals: ${this.completionMedals.map(m => `${m.title} ${m.icon}`).join(', ')}\n`;
+      }
+      
+      shareText += `\nJoin me in protecting coral reefs through sustainable tourism! 🌊`;
+      const shareUrl = this.generateShareUrl();
+      const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+      window.open(twitterUrl, '_blank', 'width=550,height=420');
+    },
+
+    shareToFacebook() {
+      const shareUrl = this.generateShareUrl();
+      const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+      window.open(facebookUrl, '_blank', 'width=580,height=400');
+    },
+
+    async copyShareLink() {
+      const completedCount = this.getTotalCompleted();
+      const totalCount = this.getTotalItems();
+      let shareText = `🌊 I just completed ${completedCount}/${totalCount} items on the CoralKita Responsible Travel Checklist! 🐠\n\n`;
+      
+      if (this.medalInfo) {
+        shareText += `Earned: ${this.medalInfo.title} ${this.medalInfo.icon}\n`;
+      }
+      
+      if (this.completionMedals.length > 0) {
+        shareText += `Phase medals: ${this.completionMedals.map(m => `${m.title} ${m.icon}`).join(', ')}\n`;
+      }
+      
+      shareText += `\nJoin me in protecting coral reefs through sustainable tourism! 🌊\n\n${this.generateShareUrl()}`;
+      
+      try {
+        await navigator.clipboard.writeText(shareText);
+        // Show notification briefly
+        this.$nextTick(() => {
+          alert('Share link copied to clipboard!');
+        });
+      } catch (err) {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = shareText;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert('Share link copied to clipboard!');
+      }
+    },
+
+    generateShareUrl() {
+      const baseUrl = window.location.origin;
+      const completedCount = this.getTotalCompleted();
+      const totalCount = this.getTotalItems();
+      const params = new URLSearchParams({
+        completed: `${completedCount}/${totalCount}`,
+        accuracy: Math.round((completedCount / totalCount) * 100)
+      });
+      return `${baseUrl}/checklist?${params.toString()}`;
     }
   }
 }
@@ -794,7 +1002,7 @@ export default {
    color: white;
  }
 
- /* 禁用状态样式 */
+ /* Disabled state styles */
  .item-checkbox input[type="checkbox"]:disabled + .checkbox-label {
    opacity: 0.5;
    cursor: not-allowed;
@@ -834,12 +1042,7 @@ export default {
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
-.item-points {
-  color: #FFD700;
-  font-size: 12px;
-  font-weight: bold;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
-}
+
 
 /* Submit Section */
 .submit-section {
@@ -857,13 +1060,7 @@ export default {
   margin-bottom: 20px;
 }
 
-.total-points {
-  color: #FFD700;
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 10px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-}
+
 
 .completion-status {
   color: white;
@@ -897,7 +1094,7 @@ export default {
    transform: none;
  }
  
- /* 完成消息样式 */
+ /* Completion message styles */
  .completion-message {
    text-align: center;
    padding: 30px;
@@ -932,7 +1129,7 @@ export default {
    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
  }
  
- /* 徽章动画 */
+ /* Badge animation */
  @keyframes bounce {
    0%, 20%, 50%, 80%, 100% {
      transform: translateY(0);
@@ -1049,14 +1246,14 @@ export default {
   margin-bottom: 30px;
 }
 
-.points-earned h3 {
+.completion-earned h3 {
   color: #FFD700;
   font-size: 28px;
   margin: 0 0 10px 0;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
-.points-earned p {
+.completion-earned p {
   color: white;
   font-size: 16px;
   margin: 0;
@@ -1129,6 +1326,411 @@ export default {
   box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
 }
 
+/* Completion Modal Styles */
+.completion-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.completion-modal {
+  background: linear-gradient(135deg, rgba(26, 29, 37, 0.95) 0%, rgba(1, 162, 235, 0.9) 100%);
+  border-radius: 25px;
+  padding: 0;
+  max-width: 700px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  animation: slideUp 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.completion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px 30px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.completion-header h2 {
+  color: white;
+  font-size: 24px;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.completion-content {
+  padding: 30px;
+}
+
+/* Medal Display */
+.medal-display {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border-radius: 20px;
+  padding: 40px;
+  margin-bottom: 30px;
+  text-align: center;
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.medal-icon {
+  font-size: 80px;
+  margin-bottom: 20px;
+  animation: bounceIn 0.6s ease-out;
+}
+
+.medal-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: white;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+.medal-message {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.6;
+  margin: 0;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Phase Medals */
+.phase-medals {
+  margin-bottom: 30px;
+}
+
+.phase-medals h3 {
+  color: white;
+  font-size: 20px;
+  margin-bottom: 20px;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.phase-medals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.phase-medal {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 20px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.phase-medal-icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+.phase-medal h4 {
+  color: white;
+  font-size: 16px;
+  margin: 0 0 8px 0;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.phase-medal p {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  margin: 0;
+  line-height: 1.4;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Statistics */
+.completion-statistics {
+  margin-bottom: 30px;
+}
+
+.completion-statistics .stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.completion-statistics .stat-card {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  transition: transform 0.3s ease;
+}
+
+.completion-statistics .stat-card:hover {
+  transform: translateY(-2px);
+}
+
+.completion-statistics .stat-card.completed {
+  border-left: 4px solid #4CAF50;
+}
+
+.completion-statistics .stat-card.remaining {
+  border-left: 4px solid #FF9800;
+}
+
+.completion-statistics .stat-card.total {
+  border-left: 4px solid #667eea;
+}
+
+.completion-statistics .stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.completion-statistics .stat-card.completed .stat-icon {
+  background: rgba(76, 175, 80, 0.1);
+  color: #4CAF50;
+}
+
+.completion-statistics .stat-card.remaining .stat-icon {
+  background: rgba(255, 152, 0, 0.1);
+  color: #FF9800;
+}
+
+.completion-statistics .stat-card.total .stat-icon {
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+}
+
+.completion-statistics .stat-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.completion-statistics .stat-number {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+.completion-statistics .stat-label {
+  font-size: 14px;
+  color: #666;
+  margin-top: 2px;
+}
+
+.completion-summary {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 20px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.completion-summary h4 {
+  color: white;
+  margin-bottom: 15px;
+  font-size: 18px;
+  font-weight: 600;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.completion-text, .progress-text {
+  font-size: 16px;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.completion-number, .progress-number {
+  font-weight: bold;
+  color: #FFD700;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+  font-size: 20px;
+}
+
+/* Uncompleted Items Summary */
+.uncompleted-summary {
+  background: rgba(255, 152, 0, 0.1);
+  border: 1px solid rgba(255, 152, 0, 0.3);
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+.uncompleted-summary h4 {
+  color: #FFB74D;
+  margin-bottom: 10px;
+  font-size: 18px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.uncompleted-count {
+  color: white;
+  margin-bottom: 15px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.uncompleted-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.uncompleted-item {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.uncompleted-title {
+  color: white;
+  font-size: 14px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.more-items {
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+  text-align: center;
+  padding: 8px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Share Section */
+.completion-modal .share-section {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 25px;
+  margin-bottom: 30px;
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  text-align: center;
+}
+
+.completion-modal .share-header h3 {
+  color: white;
+  font-size: 20px;
+  margin-bottom: 8px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.completion-modal .share-header p {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  margin-bottom: 20px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.completion-modal .share-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.completion-modal .btn-share {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 15px 10px;
+  border: none;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.completion-modal .btn-share:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.completion-modal .btn-share.twitter {
+  background: linear-gradient(135deg, #1da1f2 0%, #0d8bd9 100%);
+}
+
+.completion-modal .btn-share.facebook {
+  background: linear-gradient(135deg, #4267b2 0%, #365899 100%);
+}
+
+.completion-modal .btn-share.copy {
+  background: linear-gradient(135deg, #28a745 0%, #20953b 100%);
+}
+
+.completion-modal .share-icon {
+  font-size: 20px;
+}
+
+/* Completion Actions */
+.completion-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.btn-back-education,
+.btn-close-modal {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-back-education {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-back-education:hover {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a5acd 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.btn-close-modal {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-close-modal:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
 /* Animations */
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -1143,6 +1745,23 @@ export default {
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
   }
 }
 
@@ -1176,6 +1795,36 @@ export default {
     margin: 20px;
   }
 
+  .completion-modal {
+    width: 95%;
+    margin: 20px;
+  }
 
+  .completion-statistics .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .completion-modal .share-options {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .phase-medals-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .completion-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .medal-icon {
+    font-size: 60px;
+  }
+
+  .medal-title {
+    font-size: 24px;
+  }
 }
 </style>
