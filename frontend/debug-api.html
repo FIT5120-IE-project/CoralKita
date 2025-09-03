@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API调试测试</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <h1>API调试测试</h1>
+    <button onclick="testIslandsAPI()">测试岛屿列表API</button>
+    <button onclick="testTrendAPI()">测试趋势数据API</button>
+    
+    <div id="result" style="margin-top: 20px; padding: 10px; background: #f5f5f5;"></div>
+
+    <script>
+        // 配置
+        const API_BASE_URL = 'http://localhost:8080';
+        
+        async function testIslandsAPI() {
+            const resultDiv = document.getElementById('result');
+            try {
+                console.log('测试岛屿列表API...');
+                const response = await axios.get(`${API_BASE_URL}/trend/islands`);
+                console.log('岛屿API响应:', response);
+                resultDiv.innerHTML = `
+                    <h3>岛屿列表API测试结果:</h3>
+                    <p>状态码: ${response.status}</p>
+                    <p>响应数据:</p>
+                    <pre>${JSON.stringify(response.data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                console.error('岛屿API调用失败:', error);
+                resultDiv.innerHTML = `<p style="color: red;">岛屿API调用失败: ${error.message}</p>`;
+            }
+        }
+
+        async function testTrendAPI() {
+            const resultDiv = document.getElementById('result');
+            try {
+                console.log('测试趋势数据API...');
+                const response = await axios.get(`${API_BASE_URL}/trend/query?island=Labuan`);
+                console.log('趋势API响应:', response);
+                resultDiv.innerHTML = `
+                    <h3>趋势数据API测试结果:</h3>
+                    <p>状态码: ${response.status}</p>
+                    <p>数据条数: ${response.data.data ? response.data.data.length : 0}</p>
+                    <p>响应数据:</p>
+                    <pre>${JSON.stringify(response.data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                console.error('趋势API调用失败:', error);
+                resultDiv.innerHTML = `<p style="color: red;">趋势API调用失败: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
