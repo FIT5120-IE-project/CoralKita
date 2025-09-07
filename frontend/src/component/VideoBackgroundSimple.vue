@@ -74,7 +74,7 @@ export default {
   methods: {
     async loadThemeVideo() {
       try {
-        const response = await axios.get('/oss/video/url', {
+        const response = await axios.get('https://defiant-marcelline-baihanrui-b9820c9e.koyeb.app/oss/video/url', {
           params: {
             videoFileName: 'themecac38de5a31ddc2259ae.mp4',
             expireSeconds: 7200 // 2小时过期
