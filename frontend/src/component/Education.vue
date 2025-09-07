@@ -406,7 +406,7 @@ export default {
         const videoSources = []
         for (let i = 0; i < videoFileNames.length; i++) {
           try {
-            const response = await fetch(`/api/oss/video/url?videoFileName=${encodeURIComponent(videoFileNames[i])}&expireSeconds=7200`)
+            const response = await fetch(`https://defiant-marcelline-baihanrui-b9820c9e.koyeb.app/api/oss/video/url?videoFileName=${encodeURIComponent(videoFileNames[i])}&expireSeconds=7200`)
             const data = await response.json()
             
             if (data.code === 1) {
