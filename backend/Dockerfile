@@ -8,8 +8,11 @@ COPY . .
 # Debug: List files to verify copy worked
 RUN ls -la
 
-# Debug: Check if pom.xml exists
-RUN ls -la pom.xml
+# Debug: Check backend directory
+RUN ls -la backend/
+
+# Change to backend directory and build
+WORKDIR /build/backend
 
 # Build the application
 RUN mvn -B -q -DskipTests clean package
@@ -19,7 +22,7 @@ FROM eclipse-temurin:21-jre
 WORKDIR /app
 
 # Copy the built jar file
-COPY --from=build /build/server/target/server-1.0-SNAPSHOT.jar /app/app.jar
+COPY --from=build /build/backend/server/target/server-1.0-SNAPSHOT.jar /app/app.jar
 
 # Set JVM options for container
 ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/./urandom"
