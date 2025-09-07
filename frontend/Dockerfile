@@ -1,9 +1,9 @@
 # —— build：打包 Vue ——
 FROM node:20 AS build
 WORKDIR /app
-COPY package*.json ./
+COPY frontend/package*.json ./
 RUN npm ci
-COPY . .
+COPY frontend/ .
 RUN npm run build  # 生成 dist/
 
 # —— run：Nginx 托管 + 反代 ——
