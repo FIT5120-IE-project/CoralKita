@@ -19,7 +19,7 @@
     </modules>
     <properties>
         <mybatis.spring>2.2.0</mybatis.spring>
-        <lombok>1.18.20</lombok>
+        <lombok>1.18.30</lombok>
         <fastjson>1.2.76</fastjson>
         <commons.lang>2.6</commons.lang>
         <druid>1.2.1</druid>
@@ -32,7 +32,7 @@
         <poi>3.16</poi>
         <java.version>17</java.version>
         <maven.compiler.release>17</maven.compiler.release>
-        <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
+        <maven.compiler.plugin.version>3.12.1</maven.compiler.plugin.version>
     </properties>
     <dependencyManagement>
         <dependencies>
