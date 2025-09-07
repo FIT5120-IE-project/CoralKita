@@ -2,24 +2,11 @@
 FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /build
 
-# Copy parent pom.xml first
-COPY pom.xml ./
-
-# Copy all module pom.xml files
-COPY common/pom.xml ./common/
-COPY pojo/pom.xml ./pojo/
-COPY server/pom.xml ./server/
-
-# Download dependencies (this layer will be cached if pom.xml files don't change)
-RUN mvn -B -q -DskipTests dependency:go-offline
-
-# Copy source code
-COPY common/src ./common/src
-COPY pojo/src ./pojo/src
-COPY server/src ./server/src
+# Copy the entire project structure
+COPY . .
 
 # Build the application
-RUN mvn -B -q -DskipTests -pl server -am package
+RUN mvn -B -q -DskipTests clean package -pl server -am
 
 # ===== run =====
 FROM eclipse-temurin:21-jre
