@@ -427,50 +427,63 @@ export default {
       localStorage.setItem('hasNavigatedToEducation', 'true');
     },
 
-    // Load video sources
+    // Load video sources from OSS
     async loadVideoSources() {
       this.loadingVideo = true
       this.errorMessage = ''
       try {
-        // Use local video files and thumbnails
-        const localVideoData = [
-          {
-            id: 1,
-            title: 'Why are coral reefs so important?',
-            video_src: require('@/assets/Why are coral reefs so important.mp4'),
-            thumbnail: require('@/assets/Why are coral reefs so important.jpg')
-          },
-          {
-            id: 2,
-            title: 'What Would Happen If All The Coral Reefs Died Off?',
-            video_src: require('@/assets/What Would Happen If All The Coral Reefs Died Off.mp4'),
-            thumbnail: require('@/assets/What Would Happen If All The Coral Reefs Died Off.jpg')
-          },
-          {
-            id: 3,
-            title: 'Coral Reefs Are Dying. Here\'s How We Can Save Them',
-            video_src: require('@/assets/Coral Reefs Are Dying. Here\'s How We Can Save Them.mp4'),
-            thumbnail: require('@/assets/Coral Reefs Are Dying. Here\'s How We Can Save Them.jpg')
-          },
-          {
-            id: 4,
-            title: 'Coral Bleaching Explained: The Story of Frank the Coral',
-            video_src: require('@/assets/Coral Bleaching Explained The Story of Frank the Coral.mp4'),
-            thumbnail: require('@/assets/Coral Bleaching Explained The Story of Frank the Coral.jpg')
-          },
-          {
-            id: 5,
-            title: 'Coral Reefs 101 | National Geographic',
-            video_src: require('@/assets/Coral Reefs 101 National Geographic.mp4'),
-            thumbnail: require('@/assets/Coral Reefs 101 National Geographic.jpg')
-          }
+        // 预定义的视频文件信息
+        const videoFileNames = [
+          'Why are coral reefs so important50c1f8bcc09bfb8f4181.mp4',
+          'What Would Happen If All The Coral Reefs Died Off5371572ca8ef3ac0171a.mp4',
+          'Coral Reefs Are Dying. Here\'s How We Can Save Them9fe434e8b3ea27e37ea3.mp4',
+          'Coral Bleaching Explained The Story of Frank the Coral2db38d376a97273ad5ad.mp4',
+          'Coral Reefs 101 National Geographicf92af9ce5664eead7dec.mp4'
         ]
         
-        this.videoSources = localVideoData
+        const videoTitles = [
+          'Why are coral reefs so important?',
+          'What Would Happen If All The Coral Reefs Died Off?',
+          'Coral Reefs Are Dying. Here\'s How We Can Save Them',
+          'Coral Bleaching Explained: The Story of Frank the Coral',
+          'Coral Reefs 101 | National Geographic'
+        ]
+        
+        // 从OSS获取视频签名URL
+        const videoSources = []
+        for (let i = 0; i < videoFileNames.length; i++) {
+          try {
+            const response = await axios.get('/api/oss/video/url', {
+              params: {
+                videoFileName: videoFileNames[i],
+                expireSeconds: 7200 // 2小时过期
+              }
+            })
+            
+            if (response.data.code === 1) {
+              videoSources.push({
+                id: i + 1,
+                title: videoTitles[i],
+                video_src: response.data.data, // OSS签名URL
+                thumbnail: require('@/assets/Why are coral reefs so important.jpg') // 使用本地缩略图
+              })
+            } else {
+              console.error(`Failed to get video URL for ${videoFileNames[i]}:`, response.data.msg)
+            }
+          } catch (error) {
+            console.error(`Error getting video URL for ${videoFileNames[i]}:`, error)
+          }
+        }
+        
+        this.videoSources = videoSources
+        
+        if (videoSources.length === 0) {
+          this.errorMessage = 'No videos available from OSS'
+        }
         
       } catch (error) {
-        this.errorMessage = 'Failed to load local videos: ' + error.message
-        console.error('Failed to load local videos:', error)
+        this.errorMessage = 'Failed to load videos from OSS: ' + error.message
+        console.error('Failed to load videos from OSS:', error)
       } finally {
         this.loadingVideo = false
       }

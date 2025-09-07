@@ -160,4 +160,23 @@ public class OssService {
         
         return uploadedUrls;
     }
+
+    /**
+     * 获取视频文件的签名URL
+     * @param videoFileName 视频文件名（不包含路径）
+     * @param expireSeconds 过期时间（秒），默认1小时
+     * @return 视频的签名URL
+     */
+    public String getVideoSignedUrl(String videoFileName, int expireSeconds) {
+        // 构建完整的对象键：vedio/文件名
+        String objectKey = "vedio/" + videoFileName;
+        
+        // 检查文件是否存在
+        if (!ossClient.doesObjectExist(bucketName, objectKey)) {
+            throw new RuntimeException("视频文件不存在: " + videoFileName);
+        }
+        
+        return generateSignedUrl(objectKey, expireSeconds);
+    }
+
 }

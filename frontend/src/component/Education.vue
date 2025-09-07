@@ -377,26 +377,93 @@ export default {
     async loadVideoSources() {
       this.loadingVideo = true;
       try {
-        // 使用后端API获取珊瑚礁图片作为视频源
-        const response = await fetch(`/quiz/coral-pictures?userName=${this.currentUser?.name || 'guest'}`);
-        if (response.ok) {
-          const data = await response.json();
-          if (data.code === 1) {
-            // 将珊瑚礁图片转换为视频源格式
-            this.videoSources = data.data.map((pic, index) => ({
-              id: index + 1,
-              title: `珊瑚礁知识视频 ${index + 1}`,
-              thumbnail: pic.signedUrl,
-              description: '了解珊瑚礁生态系统和保护知识'
-            }));
-          } else {
-            throw new Error(data.msg || '获取视频源失败');
+        // 预定义的视频文件信息
+        const videoFileNames = [
+          'Why are coral reefs so important50c1f8bcc09bfb8f4181.mp4',
+          'What Would Happen If All The Coral Reefs Died Off5371572ca8ef3ac0171a.mp4',
+          'Coral Reefs Are Dying. Here\'s How We Can Save Them9fe434e8b3ea27e37ea3.mp4',
+          'Coral Bleaching Explained The Story of Frank the Coral2db38d376a97273ad5ad.mp4',
+          'Coral Reefs 101 National Geographicf92af9ce5664eead7dec.mp4'
+        ]
+        
+        const videoTitles = [
+          'Why are coral reefs so important?',
+          'What Would Happen If All The Coral Reefs Died Off?',
+          'Coral Reefs Are Dying. Here\'s How We Can Save Them',
+          'Coral Bleaching Explained: The Story of Frank the Coral',
+          'Coral Reefs 101 | National Geographic'
+        ]
+        
+        const videoDescriptions = [
+          '了解珊瑚礁的重要性和生态价值',
+          '探索珊瑚礁消失对海洋生态的影响',
+          '学习如何拯救濒危的珊瑚礁',
+          '了解珊瑚白化现象和Frank的故事',
+          '国家地理频道珊瑚礁基础知识'
+        ]
+        
+        // 从OSS获取视频签名URL
+        const videoSources = []
+        for (let i = 0; i < videoFileNames.length; i++) {
+          try {
+            const response = await fetch(`/api/oss/video/url?videoFileName=${encodeURIComponent(videoFileNames[i])}&expireSeconds=7200`)
+            const data = await response.json()
+            
+            if (data.code === 1) {
+              videoSources.push({
+                id: i + 1,
+                title: videoTitles[i],
+                thumbnail: 'https://via.placeholder.com/300x200/4facfe/ffffff?text=珊瑚礁视频' + (i + 1),
+                description: videoDescriptions[i],
+                videoUrl: data.data // OSS签名URL
+              })
+            } else {
+              console.error(`Failed to get video URL for ${videoFileNames[i]}:`, data.msg)
+            }
+          } catch (error) {
+            console.error(`Error getting video URL for ${videoFileNames[i]}:`, error)
           }
-        } else {
-          throw new Error('获取视频源失败');
+        }
+        
+        this.videoSources = videoSources
+        
+        if (videoSources.length === 0) {
+          // 如果OSS获取失败，使用默认的示例视频源
+          this.videoSources = [
+            {
+              id: 1,
+              title: '珊瑚礁生态系统介绍',
+              thumbnail: 'https://via.placeholder.com/300x200/4facfe/ffffff?text=珊瑚礁视频1',
+              description: '了解珊瑚礁的基本构成和生态功能'
+            },
+            {
+              id: 2,
+              title: '珊瑚礁保护方法',
+              thumbnail: 'https://via.placeholder.com/300x200/00f2fe/ffffff?text=珊瑚礁视频2',
+              description: '学习如何保护珊瑚礁生态系统'
+            },
+            {
+              id: 3,
+              title: '海洋生物多样性',
+              thumbnail: 'https://via.placeholder.com/300x200/667eea/ffffff?text=珊瑚礁视频3',
+              description: '探索珊瑚礁中的海洋生物'
+            },
+            {
+              id: 4,
+              title: '气候变化对珊瑚礁的影响',
+              thumbnail: 'https://via.placeholder.com/300x200/764ba2/ffffff?text=珊瑚礁视频4',
+              description: '了解气候变化如何影响珊瑚礁'
+            },
+            {
+              id: 5,
+              title: '可持续旅游实践',
+              thumbnail: 'https://via.placeholder.com/300x200/4facfe/ffffff?text=珊瑚礁视频5',
+              description: '学习如何在旅游中保护珊瑚礁'
+            }
+          ];
         }
       } catch (error) {
-        console.error('Error loading video sources:', error);
+        console.error('Error loading videos:', error);
         // 如果API失败，使用默认的示例视频源
         this.videoSources = [
           {

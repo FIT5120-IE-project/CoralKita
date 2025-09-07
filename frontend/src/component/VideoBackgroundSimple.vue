@@ -1,7 +1,16 @@
 <template>
   <div class="video-container">
+    <!-- 加载状态 -->
+    <div v-if="loading" class="loading-overlay">
+      <div class="loading-content">
+        <div class="loading-spinner"></div>
+        <p>Loading CoralKita...</p>
+      </div>
+    </div>
+    
     <!-- 视频背景 -->
     <video 
+      v-if="!loading && videoSrc"
       ref="backgroundVideo"
       class="background-video" 
       autoplay 
@@ -38,14 +47,56 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'VideoBackgroundSimple',
   data() {
     return {
-      videoSrc: require('../assets/theme.mp4')
+      videoSrc: '',
+      loading: true
     }
   },
+  async mounted() {
+    // 从OSS获取主题视频URL
+    await this.loadThemeVideo();
+    
+    // 确保视频自动播放
+    this.$nextTick(() => {
+      const video = this.$refs.backgroundVideo;
+      if (video && this.videoSrc) {
+        video.play().catch(err => {
+          console.log('视频自动播放失败:', err);
+        });
+      }
+    });
+  },
   methods: {
+    async loadThemeVideo() {
+      try {
+        const response = await axios.get('/api/oss/video/url', {
+          params: {
+            videoFileName: 'themecac38de5a31ddc2259ae.mp4',
+            expireSeconds: 7200 // 2小时过期
+          }
+        });
+        
+        if (response.data.code === 1) {
+          this.videoSrc = response.data.data;
+        } else {
+          console.error('Failed to get theme video URL:', response.data.msg);
+          // 使用fallback
+          this.videoSrc = 'https://via.placeholder.com/1920x1080/4facfe/ffffff?text=Theme+Video';
+        }
+      } catch (error) {
+        console.error('Error loading theme video:', error);
+        // 使用fallback
+        this.videoSrc = 'https://via.placeholder.com/1920x1080/4facfe/ffffff?text=Theme+Video';
+      } finally {
+        this.loading = false;
+      }
+    },
+    
     navigateToTrends() {
       // 预加载trends组件
       this.preloadTrends();
@@ -59,23 +110,7 @@ export default {
       // 预加载trends组件
       const trendsComponent = () => import('@/component/TrendsVisualization.vue');
       trendsComponent();
-    },
-    
-
-  },
-  mounted() {
-    console.log('VideoBackgroundSimple 组件已挂载');
-    console.log('视频路径:', this.videoSrc);
-    
-    this.$nextTick(() => {
-      const video = this.$refs.backgroundVideo;
-      if (video) {
-        console.log('找到视频元素');
-        video.play().catch(err => {
-          console.log('视频自动播放失败:', err);
-        });
-      }
-    });
+    }
   }
 }
 </script>
@@ -86,6 +121,46 @@ export default {
   width: 100%;
   height: 100vh;
   overflow: hidden;
+}
+
+/* 加载状态样式 */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.loading-content {
+  text-align: center;
+  color: white;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-content p {
+  font-size: 18px;
+  font-weight: 300;
+  margin: 0;
 }
 
 

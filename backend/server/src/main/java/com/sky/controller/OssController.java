@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController
@@ -81,5 +80,28 @@ public class OssController {
             return Result.error("上传失败：" + e.getMessage());
         }
     }
+
+    /**
+     * 获取单个视频文件的签名URL
+     * @param videoFileName 视频文件名
+     * @param expireSeconds 过期时间（秒），默认3600秒（1小时）
+     * @return 视频签名URL
+     */
+    @GetMapping("/video/url")
+    @ApiOperation(value = "获取单个视频文件的签名URL")
+    public Result<String> getVideoSignedUrl(
+            @RequestParam String videoFileName,
+            @RequestParam(defaultValue = "3600") int expireSeconds) {
+        log.info("获取视频签名URL：{}，过期时间：{}秒", videoFileName, expireSeconds);
+        
+        try {
+            String signedUrl = ossService.getVideoSignedUrl(videoFileName, expireSeconds);
+            return Result.success(signedUrl);
+        } catch (Exception e) {
+            log.error("获取视频签名URL失败：{}", e.getMessage());
+            return Result.error("获取失败：" + e.getMessage());
+        }
+    }
+
 
 }
