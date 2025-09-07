@@ -1,7 +1,7 @@
 sky:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    host: localhost
+    host: 8.148.202.1
     port: 3306
     database: coralkita_db
     username: coralkita_db
