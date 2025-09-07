@@ -6,7 +6,7 @@ WORKDIR /build
 COPY . .
 
 # Build the application
-RUN mvn -B -q -DskipTests clean package -pl server -am
+RUN mvn -B -q -DskipTests clean package
 
 # ===== run =====
 FROM eclipse-temurin:21-jre
