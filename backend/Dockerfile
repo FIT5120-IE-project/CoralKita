@@ -5,6 +5,12 @@ WORKDIR /build
 # Copy the entire project structure
 COPY . .
 
+# Debug: List files to verify copy worked
+RUN ls -la
+
+# Debug: Check if pom.xml exists
+RUN ls -la pom.xml
+
 # Build the application
 RUN mvn -B -q -DskipTests clean package
 
