@@ -406,11 +406,12 @@ export default {
         const videoSources = []
         for (let i = 0; i < videoFileNames.length; i++) {
           try {
-            const response = await axios.get('https://defiant-marcelline-baihanrui-b9820c9e.koyeb.app/api/oss/video/url')    
+            const response = await axios.get('https://defiant-marcelline-baihanrui-b9820c9e.koyeb.app/api/oss/video/url'， {    
               params: {
                 videoFileName: videoFileNames[i],
                 expireSeconds: 7200 // 2小时过期
-          }
+              }
+            })；
             
             
             if (response.data.code === 1) {
