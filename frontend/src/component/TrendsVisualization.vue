@@ -501,7 +501,7 @@ export default {
       if (!island) return;
       
       console.log('正在加载岛屿趋势数据:', island);
-             const url = `${API_BASE_URL}/trend/query?island=${encodeURIComponent(island)}`;
+      const url = `/api/trend/query?island=${encodeURIComponent(island)}`;
       console.log('趋势数据API地址:', url);
       
       try {
