@@ -4,3 +4,6 @@
 *.class
 *Test.java
 **/test/
+
+node_modules/
+frontend/dist/
