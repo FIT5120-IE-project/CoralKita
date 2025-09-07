@@ -6,8 +6,11 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const BACKEND_URL = 'http://localhost:8080';
 const FRONTEND_PORT = 3001;
 
-module.exports = {
-  mode: 'development', // 开发模式
+module.exports = (env, argv) => {
+  const isProduction = argv.mode === 'production';
+  
+  return {
+    mode: isProduction ? 'production' : 'development', // 根据构建模式设置
   entry: './src/main.js', // 入口文件
   output: {
     path: path.resolve(__dirname, 'dist'), // 打包目录
@@ -85,4 +88,5 @@ module.exports = {
     },
     extensions: ['.js', '.vue', '.json']
   }
+  };
 };
