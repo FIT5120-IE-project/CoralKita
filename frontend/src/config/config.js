@@ -2,12 +2,12 @@
 const config = {
   // 开发环境
   development: {
-    baseURL: 'http://localhost:8080',
+    baseURL: '/api', // 使用相对路径
     frontendPort: 3001
   },
   // 生产环境
   production: {
-    baseURL: 'http://8.148.202.1/', // 生产环境地址，请根据实际情况修改
+    baseURL: '/api', // 使用相对路径
     frontendPort: 80
   }
 };

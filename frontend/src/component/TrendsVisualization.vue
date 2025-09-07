@@ -322,7 +322,7 @@
 <script>
 import axios from 'axios';
 import { Chart, registerables } from 'chart.js';
-import { API_BASE_URL } from '@/config/config';
+// 移除API_BASE_URL导入，使用相对路径
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -474,7 +474,7 @@ export default {
       
       try {
         console.log('正在从后端加载岛屿列表...');
-        const response = await axios.get(`${API_BASE_URL}/trend/islands`);
+        const response = await axios.get('/api/trend/islands');
         console.log('岛屿列表API响应:', response);
         
         if (response.data.code === 1) {
@@ -769,7 +769,7 @@ export default {
         
         for (const island of this.availableIslands) {
           try {
-            const response = await axios.get(`${API_BASE_URL}/trend/bleach?island=${encodeURIComponent(island)}`);
+            const response = await axios.get(`/api/trend/bleach?island=${encodeURIComponent(island)}`);
             if (response.data.code === 1 && response.data.data && response.data.data.length > 0) {
               const coralData = response.data.data[0]; // 取第一条数据获取坐标
               if (coralData.islandLat && coralData.islandLng) {
@@ -1174,7 +1174,7 @@ export default {
       
       try {
         // 使用后端的批量对比接口
-        const response = await axios.post(`${API_BASE_URL}/trend/compare`, {
+        const response = await axios.post('/api/trend/compare', {
           islands: selectedIslands
         });
         
@@ -1252,7 +1252,7 @@ export default {
       
       for (const island of selectedIslands) {
         try {
-          const response = await axios.get(`${API_BASE_URL}/trend/query?island=${encodeURIComponent(island)}`);
+          const response = await axios.get(`/api/trend/query?island=${encodeURIComponent(island)}`);
           console.log(`${island} 数据响应:`, response.data);
           
           if (response.data && response.data.code === 1 && response.data.data) {
