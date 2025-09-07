@@ -2,9 +2,8 @@
 FROM node:20 AS build
 WORKDIR /app
 
-# 强制重新构建：添加时间戳
-ARG BUILD_DATE
-ENV BUILD_DATE=${BUILD_DATE:-$(date -u +%Y-%m-%dT%H:%M:%SZ)}
+# 强制重新构建：添加构建标识
+RUN echo "Build timestamp: $(date)" > /build-info.txt
 
 COPY frontend/package*.json ./
 RUN npm ci
