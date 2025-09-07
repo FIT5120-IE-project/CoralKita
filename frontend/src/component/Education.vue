@@ -406,12 +406,12 @@ export default {
         const videoSources = []
         for (let i = 0; i < videoFileNames.length; i++) {
           try {
-            const response = await axios.get('https://defiant-marcelline-baihanrui-b9820c9e.koyeb.app/api/oss/video/url'， {    
-              params: {
-                videoFileName: videoFileNames[i],
-                expireSeconds: 7200 // 2小时过期
-              }
-            })；
+            const response = await axios.get('https://defiant-marcelline-baihanrui-b9820c9e.koyeb.app/oss/video/url', {
+          params: {
+            videoFileName: videoFileNames[i],
+            expireSeconds: 7200 // 2小时过期
+          }
+        });
             
             
             if (response.data.code === 1) {
@@ -420,7 +420,7 @@ export default {
                 title: videoTitles[i],
                 thumbnail: 'https://via.placeholder.com/300x200/4facfe/ffffff?text=珊瑚礁视频' + (i + 1),
                 description: videoDescriptions[i],
-                videoUrl: data.data // OSS签名URL
+                videoUrl: response.data.data // OSS签名URL
               })
             } else {
               console.error(`Failed to get video URL for ${videoFileNames[i]}:`, data.msg)
