@@ -81,13 +81,13 @@ export default {
           this.videoSrc = response.data.data;
         } else {
           console.error('Failed to get theme video URL:', response.data.msg);
-          // 使用fallback
-          this.videoSrc = 'https://via.placeholder.com/1920x1080/4facfe/ffffff?text=Theme+Video';
+          // 使用本地fallback或隐藏视频
+          this.videoSrc = null;
         }
       } catch (error) {
         console.error('Error loading theme video:', error);
-        // 使用fallback
-        this.videoSrc = 'https://via.placeholder.com/1920x1080/4facfe/ffffff?text=Theme+Video';
+        // 使用本地fallback或隐藏视频
+        this.videoSrc = null;
       } finally {
         this.loading = false;
       }
