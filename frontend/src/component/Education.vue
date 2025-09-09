@@ -796,17 +796,10 @@ export default {
         showVerification: this.showVerification
       });
       
-      // 如果没有导航标记，说明是页面刷新或首次访问
-      if (!hasNavigated) {
-        console.log('检测到页面刷新或首次访问，显示验证界面');
-        this.showVerification = true;
-        await this.loadVerificationImages();
-      } else {
-        console.log('检测到路由导航，不显示验证界面');
-        this.showVerification = false;
-        // 清除导航标记，为下次刷新做准备
-        localStorage.removeItem('hasNavigatedToEducation');
-      }
+      // 每次进入Education页面都显示图片quiz
+      console.log('进入Education页面，显示图片quiz');
+      this.showVerification = true;
+      await this.loadVerificationImages();
       
       // 设置页面刷新标记
       sessionStorage.setItem('pageWasRefreshed', 'true');

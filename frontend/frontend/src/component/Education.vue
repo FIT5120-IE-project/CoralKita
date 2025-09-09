@@ -733,19 +733,10 @@ export default {
       console.log('isFunctionalNavigation:', isFunctionalNavigation);
       console.log('================================');
       
-      // Show verification if:
-      // 1. Verification not completed yet AND
-      // 2. This is not a functional navigation from quiz/checklist
-      const shouldShowVerification = !hasCompletedVerification && !isFunctionalNavigation;
-      
-      if (shouldShowVerification) {
-        console.log('Showing verification interface - first time visit, page refresh, or main navigation');
-        this.showVerification = true;
-        await this.loadVerificationImages();
-      } else {
-        console.log('Not showing verification - already completed or returning from functional navigation');
-        this.showVerification = false;
-      }
+      // 每次进入Education页面都显示图片quiz
+      console.log('进入Education页面，显示图片quiz');
+      this.showVerification = true;
+      await this.loadVerificationImages();
     },
 
 
