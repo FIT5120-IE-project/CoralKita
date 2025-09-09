@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.HashMap;
 import java.util.ArrayList;
-import java.time.LocalDate;
 
 /**
  * 趋势数据服务实现类
@@ -175,5 +174,54 @@ public class TrendServiceImpl implements TrendService {
         List<String> islands = trendMapper.getAllIslands();
         log.info("查询到{}个岛屿", islands.size());
         return islands;
+    }
+
+    /**
+     * 批量获取多个岛屿的坐标信息
+     * @param islands 岛屿名称列表
+     * @return 岛屿坐标信息Map，key为岛屿名称，value为坐标信息
+     */
+    @Override
+    public Map<String, Object> getIslandsCoordinates(List<String> islands) {
+        log.info("批量获取岛屿坐标：{}", islands);
+        
+        Map<String, Object> coordinatesMap = new HashMap<>();
+        
+        try {
+            // 使用单条SQL查询获取所有岛屿的坐标信息
+            List<Coral> coralList = trendMapper.getIslandsCoordinatesBatch(islands);
+            log.info("单条SQL查询到{}条岛屿坐标数据", coralList.size());
+            
+            // 将查询结果转换为Map格式
+            for (Coral coral : coralList) {
+                Map<String, Object> islandInfo = new HashMap<>();
+                islandInfo.put("lat", coral.getIslandLat());
+                islandInfo.put("lng", coral.getIslandLng());
+                islandInfo.put("hasData", true);
+                coordinatesMap.put(coral.getIsland(), islandInfo);
+            }
+            
+            // 为没有坐标数据的岛屿添加标记
+            for (String island : islands) {
+                if (!coordinatesMap.containsKey(island)) {
+                    Map<String, Object> islandInfo = new HashMap<>();
+                    islandInfo.put("hasData", false);
+                    coordinatesMap.put(island, islandInfo);
+                }
+            }
+            
+        } catch (Exception e) {
+            log.error("批量获取岛屿坐标失败: {}", e.getMessage(), e);
+            // 出错时为所有岛屿添加错误标记
+            for (String island : islands) {
+                Map<String, Object> islandInfo = new HashMap<>();
+                islandInfo.put("hasData", false);
+                islandInfo.put("error", e.getMessage());
+                coordinatesMap.put(island, islandInfo);
+            }
+        }
+        
+        log.info("成功获取{}个岛屿的坐标信息", coordinatesMap.size());
+        return coordinatesMap;
     }
 }

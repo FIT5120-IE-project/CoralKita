@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 趋势数据管理接口
@@ -119,6 +120,25 @@ public class TrendController {
         }
 
         return Result.success(coralList);
+    }
+
+    /**
+     * 批量获取多个岛屿的坐标信息
+     * @param islands 岛屿名称列表
+     * @return 岛屿坐标信息列表
+     */
+    @PostMapping("/bleach/coordinates")
+    @ApiOperation(value = "批量获取多个岛屿的坐标信息")
+    public Result<Map<String, Object>> getIslandsCoordinates(@RequestBody List<String> islands) {
+        log.info("批量获取岛屿坐标：{}", islands);
+        
+        if (islands == null || islands.isEmpty()) {
+            return Result.error("岛屿列表不能为空");
+        }
+        
+        Map<String, Object> coordinatesMap = trendService.getIslandsCoordinates(islands);
+        
+        return Result.success(coordinatesMap);
     }
 
 }

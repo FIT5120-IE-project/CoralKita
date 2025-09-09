@@ -46,4 +46,25 @@ public interface TrendMapper {
      */
     @Select("select * from coral where island = #{island} order by date desc")
     List<Coral> getCoralByIslandOrderByDate(String island);
+
+    /**
+     * 批量获取多个岛屿的坐标信息（每个岛屿取最新的一条记录）
+     * @param islands 岛屿名称列表
+     * @return 珊瑚数据列表，包含每个岛屿的最新坐标
+     */
+    @Select("<script>" +
+            "SELECT c1.* FROM coral c1 " +
+            "INNER JOIN (" +
+            "  SELECT island, MAX(date) as max_date " +
+            "  FROM coral " +
+            "  WHERE island IN " +
+            "  <foreach collection='islands' item='island' open='(' separator=',' close=')'>" +
+            "    #{island}" +
+            "  </foreach>" +
+            "  GROUP BY island" +
+            ") c2 ON c1.island = c2.island AND c1.date = c2.max_date " +
+            "WHERE c1.islandLat IS NOT NULL AND c1.islandLng IS NOT NULL " +
+            "ORDER BY c1.island" +
+            "</script>")
+    List<Coral> getIslandsCoordinatesBatch(List<String> islands);
 }

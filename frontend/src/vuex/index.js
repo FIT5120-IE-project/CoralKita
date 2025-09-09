@@ -5,81 +5,30 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    user: null,
-    token: null,
-    isAuthenticated: false
+    // 移除了用户认证相关状态，保留应用状态管理
+    appVersion: '1.0.0'
   },
   
   mutations: {
-    SET_USER(state, user) {
-      state.user = user
-      state.isAuthenticated = !!user
-    },
-    
-    SET_TOKEN(state, token) {
-      state.token = token
-    },
-    
-    CLEAR_USER(state) {
-      state.user = null
-      state.token = null
-      state.isAuthenticated = false
-    },
-    
-    UPDATE_USER_STATS(state, stats) {
-      if (state.user) {
-        state.user = { ...state.user, ...stats }
-        // 同步更新本地存储
-        localStorage.setItem('userInfo', JSON.stringify(state.user))
-      }
+    // 应用通用mutations
+    SET_APP_VERSION(state, version) {
+      state.appVersion = version
     }
   },
   
   actions: {
-    login({ commit }, { user, token }) {
-      commit('SET_USER', user)
-      commit('SET_TOKEN', token)
-      
-      // 保存到本地存储
-      localStorage.setItem('userInfo', JSON.stringify(user))
-      localStorage.setItem('token', token)
-    },
-    
-    logout({ commit }) {
-      commit('CLEAR_USER')
-      
-      // 清除本地存储
-      localStorage.removeItem('userInfo')
-      localStorage.removeItem('token')
-    },
-    
-    // 初始化时从本地存储恢复用户状态
-    initAuth({ commit }) {
-      const userInfo = localStorage.getItem('userInfo')
-      const token = localStorage.getItem('token')
-      
-      if (userInfo && token) {
-        try {
-          const user = JSON.parse(userInfo)
-          commit('SET_USER', user)
-          commit('SET_TOKEN', token)
-        } catch (error) {
-          console.error('Failed to parse user info:', error)
-          localStorage.removeItem('userInfo')
-          localStorage.removeItem('token')
-        }
-      }
-    },
-    
-    // 更新用户统计信息
-    updateUserStats({ commit }, stats) {
-      commit('UPDATE_USER_STATS', stats)
+    // 应用通用actions
+    updateAppVersion({ commit }, version) {
+      commit('SET_APP_VERSION', version)
     }
   },
   
   getters: {
-    isAuthenticated: state => state.isAuthenticated,
-    currentUser: state => state.user,
-    userToken: state => state.token
+    // 移除认证相关getters，添加通用getters
+    getAppVersion: state => state.appVersion,
+    // 为了保持兼容性，返回默认值
+    isAuthenticated: () => true, // 始终返回true，表示无需认证
+    currentUser: () => ({ name: 'Guest User', level: 1, points: 0, experience: 0 }),
+    userToken: () => null
   }
 })

@@ -8,8 +8,8 @@
 export default {
   name: 'App',
   mounted() {
-    // 初始化时恢复用户认证状态
-    this.$store.dispatch('initAuth')
+    // 应用初始化，移除了认证初始化
+    console.log('CoralKita应用已启动')
   }
 }
 </script>

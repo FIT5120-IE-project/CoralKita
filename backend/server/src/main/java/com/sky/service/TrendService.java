@@ -5,6 +5,7 @@ import com.sky.vo.TrendVO;
 import com.sky.vo.TrendCompareVO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 趋势数据服务接口
@@ -36,4 +37,11 @@ public interface TrendService {
      * @return 珊瑚数据列表
      */
     List<Coral> getCoralDataByIsland(String island);
+
+    /**
+     * 批量获取多个岛屿的坐标信息
+     * @param islands 岛屿名称列表
+     * @return 岛屿坐标信息Map，key为岛屿名称，value为坐标信息
+     */
+    Map<String, Object> getIslandsCoordinates(List<String> islands);
 }

@@ -157,7 +157,10 @@
         <div class="completion-content">
           <!-- Overall Medal Display -->
           <div v-if="medalInfo" class="medal-display">
-            <div class="medal-icon" :style="{ color: medalInfo.color }">{{ medalInfo.icon }}</div>
+            <div class="medal-icon">
+              <img v-if="medalInfo.image" :src="medalInfo.image" :alt="medalInfo.title" class="medal-image" />
+              <span v-else :style="{ color: medalInfo.color }">{{ medalInfo.icon }}</span>
+            </div>
             <h2 class="medal-title">{{ medalInfo.title }}</h2>
             <p class="medal-message">{{ medalInfo.message }}</p>
           </div>
@@ -448,6 +451,9 @@ export default {
     ...mapGetters(['isAuthenticated', 'currentUser'])
   },
   async mounted() {
+    // Set global refresh detection timestamp for verification system
+    localStorage.setItem('lastPageRefresh', Date.now().toString());
+    
     // Page load, initialize local data
     console.log('Component mounted, initializing checklist data');
   },
@@ -617,6 +623,7 @@ export default {
           title: 'Bronze Conservation Guardian',
           message: 'You\'ve taken the first steps towards responsible coral reef tourism! Keep building your sustainable travel practices.',
           icon: '🥉',
+          image: require('@/assets/bronze.png'),
           color: '#CD7F32'
         }
       } else if (completedCount >= 9 && completedCount <= 14) {
@@ -625,6 +632,7 @@ export default {
           title: 'Silver Reef Protector',
           message: 'Excellent progress! You demonstrate strong commitment to coral reef conservation during your travels.',
           icon: '🥈',
+          image: require('@/assets/sliver.png'),
           color: '#C0C0C0'
         }
       } else if (completedCount >= 15 && completedCount <= 17) {
@@ -633,6 +641,7 @@ export default {
           title: 'Gold Coral Champion',
           message: 'Outstanding! You are a true coral reef conservation champion, leading by example in sustainable tourism.',
           icon: '🥇',
+          image: require('@/assets/gold.png'),
           color: '#FFD700'
         }
       }
@@ -1376,18 +1385,29 @@ export default {
 
 /* Medal Display */
 .medal-display {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
   border-radius: 20px;
   padding: 40px;
   margin-bottom: 30px;
-  text-align: center;
-  backdrop-filter: blur(15px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.2);
+  text-align: center;
 }
 
 .medal-icon {
   font-size: 80px;
   margin-bottom: 20px;
+  animation: bounceIn 0.6s ease-out;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.medal-image {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
   animation: bounceIn 0.6s ease-out;
 }
 
