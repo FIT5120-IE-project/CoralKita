@@ -82,6 +82,31 @@ public class QuizController {
     }
 
     /**
+     * 随机获取5道题目
+     * @return 随机题目列表
+     */
+    @GetMapping("/random")
+    @ApiOperation(value = "随机获取5道题目")
+    public Result<List<QuizQuestion>> getRandomQuestions() {
+        log.info("随机获取5道题目");
+        
+        try {
+            // 从所有来源中随机获取5道题目
+            List<QuizQuestion> questions = quizService.getRandomQuestionsFromAllSources(5);
+            
+            // 检查是否找到数据
+            if (questions.isEmpty()) {
+                return Result.error("没有可用的题目");
+            }
+
+            return Result.success(questions);
+        } catch (Exception e) {
+            log.error("获取随机题目失败：{}", e.getMessage());
+            return Result.error("获取题目失败：" + e.getMessage());
+        }
+    }
+
+    /**
      * 提交测验得分
      * @param quizScoreDTO 测验得分信息
      * @return 得分结果

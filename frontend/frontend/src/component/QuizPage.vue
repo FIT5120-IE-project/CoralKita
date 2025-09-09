@@ -48,7 +48,7 @@
               >
                 <div class="video-thumbnail">
                   <img 
-                    :src="video.thumbnail || '/api/placeholder/300/200'" 
+                    :src="video.thumbnail || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y0ZjRmNCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTk5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj7lm77niYfmlKDovb3lpLHotKU8L3RleHQ+PC9zdmc+'" 
                     :alt="video.title" 
                     @error="handleThumbnailError"
                     loading="lazy"
@@ -482,7 +482,7 @@ export default {
     async loadSourceTitles() {
       try {
         console.log('Loading source titles...')
-        const response = await axios.get('/quiz/sources')
+        const response = await axios.get('/api/quiz/sources')
         console.log('Source titles response:', response.data)
         if (response.data.code === 1) {
           this.sourceTitles = response.data.data || []
@@ -541,13 +541,13 @@ export default {
     // Handle thumbnail loading error
     handleThumbnailError(event) {
       console.warn('Thumbnail loading failed:', event.target.src)
-      event.target.src = '/api/placeholder/300/200?text=Video+Thumbnail'
+      event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y0ZjRmNCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTk5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj7lm77niYfmlKDovb3lpLHotKU8L3RleHQ+PC9zdmc+'
     },
 
     // Handle image loading error for image classification questions
     handleImageError(event) {
       console.warn('Image loading failed:', event.target.src)
-      event.target.src = '/api/placeholder/300/200?text=Image+Placeholder'
+      event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y0ZjRmNCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTk5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj7lm77niYfmlKDovb3lpLHotKU8L3RleHQ+PC9zdmc+'
     },
 
     // Mark video as watched
@@ -584,7 +584,7 @@ export default {
       this.loadingQuestions = true
       this.errorMessage = ''
       try {
-        const response = await axios.get('/quiz/random')
+        const response = await axios.get('/api/quiz/random')
         console.log('Random questions response:', response.data)
 
         if (response.data.code === 1 && response.data.data) {

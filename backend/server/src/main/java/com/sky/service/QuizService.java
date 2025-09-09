@@ -21,4 +21,11 @@ public interface QuizService {
      * @return 来源标题列表
      */
     List<String> getAllSourceTitles();
+
+    /**
+     * 从所有来源中随机获取指定数量的题目
+     * @param limit 获取题目数量
+     * @return 随机题目列表
+     */
+    List<QuizQuestion> getRandomQuestionsFromAllSources(int limit);
 }

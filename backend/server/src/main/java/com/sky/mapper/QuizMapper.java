@@ -23,4 +23,12 @@ public interface QuizMapper {
      */
     @Select("SELECT DISTINCT source_title FROM quiz_questions WHERE source_title IS NOT NULL")
     List<String> getAllSourceTitles();
+
+    /**
+     * 从所有来源中随机查询指定数量的测验题目
+     * @param limit 查询数量
+     * @return 测验题目列表
+     */
+    @Select("SELECT * FROM quiz_questions ORDER BY RAND() LIMIT #{limit}")
+    List<QuizQuestion> getRandomQuestionsFromAllSources(int limit);
 }

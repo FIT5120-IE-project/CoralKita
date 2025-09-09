@@ -38,6 +38,10 @@ module.exports = (env, argv) => {
       '/checklist': {
         target: BACKEND_URL,  // 代理清单相关的API
         changeOrigin: true
+      },
+      '/oss': {
+        target: BACKEND_URL,  // 代理OSS相关的API
+        changeOrigin: true
       }
     }
   },

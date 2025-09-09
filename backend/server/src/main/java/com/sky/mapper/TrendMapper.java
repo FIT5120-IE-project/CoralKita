@@ -63,7 +63,7 @@ public interface TrendMapper {
             "  </foreach>" +
             "  GROUP BY island" +
             ") c2 ON c1.island = c2.island AND c1.date = c2.max_date " +
-            "WHERE c1.islandLat IS NOT NULL AND c1.islandLng IS NOT NULL " +
+            "WHERE c1.island_lat IS NOT NULL AND c1.island_lng IS NOT NULL " +
             "ORDER BY c1.island" +
             "</script>")
     List<Coral> getIslandsCoordinatesBatch(List<String> islands);

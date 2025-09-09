@@ -49,7 +49,7 @@
               >
                 <div class="video-thumbnail">
                   <img 
-                    :src="video.thumbnail || '/api/placeholder/300/200'" 
+                    :src="video.thumbnail || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y0ZjRmNCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTk5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj7lm77niYfmlKDovb3lpLHotKU8L3RleHQ+PC9zdmc+'" 
                     :alt="video.title" 
                     @error="handleThumbnailError"
                     loading="lazy"
@@ -353,6 +353,8 @@ export default {
   name: 'QuizPage',
   data() {
     return {
+      // OSS背景图片URL
+      bgInterfaceUrl: '',
       // Video related
       videoSources: [],
       loadingVideo: false,
@@ -411,8 +413,11 @@ export default {
     }
   },
   async mounted() {
-    await this.loadVideoSources()
-    await this.loadSourceTitles()
+    await Promise.all([
+      this.loadVideoSources(),
+      this.loadSourceTitles(),
+      this.loadBackgroundImage()
+    ])
   },
   methods: {
     // Go back to previous page
@@ -427,6 +432,29 @@ export default {
       localStorage.setItem('hasNavigatedToEducation', 'true');
     },
 
+    // 加载OSS背景图片
+    async loadBackgroundImage() {
+      try {
+        console.log('开始加载QuizPage背景图片...');
+        
+        const response = await axios.get('/api/oss/url', {
+          params: {
+            objectKey: 'image/ed_interface.png',
+            expireSeconds: 3600
+          }
+        });
+        
+        if (response.data.code === 1) {
+          this.bgInterfaceUrl = response.data.data;
+          console.log('QuizPage背景图片加载完成');
+        } else {
+          console.warn('获取背景图片URL失败:', response.data.msg);
+        }
+      } catch (error) {
+        console.error('加载QuizPage背景图片失败:', error);
+      }
+    },
+
     // Load video sources from OSS
     async loadVideoSources() {
       this.loadingVideo = true
@@ -434,11 +462,11 @@ export default {
       try {
         // 预定义的视频文件信息
         const videoFileNames = [
-          'Why are coral reefs so important50c1f8bcc09bfb8f4181.mp4',
-          'What Would Happen If All The Coral Reefs Died Off5371572ca8ef3ac0171a.mp4',
-          'Coral Reefs Are Dying. Here\'s How We Can Save Them9fe434e8b3ea27e37ea3.mp4',
-          'Coral Bleaching Explained The Story of Frank the Coral2db38d376a97273ad5ad.mp4',
-          'Coral Reefs 101 National Geographicf92af9ce5664eead7dec.mp4'
+          'Why are coral reefs so important.mp4',
+          'What Would Happen If All The Coral Reefs Died Off.mp4',
+          'Coral Reefs Are Dying. Here\'s How We Can Save Them.mp4',
+          'Coral Bleaching Explained The Story of Frank the Coral.mp4',
+          'Coral Reefs 101 National Geographic.mp4'
         ]
         
         const videoTitles = [
@@ -453,7 +481,7 @@ export default {
         const videoSources = []
         for (let i = 0; i < videoFileNames.length; i++) {
           try {
-            const response = await axios.get('/api/oss/video/url', {
+            const response = await axios.get('/oss/video/url', {
               params: {
                 videoFileName: videoFileNames[i],
                 expireSeconds: 7200 // 2小时过期
@@ -493,7 +521,7 @@ export default {
     async loadSourceTitles() {
       try {
         console.log('Loading source titles...')
-        const response = await axios.get('/quiz/sources')
+        const response = await axios.get('/api/quiz/sources')
         console.log('Source titles response:', response.data)
         if (response.data.code === 1) {
           this.sourceTitles = response.data.data || []
@@ -552,13 +580,13 @@ export default {
     // Handle thumbnail loading error
     handleThumbnailError(event) {
       console.warn('Thumbnail loading failed:', event.target.src)
-      event.target.src = '/api/placeholder/300/200?text=Video+Thumbnail'
+      event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y0ZjRmNCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTk5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj7lm77niYfmlKDovb3lpLHotKU8L3RleHQ+PC9zdmc+'
     },
 
     // Handle image loading error for image classification questions
     handleImageError(event) {
       console.warn('Image loading failed:', event.target.src)
-      event.target.src = '/api/placeholder/300/200?text=Image+Placeholder'
+      event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y0ZjRmNCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTk5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj7lm77niYfmlKDovb3lpLHotKU8L3RleHQ+PC9zdmc+'
     },
 
     // Mark video as watched
@@ -595,7 +623,7 @@ export default {
       this.loadingQuestions = true
       this.errorMessage = ''
       try {
-        const response = await axios.get('/quiz/random')
+        const response = await axios.get('/api/quiz/random')
         console.log('Random questions response:', response.data)
 
         if (response.data.code === 1 && response.data.data) {
@@ -1060,7 +1088,7 @@ export default {
 <style scoped>
 .quiz-page {
   min-height: 100vh;
-  background-image: url('@/assets/ed_interface.png');
+  background-image: v-bind('bgInterfaceUrl ? `url(${bgInterfaceUrl})` : "none"');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

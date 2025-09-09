@@ -340,6 +340,8 @@ export default {
   name: 'TrendsVisualization',
   data() {
     return {
+      // OSS背景图片URL
+      bgTrendUrl: '',
       availableIslands: [],
       selectedIsland: '',
       searchInput: '',
@@ -457,7 +459,8 @@ export default {
         this.setupChart();
         this.initializeLeafletMap();
       }),
-      this.loadAvailableIslands()
+      this.loadAvailableIslands(),
+      this.loadBackgroundImage()
     ]);
     
     // 添加窗口事件监听器
@@ -468,6 +471,29 @@ export default {
   },
   
   methods: {
+    // 加载OSS背景图片
+    async loadBackgroundImage() {
+      try {
+        console.log('开始加载TrendsVisualization背景图片...');
+        
+        const response = await axios.get('/api/oss/url', {
+          params: {
+            objectKey: 'image/bg_trend.jpg',
+            expireSeconds: 3600
+          }
+        });
+        
+        if (response.data.code === 1) {
+          this.bgTrendUrl = response.data.data;
+          console.log('TrendsVisualization背景图片加载完成');
+        } else {
+          console.warn('获取背景图片URL失败:', response.data.msg);
+        }
+      } catch (error) {
+        console.error('加载TrendsVisualization背景图片失败:', error);
+      }
+    },
+
     async loadAvailableIslands() {
       this.isLoading = true;
       this.loadingMessage = 'Loading islands...';
@@ -764,7 +790,52 @@ export default {
     // 加载岛屿坐标数据
     async loadIslandCoordinates() {
       try {
-        console.log('开始加载岛屿坐标数据...');
+        console.log('开始批量加载岛屿坐标数据...');
+        
+        // 使用新的批量接口一次性获取所有岛屿坐标
+        const response = await axios.post('/api/trend/bleach/coordinates', this.availableIslands);
+        
+        if (response.data.code === 1 && response.data.data) {
+          const coordinatesMap = response.data.data;
+          console.log('批量获取的岛屿坐标数据:', coordinatesMap);
+          
+          // 转换为前端需要的格式
+          this.islandLocations = Object.entries(coordinatesMap)
+            .filter(([island, coords]) => coords.hasData) // 只保留有坐标数据的岛屿
+            .map(([island, coords]) => ({
+              island,
+              lat: coords.lat,
+              lng: coords.lng,
+              hasData: coords.hasData
+            }));
+          
+          console.log('处理后的岛屿坐标:', this.islandLocations);
+          
+          // 在地图上添加标记
+          this.addIslandMarkers();
+          
+          // 如果已经有选中的岛屿，立即定位
+          if (this.selectedIsland) {
+            console.log('检测到预选岛屿:', this.selectedIsland);
+            setTimeout(() => {
+              this.selectIslandFromMap(this.selectedIsland);
+            }, 500);
+          }
+        } else {
+          console.error('批量获取岛屿坐标失败:', response.data.msg);
+        }
+        
+      } catch (error) {
+        console.error('批量加载岛屿坐标失败:', error);
+        // 如果批量接口失败，回退到原来的逐个请求方式
+        await this.loadIslandCoordinatesFallback();
+      }
+    },
+
+    // 回退方法：逐个获取岛屿坐标（保留作为备用）
+    async loadIslandCoordinatesFallback() {
+      try {
+        console.log('使用回退方法逐个加载岛屿坐标数据...');
         const allCoordinates = {};
         
         for (const island of this.availableIslands) {
@@ -793,7 +864,7 @@ export default {
           hasData: coords.hasData
         }));
         
-        console.log('加载的岛屿坐标:', this.islandLocations);
+        console.log('回退方法加载的岛屿坐标:', this.islandLocations);
         
         // 在地图上添加标记
         this.addIslandMarkers();
@@ -807,7 +878,7 @@ export default {
         }
         
       } catch (error) {
-        console.error('加载岛屿坐标失败:', error);
+        console.error('回退方法加载岛屿坐标失败:', error);
       }
     },
     
@@ -1728,7 +1799,7 @@ export default {
 }
 
 .bg-container {
-  background-image: url('@/assets/bg_trend.jpg'); 
+  background-image: v-bind('bgTrendUrl ? `url(${bgTrendUrl})` : "none"'); 
   background-size: cover;       
   background-position: center;  
   background-repeat: no-repeat; 

@@ -285,6 +285,8 @@ export default {
   name: 'Education',
   data() {
     return {
+      // OSS背景图片URL
+      bgLoginUrl: '',
       // 验证系统相关
       showVerification: false, // 控制验证界面的显示 - 只在页面刷新时显示
       verificationImages: [], // 验证图片列表
@@ -813,7 +815,7 @@ export default {
     async loadVerificationImages() {
       this.loadingVerification = true;
       try {
-        const response = await axios.get('/quiz/coral-pictures-balanced');
+        const response = await axios.get('/api/quiz/coral-pictures-balanced?bleachCount=2&healthCount=4');
         console.log('API Response:', response.data);
         
         // 记录从后端获取的图片信息
@@ -1008,7 +1010,31 @@ export default {
 
     handleImageError(event) {
       console.warn('图片加载失败:', event.target.src);
-      event.target.src = '/api/placeholder/300/200?text=Image+Load+Failed';
+      // 使用一个简单的SVG作为fallback图片
+      event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y0ZjRmNCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTk5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj7lm77niYfmlKDovb3lpLHotKU8L3RleHQ+PC9zdmc+';
+    },
+
+    // 加载OSS背景图片
+    async loadBackgroundImage() {
+      try {
+        console.log('开始加载Education背景图片...');
+        
+        const response = await axios.get('/api/oss/url', {
+          params: {
+            objectKey: 'image/bg_login5.jpg',
+            expireSeconds: 3600
+          }
+        });
+        
+        if (response.data.code === 1) {
+          this.bgLoginUrl = response.data.data;
+          console.log('Education背景图片加载完成');
+        } else {
+          console.warn('获取背景图片URL失败:', response.data.msg);
+        }
+      } catch (error) {
+        console.error('加载Education背景图片失败:', error);
+      }
     }
   },
 
@@ -1016,8 +1042,11 @@ export default {
     // 页面加载时检查是否需要显示验证
     console.log('Education组件已挂载，开始检查验证');
     try {
-      await this.checkFirstTimeVisit();
-      console.log('验证检查完成');
+      await Promise.all([
+        this.checkFirstTimeVisit(),
+        this.loadBackgroundImage()
+      ]);
+      console.log('验证检查和背景图片加载完成');
     } catch (error) {
       console.error('验证检查出错:', error);
     }
@@ -1028,7 +1057,7 @@ export default {
 <style scoped>
 .education-container {
   min-height: 100vh;
-  background-image: url('@/assets/bg_login5.jpg');
+  background-image: v-bind('bgLoginUrl ? `url(${bgLoginUrl})` : "none"');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

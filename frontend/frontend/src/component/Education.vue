@@ -753,7 +753,7 @@ export default {
     async loadVerificationImages() {
       this.loadingVerification = true;
       try {
-        const response = await axios.get('/quiz/coral-pictures-balanced');
+        const response = await axios.get('/api/quiz/coral-pictures-balanced?bleachCount=2&healthCount=4');
         console.log('API Response:', response.data);
         
         // 记录从后端获取的图片信息
@@ -953,7 +953,8 @@ export default {
 
     handleImageError(event) {
       console.warn('图片加载失败:', event.target.src);
-      event.target.src = '/api/placeholder/300/200?text=Image+Load+Failed';
+      // 使用一个简单的SVG作为fallback图片
+      event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y0ZjRmNCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTk5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj7lm77niYfmlKDovb3lpLHotKU8L3RleHQ+PC9zdmc+';
     }
   },
 

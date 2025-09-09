@@ -39,4 +39,15 @@ public class QuizServiceImpl implements QuizService {
         log.info("查询所有可用的来源标题");
         return quizMapper.getAllSourceTitles();
     }
+
+    /**
+     * 从所有来源中随机获取指定数量的题目
+     * @param limit 获取题目数量
+     * @return 随机题目列表
+     */
+    @Override
+    public List<QuizQuestion> getRandomQuestionsFromAllSources(int limit) {
+        log.info("从所有来源中随机获取{}道题目", limit);
+        return quizMapper.getRandomQuestionsFromAllSources(limit);
+    }
 }
