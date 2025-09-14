@@ -70,11 +70,15 @@ public interface TrendMapper {
     List<Coral> getIslandsCoordinatesBatch(List<String> islands);
 
     /**
-     * 查询最新一年的所有岛屿趋势分析元数据
+     * 查询每个岛屿最新年份的趋势分析元数据
      * @return 趋势分析元数据列表
      */
-    @Select("SELECT * FROM trend_analysis_metadata " +
-            "WHERE date = (SELECT MAX(date) FROM trend_analysis_metadata) " +
-            "ORDER BY island")
+    @Select("SELECT t1.* FROM trend_analysis_metadata t1 " +
+            "INNER JOIN (" +
+            "  SELECT island, MAX(date) as max_date " +
+            "  FROM trend_analysis_metadata " +
+            "  GROUP BY island" +
+            ") t2 ON t1.island = t2.island AND t1.date = t2.max_date " +
+            "ORDER BY t1.island")
     List<TrendAnalysisMetadata> getLatestYearAllIslandsMetadata();
 }

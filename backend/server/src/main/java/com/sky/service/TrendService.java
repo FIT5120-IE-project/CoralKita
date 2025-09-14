@@ -47,7 +47,7 @@ public interface TrendService {
     Map<String, Object> getIslandsCoordinates(List<String> islands);
 
     /**
-     * 查询最新一年的所有岛屿趋势分析元数据
+     * 查询每个岛屿最新年份的趋势分析元数据
      * @return 趋势分析元数据列表
      */
     List<TrendAnalysisMetadata> getLatestYearAllIslandsMetadata();

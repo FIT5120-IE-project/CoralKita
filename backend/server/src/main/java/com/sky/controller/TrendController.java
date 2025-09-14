@@ -141,19 +141,19 @@ public class TrendController {
     }
 
     /**
-     * 查询最新一年的所有岛屿趋势分析元数据
+     * 查询每个岛屿最新年份的趋势分析元数据
      * @return 趋势分析元数据列表
      */
     @GetMapping("/metadata/latest")
-    @ApiOperation(value = "查询最新一年的所有岛屿趋势分析元数据")
+    @ApiOperation(value = "查询每个岛屿最新年份的趋势分析元数据")
     public Result<List<TrendAnalysisMetadata>> getLatestYearAllIslandsMetadata() {
-        log.info("查询最新一年的所有岛屿趋势分析元数据");
+        log.info("查询每个岛屿最新年份的趋势分析元数据");
         
         List<TrendAnalysisMetadata> metadataList = trendService.getLatestYearAllIslandsMetadata();
         
         // 检查是否找到数据
         if (metadataList.isEmpty()) {
-            return Result.error("暂无最新年份的趋势分析元数据");
+            return Result.error("暂无趋势分析元数据");
         }
 
         return Result.success(metadataList);

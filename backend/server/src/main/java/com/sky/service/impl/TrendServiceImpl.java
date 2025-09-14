@@ -227,17 +227,17 @@ public class TrendServiceImpl implements TrendService {
     }
 
     /**
-     * 查询最新一年的所有岛屿趋势分析元数据
+     * 查询每个岛屿最新年份的趋势分析元数据
      * @return 趋势分析元数据列表
      */
     @Override
     public List<TrendAnalysisMetadata> getLatestYearAllIslandsMetadata() {
-        log.info("查询最新一年的所有岛屿趋势分析元数据");
+        log.info("查询每个岛屿最新年份的趋势分析元数据");
         
         // 查询数据库
         List<TrendAnalysisMetadata> metadataList = trendMapper.getLatestYearAllIslandsMetadata();
         
-        log.info("查询到{}条最新年份的趋势分析元数据", metadataList.size());
+        log.info("查询到{}条各岛屿最新年份的趋势分析元数据", metadataList.size());
         return metadataList;
     }
 }
