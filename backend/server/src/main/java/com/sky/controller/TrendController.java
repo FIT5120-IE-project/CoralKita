@@ -1,13 +1,12 @@
 package com.sky.controller;
 
-import com.sky.dto.TrendQueryDTO;
 import com.sky.dto.TrendCompareDTO;
 import com.sky.entity.Coral;
+import com.sky.entity.TrendAnalysisMetadata;
 import com.sky.result.Result;
 import com.sky.service.TrendService;
 import com.sky.vo.TrendVO;
 import com.sky.vo.TrendCompareVO;
-import java.util.ArrayList;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -139,6 +138,25 @@ public class TrendController {
         Map<String, Object> coordinatesMap = trendService.getIslandsCoordinates(islands);
         
         return Result.success(coordinatesMap);
+    }
+
+    /**
+     * 查询最新一年的所有岛屿趋势分析元数据
+     * @return 趋势分析元数据列表
+     */
+    @GetMapping("/metadata/latest")
+    @ApiOperation(value = "查询最新一年的所有岛屿趋势分析元数据")
+    public Result<List<TrendAnalysisMetadata>> getLatestYearAllIslandsMetadata() {
+        log.info("查询最新一年的所有岛屿趋势分析元数据");
+        
+        List<TrendAnalysisMetadata> metadataList = trendService.getLatestYearAllIslandsMetadata();
+        
+        // 检查是否找到数据
+        if (metadataList.isEmpty()) {
+            return Result.error("暂无最新年份的趋势分析元数据");
+        }
+
+        return Result.success(metadataList);
     }
 
 }

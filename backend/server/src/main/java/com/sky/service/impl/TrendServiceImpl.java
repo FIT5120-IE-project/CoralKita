@@ -2,6 +2,7 @@ package com.sky.service.impl;
 
 import com.sky.entity.Trend;
 import com.sky.entity.Coral;
+import com.sky.entity.TrendAnalysisMetadata;
 import com.sky.mapper.TrendMapper;
 import com.sky.service.TrendService;
 import com.sky.vo.TrendVO;
@@ -223,5 +224,20 @@ public class TrendServiceImpl implements TrendService {
         
         log.info("成功获取{}个岛屿的坐标信息", coordinatesMap.size());
         return coordinatesMap;
+    }
+
+    /**
+     * 查询最新一年的所有岛屿趋势分析元数据
+     * @return 趋势分析元数据列表
+     */
+    @Override
+    public List<TrendAnalysisMetadata> getLatestYearAllIslandsMetadata() {
+        log.info("查询最新一年的所有岛屿趋势分析元数据");
+        
+        // 查询数据库
+        List<TrendAnalysisMetadata> metadataList = trendMapper.getLatestYearAllIslandsMetadata();
+        
+        log.info("查询到{}条最新年份的趋势分析元数据", metadataList.size());
+        return metadataList;
     }
 }

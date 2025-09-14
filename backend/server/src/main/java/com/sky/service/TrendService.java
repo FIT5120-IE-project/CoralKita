@@ -1,6 +1,7 @@
 package com.sky.service;
 
 import com.sky.entity.Coral;
+import com.sky.entity.TrendAnalysisMetadata;
 import com.sky.vo.TrendVO;
 import com.sky.vo.TrendCompareVO;
 
@@ -44,4 +45,10 @@ public interface TrendService {
      * @return 岛屿坐标信息Map，key为岛屿名称，value为坐标信息
      */
     Map<String, Object> getIslandsCoordinates(List<String> islands);
+
+    /**
+     * 查询最新一年的所有岛屿趋势分析元数据
+     * @return 趋势分析元数据列表
+     */
+    List<TrendAnalysisMetadata> getLatestYearAllIslandsMetadata();
 }

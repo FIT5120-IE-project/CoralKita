@@ -3,7 +3,7 @@ server:
 
 spring:
   profiles:
-    active: ser
+    active: dev
   main:
     allow-circular-references: true
   datasource:
@@ -44,3 +44,10 @@ aliyun:
     accessKeyId: ${ALIYUN_AK}                   # 推荐用环境变量注入
     accessKeySecret: ${ALIYUN_SK}
     bucket: coralkita                      # 默认桶名（也可多桶场景传参覆盖）
+
+# RAG系统配置
+rag:
+  script:
+    path: rag_api.py
+python:
+  executable: uv run python  # 使用uv虚拟环境
