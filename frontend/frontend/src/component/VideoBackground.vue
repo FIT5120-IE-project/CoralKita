@@ -1,21 +1,5 @@
 <template>
-  <div class="video-background-container">
-    <!-- 视频背景 -->
-    <video 
-      ref="backgroundVideo"
-      class="background-video" 
-      autoplay 
-      muted 
-      loop 
-      playsinline
-    >
-      <source :src="videoSrc" type="video/mp4">
-      您的浏览器不支持视频播放。
-    </video>
-    
-    <!-- 遮罩层 -->
-    <div class="video-overlay"></div>
-    
+  <div class="background-container">
     <!-- 主要内容 -->
     <div class="main-content">
       <div class="hero-section">
@@ -38,57 +22,37 @@ export default {
   name: 'VideoBackground',
   data() {
     return {
-      videoSrc: require('../assets/theme.mp4')
+      // 移除视频背景，不再需要videoSrc
     }
   },
   mounted() {
-    // 确保视频自动播放
-    this.$nextTick(() => {
-      const video = this.$refs.backgroundVideo;
-      if (video) {
-        video.play().catch(err => {
-          console.log('视频自动播放失败:', err);
-        });
-      }
-    });
+    console.log('VideoBackground 组件已挂载');
   }
 }
 </script>
 
 <style scoped>
-.video-background-container {
+.background-container {
   position: relative;
   width: 100%;
   height: 100vh;
   overflow: hidden;
-}
-
-.background-video {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  min-width: 100%;
-  min-height: 100%;
-  width: auto;
-  height: auto;
-  transform: translateX(-50%) translateY(-50%);
-  z-index: -2;
-  object-fit: cover;
-}
-
-.video-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
   background: linear-gradient(
     135deg,
-    rgba(0, 100, 150, 0.3) 0%,
-    rgba(0, 50, 100, 0.4) 50%,
-    rgba(0, 30, 80, 0.5) 100%
+    #0077b6 0%,
+    #00a8cc 25%,
+    #0096c7 50%,
+    #0077b6 75%,
+    #023e8a 100%
   );
-  z-index: -1;
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .main-content {

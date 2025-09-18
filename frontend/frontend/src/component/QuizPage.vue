@@ -48,7 +48,7 @@
               >
                 <div class="video-thumbnail">
                   <img 
-                    :src="video.thumbnail || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y0ZjRmNCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTk5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj7lm77niYfmlKDovb3lpLHotKU8L3RleHQ+PC9zdmc+'" 
+                    :src="video.thumbnail || '/api/placeholder/300/200'" 
                     :alt="video.title" 
                     @error="handleThumbnailError"
                     loading="lazy"
@@ -321,10 +321,9 @@ Submit Answer
             </div>
           </div>
           <div v-if="isAuthenticated" class="video-completion">
-            <button class="btn-mark-watched" @click="markVideoWatched">
-              Mark as Watched (+2 Experience)
-            </button>
+            
           </div>
+
         </div>
       </div>
     </div>
@@ -482,7 +481,7 @@ export default {
     async loadSourceTitles() {
       try {
         console.log('Loading source titles...')
-        const response = await axios.get('/api/quiz/sources')
+        const response = await axios.get('/quiz/sources')
         console.log('Source titles response:', response.data)
         if (response.data.code === 1) {
           this.sourceTitles = response.data.data || []
@@ -541,13 +540,13 @@ export default {
     // Handle thumbnail loading error
     handleThumbnailError(event) {
       console.warn('Thumbnail loading failed:', event.target.src)
-      event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y0ZjRmNCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTk5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj7lm77niYfmlKDovb3lpLHotKU8L3RleHQ+PC9zdmc+'
+      event.target.src = '/api/placeholder/300/200?text=Video+Thumbnail'
     },
 
     // Handle image loading error for image classification questions
     handleImageError(event) {
       console.warn('Image loading failed:', event.target.src)
-      event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y0ZjRmNCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTk5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj7lm77niYfmlKDovb3lpLHotKU8L3RleHQ+PC9zdmc+'
+      event.target.src = '/api/placeholder/300/200?text=Image+Placeholder'
     },
 
     // Mark video as watched
@@ -584,33 +583,50 @@ export default {
       this.loadingQuestions = true
       this.errorMessage = ''
       try {
-        const response = await axios.get('/api/quiz/random')
-        console.log('Random questions response:', response.data)
-
-        if (response.data.code === 1 && response.data.data) {
-          console.log('Raw questions data:', response.data.data)
-          // 随机选择10道题
-          const allQuestions = response.data.data.map(q => {
-            return {
-              ...q,
-              options: [
-                { id: 'A', text: q.optionA },
-                { id: 'B', text: q.optionB },
-                { id: 'C', text: q.optionC },
-                { id: 'D', text: q.optionD }
-              ].filter(opt => opt.text && opt.text.trim() !== '')
+        // 首先获取所有可用的来源标题
+        const sourcesResponse = await axios.get('/quiz/sources')
+        console.log('Sources response:', sourcesResponse.data)
+        
+        if (sourcesResponse.data.code === 1 && sourcesResponse.data.data && sourcesResponse.data.data.length > 0) {
+          // 从所有来源中随机选择题目
+          const allQuestions = []
+          
+          // 从每个来源获取题目
+          for (const sourceTitle of sourcesResponse.data.data) {
+            try {
+              const response = await axios.get(`/quiz/questions?sourceTitle=${encodeURIComponent(sourceTitle)}`)
+              console.log(`Questions from ${sourceTitle}:`, response.data)
+              
+              if (response.data.code === 1 && response.data.data) {
+                const questionsFromSource = response.data.data.map(q => {
+                  return {
+                    ...q,
+                    options: [
+                      { id: 'A', text: q.optionA },
+                      { id: 'B', text: q.optionB },
+                      { id: 'C', text: q.optionC },
+                      { id: 'D', text: q.optionD }
+                    ].filter(opt => opt.text && opt.text.trim() !== '')
+                  }
+                })
+                allQuestions.push(...questionsFromSource)
+              }
+            } catch (sourceError) {
+              console.warn(`Failed to load questions from source ${sourceTitle}:`, sourceError)
             }
-          })
+          }
           
-          // 随机选择10道题
-          this.questions = this.getRandomQuestions(allQuestions, 10)
-          
-          console.log('Final questions array (10 random):', this.questions)
-          this.resetQuiz()
-          this.quizStartTime = new Date()
+          if (allQuestions.length > 0) {
+            // 随机选择10道题
+            this.questions = this.getRandomQuestions(allQuestions, 10)
+            console.log('Final questions array (10 random):', this.questions)
+            this.resetQuiz()
+            this.quizStartTime = new Date()
+          } else {
+            throw new Error('No questions found from any source')
+          }
         } else {
-          this.errorMessage = '未能获取到题目数据：' + (response.data.msg || '后端返回错误')
-          console.error('Backend returned error:', response.data)
+          throw new Error('No sources available or sources API failed')
         }
       } catch (error) {
         console.error('加载题目失败:', error)

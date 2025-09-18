@@ -10,7 +10,6 @@
       <div class="nav-right">
         <div class="nav-items">
           <span class="nav-item active">Map</span>
-          <span class="nav-item" @click="goToTrends">Trends</span>
           <span class="nav-item" @click="goToEducation">Education</span>
           <span class="nav-item" @click="goToGovernment">Government</span>
         </div>
@@ -19,7 +18,35 @@
 
     <!-- Main Content -->
     <div class="main-content">
-      <div class="coming-soon-card">
+      <!-- Game Mode Toggle -->
+      <div class="mode-toggle">
+        <button 
+          class="toggle-btn" 
+          :class="{ active: showGame }" 
+          @click="showGame = true"
+        >
+          🎮 Coral Adventure Game
+        </button>
+        <button 
+          class="toggle-btn" 
+          :class="{ active: !showGame }" 
+          @click="showGame = false"
+        >
+          🗺️ Interactive Map
+        </button>
+      </div>
+
+      <!-- Game Content -->
+      <div v-if="showGame" class="game-content">
+        <div class="game-placeholder">
+          <h2>🎮 Coral Adventure Game</h2>
+          <p>Game component has been removed. This feature is currently unavailable.</p>
+          <p>You can switch back to the Interactive Map view using the toggle above.</p>
+        </div>
+      </div>
+
+      <!-- Map Content -->
+      <div v-else class="coming-soon-card">
         <div class="icon-container">
           <div class="map-icon">🗺️</div>
         </div>
@@ -49,18 +76,20 @@
 <script>
 export default {
   name: 'Map',
-      mounted() {
-      // Set global refresh detection timestamp for verification system
-      localStorage.setItem('lastPageRefresh', Date.now().toString());
-    },
+  data() {
+    return {
+      showGame: true // 默认显示游戏
+    }
+  },
+  mounted() {
+    // Set global refresh detection timestamp for verification system
+    localStorage.setItem('lastPageRefresh', Date.now().toString());
+  },
   methods: {
     goToHome() {
       window.location.href = '/';
     },
 
-    goToTrends() {
-      this.$router.push('/trends');
-    },
 
     goToEducation() {
       // 主页面导航，不设置标记，应该显示验证
@@ -79,7 +108,8 @@ export default {
         // Fallback to home page
         this.goToHome();
       }
-    }
+    },
+
   }
 }
 </script>
@@ -177,10 +207,84 @@ export default {
   position: relative;
   z-index: 2;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
   min-height: calc(100vh - 70px);
   padding: 40px 20px;
+}
+
+/* Mode Toggle */
+.mode-toggle {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 5px;
+  border-radius: 25px;
+  backdrop-filter: blur(10px);
+}
+
+.toggle-btn {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  border: none;
+  padding: 12px 24px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.toggle-btn:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.toggle-btn.active {
+  background: linear-gradient(135deg, #01A2EB, #1A1D25);
+  color: white;
+  box-shadow: 0 4px 15px rgba(1, 162, 235, 0.3);
+}
+
+/* Game Content */
+.game-content {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  justify-content: center;
+}
+
+.game-placeholder {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 25px;
+  padding: 50px 40px;
+  text-align: center;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  animation: slideUp 0.6s ease-out;
+}
+
+.game-placeholder h2 {
+  color: #1A1D25;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, #01A2EB, #1A1D25);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.game-placeholder p {
+  color: #555;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 15px;
 }
 
 .coming-soon-card {
@@ -309,6 +413,16 @@ export default {
     gap: 20px;
   }
   
+  .mode-toggle {
+    flex-direction: column;
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .toggle-btn {
+    text-align: center;
+  }
+  
   .coming-soon-card {
     padding: 40px 30px;
     margin: 20px;
@@ -324,6 +438,10 @@ export default {
   
   .features-preview {
     padding: 20px;
+  }
+  
+  .game-content {
+    padding: 0 10px;
   }
 }
 
