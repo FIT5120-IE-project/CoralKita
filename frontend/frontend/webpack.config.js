@@ -64,6 +64,13 @@ module.exports = {
         type: 'asset/resource'
       },
       {
+        test: /\.webp$/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'images/[name][hash][ext][query]'
+        }
+      },
+      {
         test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)$/,
         type: 'asset/resource',
         generator: {
