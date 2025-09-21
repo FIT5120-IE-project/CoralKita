@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  rag:
+    build: .
+    ports:
+      - "5001:5001"
+    environment:
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}  # DeepSeek API密钥
+      - HF_ENDPOINT=https://hf-mirror.com
+      - HF_HUB_ENABLE_HF_TRANSFER=0
+      - HF_HOME=/app/hf_cache
+      - SENTENCE_TRANSFORMERS_HOME=/app/hf_cache
+    volumes:
+      - ./chroma_db:/app/chroma_db
+      - ./hf_cache:/app/hf_cache
+    restart: always
+    # (可选)DNS,避免解析抽风
+    dns:
+      - 223.5.5.5
+      - 119.29.29.29
