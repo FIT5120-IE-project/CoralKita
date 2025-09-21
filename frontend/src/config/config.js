@@ -2,13 +2,13 @@
 const config = {
   // 开发环境
   development: {
-    baseURL: '/api', // 使用相对路径
+    baseURL: 'http://localhost:8080',
     frontendPort: 3001
   },
   // 生产环境
   production: {
-    baseURL: '/api', // 使用相对路径
-    frontendPort: 80
+    baseURL: 'https://iter2.coralkita.site', // 生产环境地址，使用HTTPS，移除末尾斜杠
+    frontendPort: 443
   }
 };
 

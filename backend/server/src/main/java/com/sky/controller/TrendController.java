@@ -159,4 +159,42 @@ public class TrendController {
         return Result.success(metadataList);
     }
 
+    /**
+     * 批量获取所有岛屿的趋势数据
+     * @return 所有岛屿的趋势数据Map，key为岛屿名称，value为趋势数据列表
+     */
+    @GetMapping("/query/all")
+    @ApiOperation(value = "批量获取所有岛屿的趋势数据")
+    public Result<Map<String, List<TrendVO>>> getAllIslandsTrendData() {
+        log.info("批量获取所有岛屿的趋势数据");
+        
+        Map<String, List<TrendVO>> allIslandsTrendData = trendService.getAllIslandsTrendData();
+        
+        // 检查是否找到数据
+        if (allIslandsTrendData.isEmpty()) {
+            return Result.error("暂无趋势数据");
+        }
+
+        return Result.success(allIslandsTrendData);
+    }
+
+    /**
+     * 批量获取所有岛屿的珊瑚数据（bleach数据）
+     * @return 所有岛屿的珊瑚数据Map，key为岛屿名称，value为珊瑚数据列表
+     */
+    @GetMapping("/bleach/all")
+    @ApiOperation(value = "批量获取所有岛屿的珊瑚数据")
+    public Result<Map<String, List<Coral>>> getAllIslandsCoralData() {
+        log.info("批量获取所有岛屿的珊瑚数据");
+        
+        Map<String, List<Coral>> allIslandsCoralData = trendService.getAllIslandsCoralData();
+        
+        // 检查是否找到数据
+        if (allIslandsCoralData.isEmpty()) {
+            return Result.error("暂无珊瑚数据");
+        }
+
+        return Result.success(allIslandsCoralData);
+    }
+
 }

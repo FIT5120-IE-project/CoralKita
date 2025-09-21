@@ -1,18 +1,45 @@
 <template>
   <div class="education-container">
+    <!-- 背景图片加载占位符 -->
+    <div class="bg-placeholder" v-if="!backgroundLoaded">
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill" :style="{ width: loadingProgress + '%' }"></div>
+        </div>
+        <p class="loading-text">{{ loadingText }}</p>
+      </div>
+    </div>
+    
     <!-- Top Navigation -->
     <div class="top-nav">
       <div class="nav-left">
         <!-- Left side logo -->
-        <img src="@/assets/icon.png" alt="logo" class="nav-logo" @click="goToHome" />
+        <img :src="imageUrls.appIcon" alt="logo" class="nav-logo" @click="goToHome" />
         <h1 class="logo" @click="goToHome">CoralKita</h1>
       </div>
       <div class="nav-right">
         <div class="nav-items">
-          <span class="nav-item" @click="goToMap">Map</span>
-          <span class="nav-item" @click="goToTrends">Trends</span>
+          <div class="nav-item-wrapper">
+            <span class="nav-item map-rec-item" @click="goToMap">
+              <span class="nav-text-line">Map &</span>
+              <span class="nav-text-line">Recommendation</span>
+            </span>
+          </div>
+          <div class="nav-item-dropdown" @mouseenter="showTravelDropdown = true" @mouseleave="showTravelDropdown = false">
+            <span class="nav-item">Island</span>
+            <div class="dropdown-menu" v-show="showTravelDropdown">
+              <div 
+                v-for="island in travelIslands" 
+                :key="island"
+                class="dropdown-item"
+                @click="goToIslandDetail(island)"
+              >
+                <span>{{ island }}</span>
+              </div>
+            </div>
+          </div>
           <span class="nav-item active">Education</span>
-          <span class="nav-item" @click="goToGovernment">Government</span>
+          <span class="nav-item" @click="goToAITools">AI Classification</span>
         </div>
       </div>
     </div>
@@ -21,62 +48,100 @@
     <div class="education-header">
       <h1>Education & Responsible Tourism Hub</h1>
       <p>Learn about coral reefs and become a responsible traveler</p>
+      <button class="verification-game-btn" @click="startVerificationGame">
+        🎮 Wanna Try a Game?
+      </button>
     </div>
 
     <!-- Main Content Area -->
     <div class="education-content">
-      <!-- Learning Interface -->
-      <div class="learning-interface">
-        <!-- Welcome Info Card -->
-        <div class="user-info-card">
-          <div class="user-avatar">
-            <img src="@/assets/icon.png" alt="CoralKita Avatar" />
+      <!-- Video Learning Section -->
+      <div class="video-learning-section">
+        <h2>Video Learning</h2>
+        <div class="video-grid-2x2">
+          <div 
+            v-for="(video, index) in localVideos" 
+            :key="index" 
+            class="video-item"
+            @click="playVideo(video)"
+          >
+            <div class="video-thumbnail">
+              <img :src="video.thumbnail" :alt="video.title" />
+              <div class="play-overlay">
+                <div class="play-button">
+                  <span class="play-icon">▶</span>
           </div>
-          <div class="user-details">
-            <div>
-              <h3>Welcome to CoralKita Knowledge Q&A Interface</h3>
-              <p>Explore coral reef knowledge, learn marine conservation, and participate in sustainable tourism</p>
               </div>
           </div>
+            <div class="video-title">{{ video.title }}</div>
         </div>
-        
-
-        
-        
-
-
-        <!-- Features Section -->
-        <div class="features-grid">
-                    <!-- Coral Reef Learning Video -->
-          <div class="feature-card quiz-card">
-            <div class="feature-icon">
-              <img src="@/assets/icons/icon_video.png" alt="Video Icon" />
             </div>
-            <h3>Coral Reef Learning Video</h3>
-            <p>Test your knowledge about coral reefs and learn marine ecology</p>
-            <button class="btn-feature" @click="goToQuiz">Start Quiz</button>
-          </div>
+      </div>
 
-                      <!-- Travel Checklist -->
-            <div class="feature-card progress-card">
-              <div class="feature-icon">
-                <img src="@/assets/icons/icon_list.png" alt="List Icon" />
-              </div>
-              <h3>Travel Checklist</h3>
-              <p>Help users clearly understand and complete the key steps of responsible travel</p>
-              <button class="btn-feature" @click="openTravelChecklist">Fill Checklist</button>
-            </div>
+      <!-- Coral Reefs Numbers Section -->
+      <div class="coral-numbers-section">
+        <h2 class="numbers-title" id="reef-title">CORAL REEFS IN NUMBERS</h2>
+
+        <div class="numbers-row">
+          <article class="numbers-card">
+            <div class="numbers-stat"><span class="numbers-count" data-to="3">0</span></div>
+            <div class="numbers-headline">main types of coral reefs</div>
+            <p class="numbers-desc">Fringing reefs hug coastlines, barrier reefs sit behind lagoons, and atolls form rings in the open ocean. Knowing their formation helps us understand why certain reefs thrive in specific places.</p>
+            <a class="numbers-cta" href="https://www.youtube.com/watch?v=mPA9Ze16lGw" target="_blank">Learn More</a>
+          </article>
+          <article class="numbers-card">
+            <div class="numbers-stat"><span class="numbers-count" data-to="3.4" data-decimals="1">0</span><span class="numbers-suffix">billion</span></div>
+            <div class="numbers-headline">RM annual tourism value on Tioman</div>
+            <p class="numbers-desc">Healthy reefs attract divers, protect coasts, and support fisheries—driving Malaysia's tourism economy.</p>
+            <a class="numbers-cta" href="https://www.youtube.com/watch?v=3JfiN6s85p0" target="_blank">Learn More</a>
+          </article>
+        </div>
+
+        <div class="numbers-row">
+          <article class="numbers-card">
+            <div class="numbers-stat"><span class="numbers-fraction"><sup>1</sup>/<sub>4</sub></span></div>
+            <div class="numbers-headline">marine species depend on reefs</div>
+            <p class="numbers-desc">Reefs cover less than 1% of the ocean yet support 25% of marine life, protect coasts, feed communities, and hold potential medical cures.</p>
+            <a class="numbers-cta" href="https://www.youtube.com/watch?v=bHO-z-1xJDY" target="_blank">Learn More</a>
+          </article>
+          <article class="numbers-card">
+            <div class="numbers-stat"><span class="numbers-count" data-to="4600">0</span></div>
+            <div class="numbers-headline">bomb fishing incidents</div>
+            <p class="numbers-desc">AI helps protect reefs—from tracking fish "songs" that signal recovery to detecting illegal blast fishing across vast waters.</p>
+            <a class="numbers-cta" href="https://www.youtube.com/watch?v=GnB8OoT2UAE" target="_blank">Learn More</a>
+          </article>
+        </div>
+
+
+        <div class="numbers-row">
+          <article class="numbers-card">
+            <div class="numbers-stat"><span class="numbers-count" data-to="4000">0</span></div>
+            <div class="numbers-headline">fish species on a single reef</div>
+            <p class="numbers-desc">Like underwater cities, reefs teem with life—from tiny reef fish to apex predators—making them highly productive ecosystems.</p>
+            <a class="numbers-cta" href="https://www.youtube.com/watch?v=14ot4DrXdds&t=383s" target="_blank">Learn More</a>
+          </article>
+          <article class="numbers-card">
+            <div class="numbers-stat"><span class="numbers-count" data-to="30000">0</span><span class="numbers-suffix">+</span></div>
+            <div class="numbers-headline">corals outplanted on the GBR</div>
+            <p class="numbers-desc">The Coral Nurture Programme grows fragments in nurseries and restores reefs—science and tourism working together.</p>
+            <a class="numbers-cta" href="https://www.youtube.com/watch?v=pgwcPlX5Kzo&t=104s" target="_blank">Learn More</a>
+          </article>
         </div>
       </div>
     </div>
 
-    <!-- 验证界面 -->
-    <div v-if="showVerification" class="verification-overlay">
-      <div class="verification-modal">
-        <div class="verification-header">
-          <h2>Coral Reef Health Verification</h2>
-          <p>Please identify whether the coral reefs in the following 6 images are healthy</p>
-    </div>
+    <!-- Verification Interface -->
+    <div v-if="showVerification" class="verification-overlay" 
+         :class="{ 'clickable-overlay': verificationCompleted && verificationResult }"
+         @click="handleOverlayClick">
+        <div class="verification-modal" @click.stop>
+          <div class="verification-header">
+            <button class="btn-close-verification" @click="closeVerification">
+              ×
+            </button>
+            <h2>Coral Reef Health Verification</h2>
+            <p>Please identify whether the coral reefs in the following 6 images are healthy</p>
+          </div>
     
         <div class="verification-content">
           <div v-if="loadingVerification" class="loading-verification">
@@ -135,6 +200,7 @@
             </div>
             <h3>{{ verificationResult.success ? 'Verification Successful!' : 'Verification Failed' }}</h3>
             <p>{{ verificationResult.message }}</p>
+            <div class="click-to-close-hint">Click anywhere to continue</div>
             </div>
             </div>
             
@@ -149,404 +215,369 @@
     
 
 
-    <!-- 测验界面 -->
-    <div v-if="showQuiz" class="quiz-overlay">
-      <div class="quiz-modal">
-        <div class="quiz-header">
-          <h2>Coral Reef Knowledge Quiz</h2>
-          <button class="btn-close-quiz" @click="closeQuiz">×</button>
-        </div>
-        
-        <div class="quiz-content">
-          <!-- 视频学习区域 -->
-          <div class="video-section">
-            <h3>Video Learning</h3>
-            <div class="video-carousel">
-              <button class="nav-arrow left" @click="prevVideo" :disabled="currentVideoIndex === 0">
-                &#10094;
-              </button>
-              
-              <div class="video-container">
-                <div v-if="loadingVideo" class="loading-placeholder">
-                  <div class="loading-spinner"></div>
-                  <p>Loading videos...</p>
-                </div>
-                <div v-else-if="videoSources.length === 0" class="no-videos">
-                  <p>No video resources available</p>
-                </div>
-                <div v-else class="video-grid">
-                  <div 
-                    v-for="(video, index) in visibleVideos" 
-                    :key="video.id" 
-                    class="video-item"
-                    @click="playVideo(video.id)"
-                  >
-                    <div class="video-thumbnail">
-                      <img :src="video.thumbnail" :alt="video.title" />
-                      <div class="play-overlay">
-                        <div class="play-button">
-                          <span class="play-icon">▶</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="video-title">{{ video.title }}</div>
-                  </div>
-                </div>
-              </div>
-              
-              <button class="nav-arrow right" @click="nextVideo" :disabled="currentVideoIndex >= videoSources.length - 4">
-                &#10095;
-              </button>
-            </div>
-            
-            <!-- 视频指示器 -->
-            <div class="video-indicators">
-              <span 
-                v-for="(video, index) in videoSources" 
-                :key="index"
-                class="indicator"
-                :class="{ active: index >= currentVideoIndex && index < currentVideoIndex + 4 }"
-                @click="goToVideo(index)"
-              ></span>
-            </div>
-          </div>
 
-          <!-- 测验题目区域 -->
-          <div class="quiz-section">
-            <div class="quiz-progress">
-              <span class="progress-text">Question {{ currentQuestionIndex + 1 }} / {{ questions.length }}</span>
-              <div class="progress-bar">
-                <div class="progress-fill" :style="{ width: progressPercentage + '%' }"></div>
-              </div>
-            </div>
-            
-            <div class="question-container">
-              <div v-if="loadingQuestions" class="loading-placeholder">
-                <div class="loading-spinner"></div>
-                <p>Loading questions...</p>
-              </div>
-              <div v-else-if="questions.length === 0" class="no-questions">
-                <p>No questions available</p>
-              </div>
-              <div v-else-if="showAnswerResult" class="answer-result">
-                <div class="result-icon" :class="isAnswerCorrect ? 'correct' : 'incorrect'">
-                  {{ isAnswerCorrect ? '✓' : '✗' }}
-                </div>
-                <h3 class="result-text">{{ isAnswerCorrect ? 'Correct Answer!' : 'Wrong Answer!' }}</h3>
-                <p class="result-explanation" v-if="!isAnswerCorrect">
-                  Correct Answer: {{ getCorrectAnswerText() }}
-                </p>
-                <button class="btn-next-question" @click="nextQuestion">
-                  {{ currentQuestionIndex < questions.length - 1 ? 'Next Question' : 'Complete Quiz' }}
-                </button>
-              </div>
-              <div v-else class="question-display">
-                <h3 class="question-text">{{ currentQuestion.question }}</h3>
-                <div class="options">
-                  <label 
-                    v-for="(option, optIndex) in currentQuestion.options" 
-                    :key="optIndex" 
-                    class="option"
-                    :class="{ selected: selectedOption === option.id }"
-                  >
-                    <input 
-                      type="radio" 
-                      :name="'currentQuestion'" 
-                      :value="option.id" 
-                      @change="selectOption(option.id)"
-                    />
-                    <span class="option-text">{{ option.text }}</span>
-                  </label>
-                </div>
-                
-                <div class="question-actions">
-                  <button 
-                    class="btn-submit-answer" 
-                    @click="submitAnswer"
-                    :disabled="selectedOption === null"
-                  >
-                    Submit Answer
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+    <!-- Footer -->
+    <footer class="main-footer">
+      <div class="footer-content">
+        © 2025 CoralKita
+        <span class="footer-links">
+          <a href="mailto:coralkita.service@gmail.com">Contact Us</a>
+        </span>
       </div>
-    </div>
+    </footer>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 import axios from 'axios'
+import ossService from '@/utils/ossService.js'
 
 export default {
   name: 'Education',
   data() {
     return {
-      // OSS背景图片URL
-      bgLoginUrl: '',
-      // 验证系统相关
-      showVerification: false, // 控制验证界面的显示 - 只在页面刷新时显示
-      verificationImages: [], // 验证图片列表
-      loadingVerification: false, // 加载验证图片状态
-      selectedImages: [], // 用户选择的图片ID列表（最多4个）
-      maxSelections: 4, // 最大选择次数
-      verificationCompleted: false, // 验证是否完成
-      verificationResult: null, // 验证结果
+      backgroundLoaded: false, // 背景图片加载状态
+      loadingProgress: 0, // 加载进度
+      loadingText: 'Loading map data...', // 加载文本
+      // Travel dropdown related
+      showTravelDropdown: false,
+      currentLanguage: 'en',
+      travelIslands: ['Mertang', 'P Singa', 'Sipadan', 'Pulau Lima', 'Seri Buat'],
       
-      // 原有的quiz相关数据（现在主要用于测验模态框）
-      showQuiz: false, // 控制测验模态框的显示
-      videoSources: [], // 视频源列表
-      loadingVideo: false, // 加载视频源时的状态
-      questions: [], // 测验题目
-      loadingQuestions: false, // 加载题目时的状态
-      selectedOptions: [], // 用户选择的选项
-      quizScore: 0, // 测验得分
-      quizCompleted: false, // 测验是否完成
-      currentVideoIndex: 0, // 当前播放的视频索引
-      currentQuestionIndex: 0, // 当前显示的题目索引
-      selectedOption: null, // 当前选中的选项
-      showAnswerResult: false, // 是否显示答案结果
-      isAnswerCorrect: false, // 答案是否正确
-      answerExplanation: '', // 答案解释
-      quizStartTime: null, // 测验开始时间
-      quizEndTime: null, // 测验结束时间
-      quizDuration: 0 // 测验持续时间 (秒)
+      // Verification system related
+      showVerification: false, // Control verification interface display - only show on page refresh
+      verificationImages: [], // Verification image list
+      loadingVerification: false, // Loading verification images status
+      selectedImages: [], // User selected image ID list (maximum 4)
+      maxSelections: 4, // Maximum selection times
+      verificationCompleted: false, // Whether verification is completed
+      verificationResult: null, // Verification result
+      
+      // OSS图片URL
+      backgroundImageUrl: null, // 背景图片URL
+      imageUrls: {
+        appIcon: '',
+        video1Thumbnail: '',
+        video1Video: '',
+        video2Thumbnail: '',
+        video2Video: '',
+        video3Thumbnail: '',
+        video3Video: '',
+        video4Thumbnail: '',
+        video4Video: ''
+      },
+      // Local video data
+      localVideos: [
+        {
+          title: "Why are coral reefs so important",
+          thumbnail: 'http://static.coralkita.site/assets/Why are coral reefs so important.jpg',
+          video: 'http://static.coralkita.site/assets/Why are coral reefs so important.mp4'
+        },
+        {
+          title: "What Would Happen If All The Coral Reefs Died Off",
+          thumbnail: 'http://static.coralkita.site/assets/What Would Happen If All The Coral Reefs Died Off.jpg',
+          video: 'http://static.coralkita.site/assets/What Would Happen If All The Coral Reefs Died Off.mp4'
+        },
+        {
+          title: "Coral Reefs Are Dying. Here's How We Can Save Them",
+          thumbnail: 'http://static.coralkita.site/assets/Coral Reefs Are Dying. Here\'s How We Can Save Them.jpg',
+          video: 'http://static.coralkita.site/assets/Coral Reefs Are Dying. Here\'s How We Can Save Them.mp4'
+        },
+        {
+          title: "Coral Bleaching Explained: The Story of Frank the Coral",
+          thumbnail: 'http://static.coralkita.site/assets/Coral Bleaching Explained The Story of Frank the Coral.jpg',
+          video: 'http://static.coralkita.site/assets/Coral Bleaching Explained The Story of Frank the Coral.mp4'
+        }
+      ]
     }
   },
   computed: {
     ...mapGetters(['isAuthenticated', 'currentUser']),
     
-    // 获取当前可见的视频（显示4个）
-    visibleVideos() {
-      const startIndex = this.currentVideoIndex;
-      const endIndex = Math.min(this.videoSources.length, startIndex + 4);
-      return this.videoSources.slice(startIndex, endIndex);
-    },
     
-    // 当前显示的题目
-    currentQuestion() {
-      return this.questions[this.currentQuestionIndex] || null;
-    },
-    
-    // 进度百分比
-    progressPercentage() {
-      if (this.questions.length === 0) return 0;
-      return ((this.currentQuestionIndex + 1) / this.questions.length) * 100;
-    }
   },
   methods: {
-    
-    goToQuiz() {
-      // Navigate to independent quiz page
-      localStorage.setItem('hasNavigatedToEducation', 'true');
-      this.$router.push('/quiz');
+    /**
+     * 加载背景图片
+     */
+    async loadBackgroundImage() {
+      try {
+        this.backgroundImageUrl = await ossService.getFileUrl('bg_login5.webp')
+        // 设置CSS变量
+        document.documentElement.style.setProperty('--bg-image', `url(${this.backgroundImageUrl})`)
+      } catch (error) {
+        console.warn('加载背景图片失败，使用默认图片:', error)
+        this.backgroundImageUrl = null
+      }
+    },
+
+    /**
+     * 预加载背景图片
+     */
+    preloadBackgroundImage() {
+      // 创建高优先级预加载链接元素
+      const preloadLink = document.createElement('link');
+      preloadLink.rel = 'preload';
+      preloadLink.as = 'image';
+      preloadLink.href = this.backgroundImageUrl;
+      preloadLink.fetchPriority = 'high'; // 高优先级
+      
+      // 添加到head中
+      document.head.appendChild(preloadLink);
+      
+      // 模拟加载进度
+      this.simulateLoadingProgress();
+      
+      // 预加载图片到浏览器缓存
+      const img = new Image();
+      img.src = this.backgroundImageUrl;
+      img.onload = () => {
+        console.log('Education background image preloaded to cache');
+        this.loadingProgress = 100;
+        this.loadingText = 'Map data loaded successfully!';
+        setTimeout(() => {
+          this.backgroundLoaded = true;
+        }, 500);
+      };
+      img.onerror = () => {
+        console.warn('Failed to preload Education background image');
+        this.loadingProgress = 100;
+        this.loadingText = 'Using backup data...';
+        setTimeout(() => {
+          this.backgroundLoaded = true; // 即使失败也隐藏占位符
+        }, 500);
+      };
+      
+      console.log('Education background image preload started');
+    },
+
+    /**
+     * 模拟加载进度
+     */
+    simulateLoadingProgress() {
+      const progressSteps = [
+        { progress: 20, text: 'Connecting to map server...' },
+        { progress: 40, text: 'Loading map data...' },
+        { progress: 60, text: 'Locating island information...' },
+        { progress: 80, text: 'Generating interactive map...' },
+        { progress: 95, text: 'Almost ready...' }
+      ];
+
+      let currentStep = 0;
+      const updateProgress = () => {
+        if (currentStep < progressSteps.length) {
+          const step = progressSteps[currentStep];
+          this.loadingProgress = step.progress;
+          this.loadingText = step.text;
+          currentStep++;
+          setTimeout(updateProgress, 800);
+        }
+      };
+
+      updateProgress();
+    },
+
+    /**
+     * 加载所有OSS图片URL
+     */
+    async loadOssImages() {
+      try {
+        console.log('开始加载OSS图片...')
+        
+        // 并行加载所有图片URL
+        const [
+          appIcon,
+          video1Thumbnail,
+          video1Video,
+          video2Thumbnail,
+          video2Video,
+          video3Thumbnail,
+          video3Video,
+          video4Thumbnail,
+          video4Video
+        ] = await Promise.all([
+          ossService.getSignedUrl('assets/icon.png'),
+          ossService.getSignedUrl('assets/Why are coral reefs so important.jpg'),
+          ossService.getSignedUrl('assets/Why are coral reefs so important.mp4'),
+          ossService.getSignedUrl('assets/What Would Happen If All The Coral Reefs Died Off.jpg'),
+          ossService.getSignedUrl('assets/What Would Happen If All The Coral Reefs Died Off.mp4'),
+          ossService.getSignedUrl('assets/Coral Reefs Are Dying. Here\'s How We Can Save Them.jpg'),
+          ossService.getSignedUrl('assets/Coral Reefs Are Dying. Here\'s How We Can Save Them.mp4'),
+          ossService.getSignedUrl('assets/Coral Bleaching Explained The Story of Frank the Coral.jpg'),
+          ossService.getSignedUrl('assets/Coral Bleaching Explained The Story of Frank the Coral.mp4')
+        ])
+
+        // 更新图片URL
+        this.imageUrls = {
+          appIcon,
+          video1Thumbnail,
+          video1Video,
+          video2Thumbnail,
+          video2Video,
+          video3Thumbnail,
+          video3Video,
+          video4Thumbnail,
+          video4Video
+        }
+
+        // 更新视频数据
+        this.updateVideoData()
+
+        console.log('OSS图片加载完成:', this.imageUrls)
+      } catch (error) {
+        console.error('加载OSS图片失败:', error)
+        // 如果OSS加载失败，使用本地图片作为备用
+        this.loadFallbackImages()
+      }
+    },
+
+    /**
+     * 更新视频数据
+     */
+    updateVideoData() {
+      this.localVideos = [
+        {
+          title: "Why are coral reefs so important",
+          thumbnail: this.imageUrls.video1Thumbnail,
+          video: this.imageUrls.video1Video
+        },
+        {
+          title: "What Would Happen If All The Coral Reefs Died Off",
+          thumbnail: this.imageUrls.video2Thumbnail,
+          video: this.imageUrls.video2Video
+        },
+        {
+          title: "Coral Reefs Are Dying. Here's How We Can Save Them",
+          thumbnail: this.imageUrls.video3Thumbnail,
+          video: this.imageUrls.video3Video
+        },
+        {
+          title: "Coral Bleaching Explained: The Story of Frank the Coral",
+          thumbnail: this.imageUrls.video4Thumbnail,
+          video: this.imageUrls.video4Video
+        }
+      ]
+    },
+
+    /**
+     * 加载备用本地图片
+     */
+    loadFallbackImages() {
+      console.log('使用本地图片作为备用...')
+      this.imageUrls = {
+        appIcon: 'http://static.coralkita.site/assets/icon.png',
+        video1Thumbnail: 'http://static.coralkita.site/assets/Why are coral reefs so important.jpg',
+        video1Video: 'http://static.coralkita.site/assets/Why are coral reefs so important.mp4',
+        video2Thumbnail: 'http://static.coralkita.site/assets/What Would Happen If All The Coral Reefs Died Off.jpg',
+        video2Video: 'http://static.coralkita.site/assets/What Would Happen If All The Coral Reefs Died Off.mp4',
+        video3Thumbnail: 'http://static.coralkita.site/assets/Coral Reefs Are Dying. Here\'s How We Can Save Them.jpg',
+        video3Video: 'http://static.coralkita.site/assets/Coral Reefs Are Dying. Here\'s How We Can Save Them.mp4',
+        video4Thumbnail: 'http://static.coralkita.site/assets/Coral Bleaching Explained The Story of Frank the Coral.jpg',
+        video4Video: 'http://static.coralkita.site/assets/Coral Bleaching Explained The Story of Frank the Coral.mp4'
+      }
+      
+      // 更新视频数据
+      this.updateVideoData()
+    },
+
+    // Travel navigation methods
+    goToIslandDetail(islandName) {
+      console.log('导航到岛屿详情页面:', islandName);
+      this.showTravelDropdown = false;
+      
+      this.$nextTick(() => {
+        this.$router.push(`/travel/${encodeURIComponent(islandName)}`).catch(err => {
+          if (err.name !== 'NavigationDuplicated') {
+            console.error('Navigation error:', err);
+          }
+        });
+      });
     },
     
     
 
-    openTravelChecklist() {
-      localStorage.setItem('hasNavigatedToEducation', 'true');
-      this.$router.push('/travel-checklist');
-    },
 
     // Navigation methods
     goToHome() {
-      // Navigate to home page - 页面刷新，不设置localStorage
+      // Navigate to home page - page refresh, don't set localStorage
       window.location.href = '/';
     },
 
     goToMap() {
       console.log('Navigate to Map page');
-      localStorage.setItem('hasNavigatedToEducation', 'true');
-      this.$router.push('/map');
+      this.$router.push('/map').catch(err => {
+        // Ignore navigation duplicated error
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
     },
 
-    goToTrends() {
-      console.log('Navigate to Trends page');
-      localStorage.setItem('hasNavigatedToEducation', 'true');
-      this.$router.push('/trends');
-    },
 
     goToGovernment() {
       console.log('Navigate to Government page');
-      localStorage.setItem('hasNavigatedToEducation', 'true');
-      this.$router.push('/government');
+      this.$router.push('/government').catch(err => {
+        // Ignore navigation duplicated error
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
     },
 
-    async loadVideoSources() {
-      this.loadingVideo = true;
-      try {
-        // 预定义的视频文件信息
-        const videoFileNames = [
-          'Why are coral reefs so important50c1f8bcc09bfb8f4181.mp4',
-          'What Would Happen If All The Coral Reefs Died Off5371572ca8ef3ac0171a.mp4',
-          'Coral Reefs Are Dying. Here\'s How We Can Save Them9fe434e8b3ea27e37ea3.mp4',
-          'Coral Bleaching Explained The Story of Frank the Coral2db38d376a97273ad5ad.mp4',
-          'Coral Reefs 101 National Geographicf92af9ce5664eead7dec.mp4'
-        ]
-        
-        const videoTitles = [
-          'Why are coral reefs so important?',
-          'What Would Happen If All The Coral Reefs Died Off?',
-          'Coral Reefs Are Dying. Here\'s How We Can Save Them',
-          'Coral Bleaching Explained: The Story of Frank the Coral',
-          'Coral Reefs 101 | National Geographic'
-        ]
-        
-        const videoDescriptions = [
-          '了解珊瑚礁的重要性和生态价值',
-          '探索珊瑚礁消失对海洋生态的影响',
-          '学习如何拯救濒危的珊瑚礁',
-          '了解珊瑚白化现象和Frank的故事',
-          '国家地理频道珊瑚礁基础知识'
-        ]
-        
-        // 从OSS获取视频签名URL
-        const videoSources = []
-        for (let i = 0; i < videoFileNames.length; i++) {
-          try {
-            const response = await axios.get('https://defiant-marcelline-baihanrui-b9820c9e.koyeb.app/oss/video/url', {
-          params: {
-            videoFileName: videoFileNames[i],
-            expireSeconds: 7200 // 2小时过期
-          }
-        });
-            
-            
-            if (response.data.code === 1) {
-              videoSources.push({
-                id: i + 1,
-                title: videoTitles[i],
-                thumbnail: 'https://via.placeholder.com/300x200/4facfe/ffffff?text=珊瑚礁视频' + (i + 1),
-                description: videoDescriptions[i],
-                videoUrl: response.data.data // OSS签名URL
-              })
-            } else {
-              console.error(`Failed to get video URL for ${videoFileNames[i]}:`, data.msg)
-            }
-          } catch (error) {
-            console.error(`Error getting video URL for ${videoFileNames[i]}:`, error)
-          }
+    goToAITools() {
+      console.log('Navigate to AI Tools page');
+      this.$router.push('/ai-tools').catch(err => {
+        // Ignore navigation duplicated error
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
         }
-        
-        this.videoSources = videoSources
-        
-        if (videoSources.length === 0) {
-          // 如果OSS获取失败，使用默认的示例视频源
-          this.videoSources = [
-            {
-              id: 1,
-              title: '珊瑚礁生态系统介绍',
-              thumbnail: 'https://via.placeholder.com/300x200/4facfe/ffffff?text=珊瑚礁视频1',
-              description: '了解珊瑚礁的基本构成和生态功能'
-            },
-            {
-              id: 2,
-              title: '珊瑚礁保护方法',
-              thumbnail: 'https://via.placeholder.com/300x200/00f2fe/ffffff?text=珊瑚礁视频2',
-              description: '学习如何保护珊瑚礁生态系统'
-            },
-            {
-              id: 3,
-              title: '海洋生物多样性',
-              thumbnail: 'https://via.placeholder.com/300x200/667eea/ffffff?text=珊瑚礁视频3',
-              description: '探索珊瑚礁中的海洋生物'
-            },
-            {
-              id: 4,
-              title: '气候变化对珊瑚礁的影响',
-              thumbnail: 'https://via.placeholder.com/300x200/764ba2/ffffff?text=珊瑚礁视频4',
-              description: '了解气候变化如何影响珊瑚礁'
-            },
-            {
-              id: 5,
-              title: '可持续旅游实践',
-              thumbnail: 'https://via.placeholder.com/300x200/4facfe/ffffff?text=珊瑚礁视频5',
-              description: '学习如何在旅游中保护珊瑚礁'
-            }
-          ];
-        }
-      } catch (error) {
-        console.error('Error loading videos:', error);
-        // 如果API失败，使用默认的示例视频源
-        this.videoSources = [
-          {
-            id: 1,
-            title: '珊瑚礁生态系统介绍',
-            thumbnail: 'https://via.placeholder.com/300x200/4facfe/ffffff?text=珊瑚礁视频1',
-            description: '了解珊瑚礁的基本构成和生态功能'
-          },
-          {
-            id: 2,
-            title: '珊瑚礁保护方法',
-            thumbnail: 'https://via.placeholder.com/300x200/00f2fe/ffffff?text=珊瑚礁视频2',
-            description: '学习如何保护珊瑚礁生态系统'
-          },
-          {
-            id: 3,
-            title: '海洋生物多样性',
-            thumbnail: 'https://via.placeholder.com/300x200/667eea/ffffff?text=珊瑚礁视频3',
-            description: '探索珊瑚礁中的海洋生物'
-          },
-          {
-            id: 4,
-            title: '气候变化对珊瑚礁的影响',
-            thumbnail: 'https://via.placeholder.com/300x200/764ba2/ffffff?text=珊瑚礁视频4',
-            description: '了解气候变化如何影响珊瑚礁'
-          },
-          {
-            id: 5,
-            title: '可持续旅游实践',
-            thumbnail: 'https://via.placeholder.com/300x200/4facfe/ffffff?text=珊瑚礁视频5',
-            description: '学习如何在旅游中保护珊瑚礁'
-          }
-        ];
-      } finally {
-        this.loadingVideo = false;
-      }
+      });
     },
+
+    toggleLanguage() {
+      this.currentLanguage = this.currentLanguage === 'en' ? 'zh' : 'en'
+    },
+
 
     async loadQuestions() {
       this.loadingQuestions = true;
       try {
-        // 使用后端API获取测验题目
+        // Use backend API to get quiz questions
         const response = await fetch('/quiz/questions');
         if (response.ok) {
           const data = await response.json();
           if (data.code === 1) {
-            // 随机选择5个题目
+            // Randomly select 5 questions
             const allQuestions = data.data;
             this.questions = this.getRandomQuestions(allQuestions, 5);
             this.selectedOptions = new Array(this.questions.length).fill(null);
           } else {
-            throw new Error(data.msg || '获取题目失败');
+            throw new Error(data.msg || 'Failed to get questions');
           }
         } else {
-          throw new Error('获取题目失败');
+          throw new Error('Failed to get questions');
         }
       } catch (error) {
         console.error('Error loading quiz questions:', error);
-        // 如果API失败，使用默认的示例题目
+        // If API fails, use default example questions
         this.questions = [
           {
             id: 1,
-            question: '珊瑚礁主要由什么构成？',
+            question: 'What are coral reefs mainly composed of?',
             options: [
-              { id: 1, text: '珊瑚虫的骨骼', isCorrect: true },
-              { id: 2, text: '海藻', isCorrect: false },
-              { id: 3, text: '贝壳', isCorrect: false },
-              { id: 4, text: '海星', isCorrect: false }
+              { id: 1, text: 'Coral polyp skeletons', isCorrect: true },
+              { id: 2, text: 'Seaweed', isCorrect: false },
+              { id: 3, text: 'Shells', isCorrect: false },
+              { id: 4, text: 'Starfish', isCorrect: false }
             ]
           },
           {
             id: 2,
-            question: '以下哪种行为对珊瑚礁最有害？',
+            question: 'Which of the following behaviors is most harmful to coral reefs?',
             options: [
-              { id: 1, text: '触摸珊瑚', isCorrect: false },
-              { id: 2, text: '使用防晒霜', isCorrect: true },
+              { id: 1, text: 'Touching corals', isCorrect: false },
+              { id: 2, text: 'Using sunscreen', isCorrect: true },
               { id: 3, text: '观察鱼类', isCorrect: false },
               { id: 4, text: '拍照留念', isCorrect: false }
             ]
@@ -563,17 +594,17 @@ export default {
           },
           {
             id: 4,
-            question: '珊瑚礁的主要威胁不包括？',
+            question: 'Which of the following is NOT a major threat to coral reefs?',
             options: [
-              { id: 1, text: '海洋酸化', isCorrect: false },
-              { id: 2, text: '过度捕捞', isCorrect: false },
-              { id: 3, text: '海豚数量增加', isCorrect: true },
-              { id: 4, text: '塑料污染', isCorrect: false }
+              { id: 1, text: 'Ocean acidification', isCorrect: false },
+              { id: 2, text: 'Overfishing', isCorrect: false },
+              { id: 3, text: 'Increase in dolphin population', isCorrect: true },
+              { id: 4, text: 'Plastic pollution', isCorrect: false }
             ]
           },
           {
             id: 5,
-            question: '保护珊瑚礁最有效的方法是？',
+            question: 'What is the most effective way to protect coral reefs?',
             options: [
               { id: 1, text: '减少碳排放', isCorrect: true },
               { id: 2, text: '增加旅游', isCorrect: false },
@@ -593,86 +624,10 @@ export default {
       return shuffled.slice(0, count);
     },
 
-    selectOption(optionId) {
-      this.selectedOption = optionId;
-    },
 
-    async submitAnswer() {
-      if (this.selectedOption === null) {
-        alert('请选择一个答案！');
-        return;
-      }
 
-      const currentQuestion = this.questions[this.currentQuestionIndex];
-      const isCorrect = currentQuestion.options.find(opt => opt.id === this.selectedOption).isCorrect;
-      
-      this.isAnswerCorrect = isCorrect;
-      this.showAnswerResult = true;
-
-      if (isCorrect) {
-        this.quizScore++;
-      }
-
-      this.answerExplanation = isCorrect ? '恭喜你，回答正确！' : `很遗憾，回答错误。正确答案是：${this.getCorrectAnswerText()}`;
-
-      this.quizEndTime = new Date();
-      this.quizDuration = (this.quizEndTime - this.quizStartTime) / 1000;
-
-      // 延迟一段时间后自动进入下一题
-      setTimeout(() => {
-        this.nextQuestion();
-      }, 2000); // 2秒后显示下一题
-    },
-
-    nextQuestion() {
-      this.showAnswerResult = false;
-      this.selectedOption = null;
-      this.currentQuestionIndex++;
-
-      if (this.currentQuestionIndex < this.questions.length) {
-        // 如果还有题目，继续显示当前题目
-        this.currentQuestion = this.questions[this.currentQuestionIndex];
-      } else {
-        // 如果没有题目了，显示完成测验
-        this.quizEndTime = new Date();
-        this.quizDuration = (this.quizEndTime - this.quizStartTime) / 1000;
-        this.showQuiz = false; // 关闭测验模态框
-        alert(`测验完成！\n您的得分：${this.quizScore}/${this.questions.length}\n用时：${this.quizDuration}秒`);
-
-        // 更新用户信息 (模拟)
-        this.$store.dispatch('updateUserStats', {
-          points: this.quizScore * 10, // 假设每题10分
-          experience: this.quizScore * 5, // 假设每题5经验
-          level: Math.floor(this.quizScore / 5) + 1 // 假设每5题升一级
-        });
-      }
-    },
-
-    getCorrectAnswerText() {
-      const currentQuestion = this.questions[this.currentQuestionIndex];
-      const correctOption = currentQuestion.options.find(opt => opt.isCorrect);
-      return correctOption ? correctOption.text : 'N/A';
-    },
-
-    goToVideo(index) {
-      this.currentVideoIndex = index;
-    },
-
-    prevVideo() {
-      if (this.currentVideoIndex > 0) {
-        this.currentVideoIndex--;
-      }
-    },
-
-    nextVideo() {
-      if (this.currentVideoIndex < this.videoSources.length - 4) {
-        this.currentVideoIndex++;
-      }
-    },
-
-    playVideo(videoId) {
-      const video = this.videoSources.find(v => v.id === videoId);
-      if (video) {
+    playVideo(video) {
+      try {
         // 创建全屏视频播放器
         const videoPlayer = document.createElement('div');
         videoPlayer.className = 'fullscreen-video-player';
@@ -680,12 +635,11 @@ export default {
           <div class="video-overlay">
             <button class="close-video-btn" onclick="this.parentElement.parentElement.remove()">×</button>
             <video controls autoplay class="fullscreen-video">
-              <source src="${video.videoUrl || video.thumbnail}" type="video/mp4">
+              <source src="${video.video}" type="video/mp4">
               您的浏览器不支持视频播放
             </video>
             <div class="video-info">
               <h3>${video.title}</h3>
-              <p>${video.description}</p>
             </div>
           </div>
         `;
@@ -712,6 +666,7 @@ export default {
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-direction: column;
           }
           .close-video-btn {
             position: absolute;
@@ -727,29 +682,25 @@ export default {
             cursor: pointer;
             z-index: 10000;
           }
+          .close-video-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+          }
           .fullscreen-video {
             max-width: 90%;
             max-height: 80%;
             border-radius: 10px;
           }
           .video-info {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
             color: white;
             background: rgba(0, 0, 0, 0.7);
             padding: 15px;
             border-radius: 10px;
-            max-width: 300px;
+            margin-top: 20px;
+            text-align: center;
           }
           .video-info h3 {
-            margin: 0 0 10px 0;
-            font-size: 18px;
-          }
-          .video-info p {
             margin: 0;
-            font-size: 14px;
-            opacity: 0.9;
+            font-size: 18px;
           }
         `;
         
@@ -760,55 +711,47 @@ export default {
         videoPlayer.addEventListener('click', (e) => {
           if (e.target === videoPlayer) {
             videoPlayer.remove();
+            style.remove();
           }
         });
+      } catch (error) {
+        console.error('Error playing video:', error);
+        alert('无法播放视频，请检查视频文件是否存在');
       }
     },
 
-    closeQuiz() {
-      this.showQuiz = false;
-      this.videoSources = [];
-      this.questions = [];
-      this.selectedOptions = [];
-      this.quizScore = 0;
-      this.quizCompleted = false;
-      this.currentVideoIndex = 0;
-      this.currentQuestionIndex = 0;
-      this.selectedOption = null;
-      this.showAnswerResult = false;
-      this.isAnswerCorrect = false;
-      this.answerExplanation = '';
-      this.quizStartTime = null;
-      this.quizEndTime = null;
-      this.quizDuration = 0;
+
+    // Verification related methods
+    async checkFirstTimeVisit() {
+      const hasCompletedVerification = localStorage.getItem('verificationCompleted');
+      const isFunctionalNavigation = localStorage.getItem('functionalNavigation');
+      
+      console.log('=== VERIFICATION DEBUG INFO ===');
+      console.log('hasCompletedVerification:', hasCompletedVerification);
+      console.log('isFunctionalNavigation:', isFunctionalNavigation);
+      console.log('================================');
+      
+      // Show verification if:
+      // 1. Verification not completed yet AND
+      // 2. This is not a functional navigation from quiz/checklist
+      const shouldShowVerification = !hasCompletedVerification && !isFunctionalNavigation;
+      
+      if (shouldShowVerification) {
+        console.log('Showing verification interface - first time visit, page refresh, or main navigation');
+        this.showVerification = true;
+        await this.loadVerificationImages();
+      } else {
+        console.log('Not showing verification - already completed or returning from functional navigation');
+        this.showVerification = false;
+      }
     },
 
-    // 验证相关方法
-    async checkFirstTimeVisit() {
-      // 使用localStorage而不是sessionStorage来持久化标记
-      // 但每次页面刷新时都清除这个标记
-      const wasRefresh = sessionStorage.getItem('pageWasRefreshed');
-      const hasNavigated = localStorage.getItem('hasNavigatedToEducation');
-      
-      console.log('页面加载检查:', { 
-        wasRefresh, 
-        hasNavigated,
-        showVerification: this.showVerification
-      });
-      
-      // 每次进入Education页面都显示图片quiz
-      console.log('进入Education页面，显示图片quiz');
-      this.showVerification = true;
-      await this.loadVerificationImages();
-      
-      // 设置页面刷新标记
-      sessionStorage.setItem('pageWasRefreshed', 'true');
-    },
+
 
     async loadVerificationImages() {
       this.loadingVerification = true;
       try {
-        const response = await axios.get('/api/quiz/coral-pictures-balanced?bleachCount=2&healthCount=4');
+        const response = await axios.get('/quiz/coral-pictures-balanced');
         console.log('API Response:', response.data);
         
         // 记录从后端获取的图片信息
@@ -985,89 +928,276 @@ export default {
 
       this.verificationCompleted = true;
       
-      // 3秒后关闭验证界面
-      setTimeout(() => {
-        this.closeVerification();
-      }, 3000);
+      // Mark verification as completed globally
+      localStorage.setItem('verificationCompleted', 'true');
     },
 
     closeVerification() {
       this.showVerification = false;
-      // 重置验证状态，为下次验证做准备
+      // Reset verification state for next verification
       this.verificationCompleted = false;
       this.verificationResult = null;
       this.verificationImages = [];
       this.selectedImages = [];
-      // 不清除localStorage标记，让它在导航时保持
+      // Keep localStorage flag for navigation consistency
+    },
+
+    handleOverlayClick() {
+      // Only close when verification is completed and showing result
+      if (this.verificationCompleted && this.verificationResult) {
+        this.closeVerification();
+      }
     },
 
     handleImageError(event) {
       console.warn('图片加载失败:', event.target.src);
-      // 使用一个简单的SVG作为fallback图片
-      event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y0ZjRmNCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTk5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj7lm77niYfmlKDovb3lpLHotKU8L3RleHQ+PC9zdmc+';
+      event.target.src = '/api/placeholder/300/200?text=Image+Load+Failed';
     },
 
-    // 加载OSS背景图片
-    async loadBackgroundImage() {
-      try {
-        console.log('开始加载Education背景图片...');
-        
-        const response = await axios.get('/api/oss/url', {
-          params: {
-            objectKey: 'image/bg_login5.jpg',
-            expireSeconds: 3600
+    // 手动启动验证游戏
+    async startVerificationGame() {
+      console.log('手动启动验证游戏');
+      
+      // 重置验证状态
+      this.verificationCompleted = false;
+      this.verificationResult = null;
+      this.verificationImages = [];
+      this.selectedImages = [];
+      
+      // 显示验证界面并加载图片
+      this.showVerification = true;
+      await this.loadVerificationImages();
+    },
+
+    // 初始化数字动画功能
+    initNumbersAnimation() {
+      // IntersectionObserver to reveal rows/title and trigger count ups
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('is-in');
+            // for each number inside this card, start counting once
+            e.target.querySelectorAll('.numbers-count').forEach(this.startNumbersCount);
+            io.unobserve(e.target);
           }
         });
-        
-        if (response.data.code === 1) {
-          this.bgLoginUrl = response.data.data;
-          console.log('Education背景图片加载完成');
-        } else {
-          console.warn('获取背景图片URL失败:', response.data.msg);
+      }, { threshold: 0.2 });
+
+      document.querySelectorAll('.numbers-card, .numbers-title').forEach(el => io.observe(el));
+    },
+
+    // 数字计数动画
+    startNumbersCount(el) {
+      if (el.dataset.done) return; // prevent double
+      const to = parseFloat(el.dataset.to || '0');
+      const decimals = parseInt(el.dataset.decimals || '0');
+      const duration = 1200; // ms
+      const start = performance.now();
+      const from = 0;
+      
+      function tick(now) {
+        const p = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - p, 3); // easeOutCubic
+        const val = from + (to - from) * eased;
+        el.textContent = val.toLocaleString(undefined, { 
+          minimumFractionDigits: decimals, 
+          maximumFractionDigits: decimals 
+        });
+        if (p < 1) {
+          requestAnimationFrame(tick);
+        } else { 
+          el.dataset.done = '1'; 
+          el.classList.add('numbers-pop'); 
         }
-      } catch (error) {
-        console.error('加载Education背景图片失败:', error);
       }
+      requestAnimationFrame(tick);
     }
   },
 
   async mounted() {
-    // 页面加载时检查是否需要显示验证
-    console.log('Education组件已挂载，开始检查验证');
-    try {
-      await Promise.all([
-        this.checkFirstTimeVisit(),
-        this.loadBackgroundImage()
-      ]);
-      console.log('验证检查和背景图片加载完成');
-    } catch (error) {
-      console.error('验证检查出错:', error);
+    // 立即开始预加载背景图片
+    this.preloadBackgroundImage();
+    
+    // 加载背景图片
+    this.loadBackgroundImage();
+    
+    // Set global refresh detection timestamp for verification system
+    localStorage.setItem('lastPageRefresh', Date.now().toString());
+    
+    // Load OSS images first
+    await this.loadOssImages();
+    
+    // Check if this is a functional navigation (from quiz/checklist)
+    const isFunctionalNavigation = localStorage.getItem('functionalNavigation');
+    
+    console.log('=== EDUCATION MOUNTED DEBUG ===');
+    console.log('isFunctionalNavigation from localStorage:', isFunctionalNavigation);
+    console.log('Will clear verification status:', !isFunctionalNavigation);
+    console.log('================================');
+    
+    if (!isFunctionalNavigation) {
+      // This is either a page refresh or main navigation, clear verification status
+      console.log('Clearing verification status - page refresh or main navigation detected');
+      localStorage.removeItem('verificationCompleted');
+    } else {
+      console.log('Keeping verification status - functional navigation detected');
+      // Clear the functional navigation flag after using it
+      localStorage.removeItem('functionalNavigation');
     }
+    
+    // 禁用自动验证 - 只有点击按钮时才触发验证游戏
+    console.log('Education组件已挂载，验证游戏已禁用自动触发');
+    console.log('用户需要点击按钮手动启动验证游戏');
+    
+    // 确保验证界面不会自动显示
+    this.showVerification = false;
+    
+    // 初始化数字动画功能
+    this.$nextTick(() => {
+      this.initNumbersAnimation();
+    });
   }
 }
 </script>
 
 <style scoped>
+
+
 .education-container {
   min-height: 100vh;
-  background-image: v-bind('bgLoginUrl ? `url(${bgLoginUrl})` : "none"');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  padding: 0;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  /* 删除 background 相关 */
+  background: none;
+  /* 删除 transform、will-change */
+}
+
+
+
+/* 海洋主题背景加载占位符样式 */
+.bg-placeholder {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #0f4c75 0%, #3282b8 25%, #0f4c75 50%, #1e3a8a 75%, #0f4c75 100%);
+  background-size: 400% 400%;
+  animation: oceanWave 8s ease-in-out infinite;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  color: white;
+  font-size: 18px;
+  overflow: hidden;
+}
+
+.bg-placeholder::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="waves" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M0,50 Q25,30 50,50 T100,50 L100,100 L0,100 Z" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23waves)"/></svg>');
+  animation: waveMotion 6s ease-in-out infinite;
+}
+
+
+
+@keyframes oceanWave {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes waveMotion {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(1deg); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(5deg); }
+}
+
+
+/* 海洋主题进度条样式 */
+.progress-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  width: 300px;
+  text-align: center;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 15px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00d4ff 0%, #00a8cc 50%, #0077be 100%);
+  border-radius: 10px;
+  transition: width 0.8s ease-in-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-fill::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  animation: shimmer 2s infinite;
+}
+
+.loading-text {
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  margin: 0;
+  animation: textGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+@keyframes textGlow {
+  0% { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); }
+  100% { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5), 0 0 10px rgba(0, 212, 255, 0.3); }
 }
 
 .education-container::before {
   content: "";
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.3);
-  z-index: 1;
+  width: 100%;
+  height: 100%;
+  background: url('@/assets/bg_login5.webp') no-repeat center center;
+  background-size: cover;
+  z-index: -1;
+  /* 优化背景图片加载 */
+  will-change: transform;      /* 提示浏览器优化 */
+  transform: translateZ(0);     /* 启用硬件加速 */
 }
 
 .education-header {
@@ -1075,8 +1205,8 @@ export default {
   z-index: 2;
   text-align: center;
   color: white;
-  padding: 40px 20px 30px;
-  margin-bottom: 40px;
+  padding: 40px 20px 18px;
+  margin-bottom: 24px;
   margin-top: 20px;
 }
 
@@ -1091,6 +1221,35 @@ export default {
   font-size: 1.3rem;
   opacity: 0.95;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  margin-bottom: 25px;
+}
+
+/* 验证游戏按钮样式 */
+.verification-game-btn {
+  background: linear-gradient(135deg, #72c4f0ff, #6c98d6ff);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.22);
+  text-shadow: none;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.verification-game-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.29);
+  background: linear-gradient(135deg, #67b0d7ff, #5a8ad3ff);
+}
+
+.verification-game-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 10px rgba(102, 126, 234, 0.5);
 }
 
 .education-content {
@@ -1099,6 +1258,178 @@ export default {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px 40px;
+}
+
+/* Video Learning Section */
+.video-learning-section {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 30px;
+  margin-bottom: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.video-learning-section h2 {
+  color: white;
+  font-size: 2rem;
+  margin-bottom: 25px;
+  text-align: center;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Coral Numbers Section */
+.coral-numbers-section {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 30px;
+  margin-bottom: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.numbers-title {
+  color: white;
+  font-size: clamp(28px, 3.2vw, 44px);
+  text-align: center;
+  margin: 0.35rem 0 1.2rem;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.numbers-title.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+.numbers-row {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  margin-bottom: 32px;
+}
+
+@media (min-width: 768px) {
+  .numbers-row {
+    flex-direction: row;
+  }
+}
+
+.numbers-card {
+  flex: 1;
+  padding: 0 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  background: transparent;
+  border-radius: 0;
+  padding: 20px 0;
+  border: none;
+}
+
+.numbers-card.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+.numbers-stat {
+  font-weight: 800;
+  font-size: clamp(32px, 4vw, 52px);
+  margin-bottom: 6px;
+  line-height: 1;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.numbers-count {
+  display: inline-block;
+  transform: translateY(0.1em);
+}
+
+.numbers-suffix {
+  font-weight: 700;
+  opacity: 0.9;
+  margin-left: 0.15em;
+}
+
+.numbers-headline {
+  font-weight: 600;
+  font-size: 15px;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.numbers-desc {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.numbers-cta {
+  margin-top: 12px;
+  align-self: flex-start;
+  color: rgba(255, 255, 255, 0.9);
+  border-radius: 999px;
+  padding: 10px 16px;
+  text-decoration: none;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+  font-size: 14px;
+  font-weight: 600;
+  transition: 0.2s;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.numbers-cta:hover {
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+}
+
+.numbers-fraction {
+  display: inline-flex;
+  align-items: flex-end;
+  line-height: 0.9;
+}
+
+.numbers-fraction sup {
+  font-size: 50%;
+  transform: translateY(-2px);
+}
+
+.numbers-fraction sub {
+  font-size: 50%;
+  transform: translateY(2px);
+}
+
+/* 进入视口时数字弹跳轻微缩放 */
+.numbers-pop {
+  animation: numbersPop 0.5s ease-out both;
+}
+
+@keyframes numbersPop {
+  0% { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+
+/* 无障碍：尊重"减少动效"设置 */
+@media (prefers-reduced-motion: reduce) {
+  .numbers-title, .numbers-card {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .numbers-pop {
+    animation: none !important;
+  }
 }
 
 /* 未登录状态样式 */
@@ -1375,22 +1706,23 @@ export default {
 }
 
 .feature-card {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.2);
   border-radius: 20px;
   padding: 40px 30px;
   text-align: center;
   transition: all 0.3s ease;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(20px);
+  border: 3px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
   color: white;
 }
 
 .feature-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-  background: rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
 }
 
 .feature-icon {
@@ -1443,8 +1775,8 @@ export default {
 }
 
 .btn-feature:hover {
-  background: rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(47, 111, 151, 0.3);
+  border-color: rgba(255, 255, 255, 0.7);
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
@@ -1495,6 +1827,24 @@ export default {
   display: flex;
   gap: 32px;
   align-items: center;
+  flex-wrap: wrap;
+}
+
+.nav-item-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.map-rec-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+}
+
+.nav-text-line {
+  display: block;
 }
 
 .nav-item {
@@ -1515,6 +1865,101 @@ export default {
 .nav-item.active {
   color: white;
   border-bottom-color: #63b3ed;
+}
+
+/* Island 下拉菜单样式 */
+.nav-item-dropdown {
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px); /* 在Island正下方，留8px间距 */
+  left: 50%;
+  transform: translateX(-50%); /* 居中对齐 */
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1);
+  min-width: 120px;
+  max-width: 140px;
+  z-index: 1000;
+  overflow: hidden;
+  animation: dropdownSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 移除小箭头，使用图二样式 */
+
+@keyframes dropdownSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: 14px 20px;
+  color: #1f2937;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+/* Language Toggle */
+.language-toggle {
+  margin-left: 16px;
+}
+
+.lang-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  font-size: 0.9rem;
+  min-width: 40px;
+}
+
+.lang-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.05);
+}
+
+.dropdown-item:hover {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(16, 185, 129, 0.08));
+  color: #1e40af;
+  transform: translateX(2px);
+}
+
+.dropdown-item:first-child:hover {
+  border-radius: 16px 16px 0 0;
+}
+
+.dropdown-item:last-child:hover {
+  border-radius: 0 0 16px 16px;
+}
+
+.dropdown-item:first-child:last-child:hover {
+  border-radius: 16px;
 }
 
 /* Error Message */
@@ -1646,6 +2091,14 @@ export default {
   
   .source-selector select {
     width: 100%;
+  }
+  
+  .video-grid-2x2 {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    max-width: 100%;
+    padding: 15px 0;
+    gap: 15px;
   }
   
   .video-grid {
@@ -1973,6 +2426,17 @@ export default {
   display: none;
 }
 
+/* 2x2 Video Grid Layout */
+.video-grid-2x2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 20px;
+  padding: 20px 0;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
 .video-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -1986,7 +2450,7 @@ export default {
   border-radius: 15px;
   overflow: hidden;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+
 }
 
 .video-item:hover {
@@ -1996,7 +2460,7 @@ export default {
 .video-thumbnail {
   position: relative;
   width: 100%;
-  height: 150px;
+  height: 200px;
   overflow: hidden;
 }
 
@@ -2222,24 +2686,34 @@ export default {
   backdrop-filter: blur(5px);
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+  padding-top: 5vh;
   z-index: 2000;
   animation: fadeIn 0.3s ease forwards;
 }
 
+.verification-overlay.clickable-overlay {
+  cursor: pointer;
+}
+
+.verification-overlay.clickable-overlay .verification-modal {
+  cursor: default;
+}
+
 .verification-modal {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: rgba(255, 255, 255, 0.3);
   border-radius: 25px;
   padding: 0;
   max-width: 900px;
   width: 95%;
-  max-height: 90vh;
+  max-height: 85vh;
   overflow-y: auto;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   animation: slideUp 0.3s ease forwards;
 }
 
 .verification-header {
+  position: relative;
   text-align: center;
   padding: 30px 30px 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
@@ -2265,6 +2739,32 @@ export default {
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.7);
   font-style: italic;
+}
+
+.btn-close-verification {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 28px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.btn-close-verification:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  transform: rotate(90deg);
 }
 
 .verification-content {
@@ -2328,9 +2828,11 @@ export default {
 }
 
 .image-item:hover {
-  background: rgba(255, 255, 255, 0.15);
-  transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+  transform: translateY(-8px);
+  border-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
 }
 
 .image-item.selected-correct {
@@ -2449,6 +2951,13 @@ export default {
   text-align: center;
   color: white;
   padding: 40px 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.verification-result:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
 }
 
 .verification-result .result-icon {
@@ -2475,6 +2984,19 @@ export default {
   font-size: 16px;
   line-height: 1.6;
   opacity: 0.9;
+}
+
+.click-to-close-hint {
+  margin-top: 20px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+  animation: fadeInOut 2s infinite;
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
 }
 
 @keyframes spin {
@@ -2548,5 +3070,44 @@ export default {
   .verification-image {
     height: 180px;
   }
+}
+
+/* Footer Styles */
+.main-footer {
+  width: 100%;
+  background: rgba(26, 43, 66, 1);
+  color: #e0e7ef;
+  text-align: center;
+  padding: 18px 0 12px 0;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  margin-top: 40px;
+  box-shadow: 0 -2px 12px rgba(59,130,246,0.08);
+  z-index: 10;
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.footer-links {
+  margin-top: 4px;
+  font-size: 14px;
+}
+
+.footer-links a {
+  color: #a5d8ff;
+  text-decoration: none;
+  margin: 0 6px;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover {
+  color: #fff;
+  text-decoration: underline;
 }
 </style>

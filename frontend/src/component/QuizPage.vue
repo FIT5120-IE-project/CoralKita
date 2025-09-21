@@ -1,10 +1,20 @@
 <template>
   <div class="quiz-page">
+    <!-- 背景图片加载占位符 -->
+    <div class="bg-placeholder" v-if="!backgroundLoaded">
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill" :style="{ width: loadingProgress + '%' }"></div>
+        </div>
+        <p class="loading-text">{{ loadingText }}</p>
+      </div>
+    </div>
+    
     <!-- Page Header -->
     <div class="quiz-header">
       <div class="header-left">
         <button class="btn-back" @click="goBack">
-          <i class="back-icon">←</i>
+          <i class="back-icon"><</i>
           Back
         </button>
       </div>
@@ -13,7 +23,6 @@
       </div>
       <div class="header-right">
         <div class="app-info">
-          <span class="app-name">CoralKita知识问答</span>
         </div>
       </div>
     </div>
@@ -49,7 +58,7 @@
               >
                 <div class="video-thumbnail">
                   <img 
-                    :src="video.thumbnail || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y0ZjRmNCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTk5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj7lm77niYfmlKDovb3lpLHotKU8L3RleHQ+PC9zdmc+'" 
+                    :src="video.thumbnail || '/api/placeholder/300/200'" 
                     :alt="video.title" 
                     @error="handleThumbnailError"
                     loading="lazy"
@@ -92,18 +101,7 @@
           <h2>Knowledge Quiz</h2>
         </div>
         
-        <!-- Quiz Type Selection -->
-        <div class="quiz-type-selection">
-          <div class="quiz-type-card single-quiz-card">
-            <h3>Coral Reef Knowledge Quiz</h3>
-            <p>Test your knowledge with multiple choice questions about coral reefs</p>
-            <div class="quiz-type-buttons">
-              <button class="btn-quiz-type" @click="startSingleChoiceQuiz">
-                Start Quiz
-              </button>
-            </div>
-          </div>
-        </div>
+
         
         <!-- Quiz Progress and Questions (shown when quiz is active) -->
         <div v-if="questions.length > 0" class="quiz-active-section">
@@ -148,7 +146,10 @@
             <div v-else-if="quizCompleted" class="quiz-completed">
               <!-- Medal Display -->
               <div v-if="medalInfo" class="medal-display">
-                <div class="medal-icon" :style="{ color: medalInfo.color }">{{ medalInfo.icon }}</div>
+                <div class="medal-icon">
+                  <img v-if="medalInfo.image" :src="medalInfo.image" :alt="medalInfo.title" class="medal-image" />
+                  <span v-else :style="{ color: medalInfo.color }">{{ medalInfo.icon }}</span>
+                </div>
                 <h2 class="medal-title">{{ medalInfo.title }}</h2>
                 <p class="medal-message">{{ medalInfo.message }}</p>
               </div>
@@ -228,22 +229,22 @@
                 
                 <div class="share-options">
                   <button class="btn-share twitter" @click="shareToTwitter">
-                    <i class="share-icon">🐦</i>
+                    <img :src="twitterIconUrl" alt="Twitter" class="share-icon" />
                     <span>Twitter</span>
                   </button>
                   
                   <button class="btn-share facebook" @click="shareToFacebook">
-                    <i class="share-icon">📘</i>
+                    <img :src="facebookIconUrl" alt="Facebook" class="share-icon" />
                     <span>Facebook</span>
                   </button>
                   
                   <button class="btn-share copy" @click="copyShareLink">
-                    <i class="share-icon">🔗</i>
+                    <img :src="linkIconUrl" alt="Copy Link" class="share-icon" />
                     <span>Copy Link</span>
                   </button>
                   
                   <button class="btn-share download" @click="downloadBadge">
-                    <i class="share-icon">📱</i>
+                    <img :src="downloadIconUrl || require('@/assets/icons/icon_download.png')" alt="Download Badge" class="share-icon" />
                     <span>Download Badge</span>
                   </button>
                 </div>
@@ -330,10 +331,9 @@ Submit Answer
             </div>
           </div>
           <div v-if="isAuthenticated" class="video-completion">
-            <button class="btn-mark-watched" @click="markVideoWatched">
-              Mark as Watched (+2 Experience)
-            </button>
+            
           </div>
+
         </div>
       </div>
     </div>
@@ -348,13 +348,15 @@ Submit Answer
 <script>
 import { mapGetters } from 'vuex'
 import axios from 'axios'
+import ossService from '@/utils/ossService.js'
 
 export default {
   name: 'QuizPage',
   data() {
     return {
-      // OSS背景图片URL
-      bgInterfaceUrl: '',
+      backgroundLoaded: false, // 背景图片加载状态
+      loadingProgress: 0, // 加载进度
+      loadingText: 'Loading quiz interface...', // 加载文本
       // Video related
       videoSources: [],
       loadingVideo: false,
@@ -380,6 +382,15 @@ export default {
       
       // Medal system
       medalInfo: null,
+      
+      // 分享图标URL
+      twitterIconUrl: null,
+      facebookIconUrl: null,
+      linkIconUrl: null,
+      downloadIconUrl: null,
+      
+      // 背景图片URL
+      backgroundImageUrl: null,
       showMedal: false,
 
       // Share system
@@ -413,105 +424,123 @@ export default {
     }
   },
   async mounted() {
-    await Promise.all([
-      this.loadVideoSources(),
-      this.loadSourceTitles(),
-      this.loadBackgroundImage()
-    ])
+    // 立即开始预加载背景图片
+    this.preloadBackgroundImage();
+    
+    // 加载分享图标
+    this.loadShareIcons();
+    
+    // 加载背景图片
+    this.loadBackgroundImage();
+    
+    // Set global refresh detection timestamp for verification system
+    localStorage.setItem('lastPageRefresh', Date.now().toString());
+    
+    await this.loadVideoSources()
+    await this.loadSourceTitles()
+    
+    // Auto-start quiz when page loads
+    this.loadRandomQuestions()
   },
   methods: {
+    /**
+     * 加载分享图标
+     */
+    async loadShareIcons() {
+      try {
+        // 并行加载所有分享图标
+        const [twitterIconUrl, facebookIconUrl, linkIconUrl, downloadIconUrl] = await Promise.all([
+          ossService.getFileUrl('assets/icons/icon_twiter.png'),
+          ossService.getFileUrl('assets/icons/icon_facebook.png'),
+          ossService.getFileUrl('assets/icons/icon_link.png'),
+          ossService.getFileUrl('assets/icons/icon_download.png')
+        ])
+        
+        this.twitterIconUrl = twitterIconUrl
+        this.facebookIconUrl = facebookIconUrl
+        this.linkIconUrl = linkIconUrl
+        this.downloadIconUrl = downloadIconUrl
+      } catch (error) {
+        console.warn('加载分享图标失败，使用默认图标:', error)
+        // 保持为null，使用默认图标
+      }
+    },
+
+    /**
+     * 加载背景图片
+     */
+    async loadBackgroundImage() {
+      try {
+        this.backgroundImageUrl = await ossService.getFileUrl('bg_login5.webp')
+        // 设置CSS变量
+        document.documentElement.style.setProperty('--bg-image', `url(${this.backgroundImageUrl})`)
+      } catch (error) {
+        console.warn('加载背景图片失败，使用默认图片:', error)
+        this.backgroundImageUrl = null
+      }
+    },
+
     // Go back to previous page
     goBack() {
-      // 设置导航标记，表示这是路由导航而不是页面刷新
-      localStorage.setItem('hasNavigatedToEducation', 'true');
-      this.$router.push('/education')
+      // 设置功能导航标记，表示这是从功能页面返回
+      localStorage.setItem('functionalNavigation', 'true');
+      this.$router.push('/education').catch(err => {
+        // Ignore navigation duplicated error
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
     },
 
     // Set navigation flag for router-link clicks
     setNavigationFlag() {
-      localStorage.setItem('hasNavigatedToEducation', 'true');
+      localStorage.setItem('functionalNavigation', 'true');
     },
 
-    // 加载OSS背景图片
-    async loadBackgroundImage() {
-      try {
-        console.log('开始加载QuizPage背景图片...');
-        
-        const response = await axios.get('/api/oss/url', {
-          params: {
-            objectKey: 'image/ed_interface.png',
-            expireSeconds: 3600
-          }
-        });
-        
-        if (response.data.code === 1) {
-          this.bgInterfaceUrl = response.data.data;
-          console.log('QuizPage背景图片加载完成');
-        } else {
-          console.warn('获取背景图片URL失败:', response.data.msg);
-        }
-      } catch (error) {
-        console.error('加载QuizPage背景图片失败:', error);
-      }
-    },
-
-    // Load video sources from OSS
+    // Load video sources
     async loadVideoSources() {
       this.loadingVideo = true
       this.errorMessage = ''
       try {
-        // 预定义的视频文件信息
-        const videoFileNames = [
-          'Why are coral reefs so important.mp4',
-          'What Would Happen If All The Coral Reefs Died Off.mp4',
-          'Coral Reefs Are Dying. Here\'s How We Can Save Them.mp4',
-          'Coral Bleaching Explained The Story of Frank the Coral.mp4',
-          'Coral Reefs 101 National Geographic.mp4'
-        ]
-        
-        const videoTitles = [
-          'Why are coral reefs so important?',
-          'What Would Happen If All The Coral Reefs Died Off?',
-          'Coral Reefs Are Dying. Here\'s How We Can Save Them',
-          'Coral Bleaching Explained: The Story of Frank the Coral',
-          'Coral Reefs 101 | National Geographic'
-        ]
-        
-        // 从OSS获取视频签名URL
-        const videoSources = []
-        for (let i = 0; i < videoFileNames.length; i++) {
-          try {
-            const response = await axios.get('/oss/video/url', {
-              params: {
-                videoFileName: videoFileNames[i],
-                expireSeconds: 7200 // 2小时过期
-              }
-            })
-            
-            if (response.data.code === 1) {
-              videoSources.push({
-                id: i + 1,
-                title: videoTitles[i],
-                video_src: response.data.data, // OSS签名URL
-                thumbnail: require('@/assets/Why are coral reefs so important.jpg') // 使用本地缩略图
-              })
-            } else {
-              console.error(`Failed to get video URL for ${videoFileNames[i]}:`, response.data.msg)
-            }
-          } catch (error) {
-            console.error(`Error getting video URL for ${videoFileNames[i]}:`, error)
+        // Use local video files and thumbnails
+        const localVideoData = [
+          {
+            id: 1,
+            title: 'Why are coral reefs so important?',
+            video_src: require('@/assets/Why are coral reefs so important.mp4'),
+            thumbnail: require('@/assets/Why are coral reefs so important.jpg')
+          },
+          {
+            id: 2,
+            title: 'What Would Happen If All The Coral Reefs Died Off?',
+            video_src: require('@/assets/What Would Happen If All The Coral Reefs Died Off.mp4'),
+            thumbnail: require('@/assets/What Would Happen If All The Coral Reefs Died Off.jpg')
+          },
+          {
+            id: 3,
+            title: 'Coral Reefs Are Dying. Here\'s How We Can Save Them',
+            video_src: require('@/assets/Coral Reefs Are Dying. Here\'s How We Can Save Them.mp4'),
+            thumbnail: require('@/assets/Coral Reefs Are Dying. Here\'s How We Can Save Them.jpg')
+          },
+          {
+            id: 4,
+            title: 'Coral Bleaching Explained: The Story of Frank the Coral',
+            video_src: require('@/assets/Coral Bleaching Explained The Story of Frank the Coral.mp4'),
+            thumbnail: require('@/assets/Coral Bleaching Explained The Story of Frank the Coral.jpg')
+          },
+          {
+            id: 5,
+            title: 'Coral Reefs 101 | National Geographic',
+            video_src: require('@/assets/Coral Reefs 101 National Geographic.mp4'),
+            thumbnail: require('@/assets/Coral Reefs 101 National Geographic.jpg')
           }
-        }
+        ]
         
-        this.videoSources = videoSources
-        
-        if (videoSources.length === 0) {
-          this.errorMessage = 'No videos available from OSS'
-        }
+        this.videoSources = localVideoData
         
       } catch (error) {
-        this.errorMessage = 'Failed to load videos from OSS: ' + error.message
-        console.error('Failed to load videos from OSS:', error)
+        this.errorMessage = 'Failed to load local videos: ' + error.message
+        console.error('Failed to load local videos:', error)
       } finally {
         this.loadingVideo = false
       }
@@ -521,7 +550,7 @@ export default {
     async loadSourceTitles() {
       try {
         console.log('Loading source titles...')
-        const response = await axios.get('/api/quiz/sources')
+        const response = await axios.get('/quiz/sources')
         console.log('Source titles response:', response.data)
         if (response.data.code === 1) {
           this.sourceTitles = response.data.data || []
@@ -580,13 +609,13 @@ export default {
     // Handle thumbnail loading error
     handleThumbnailError(event) {
       console.warn('Thumbnail loading failed:', event.target.src)
-      event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y0ZjRmNCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTk5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj7lm77niYfmlKDovb3lpLHotKU8L3RleHQ+PC9zdmc+'
+      event.target.src = '/api/placeholder/300/200?text=Video+Thumbnail'
     },
 
     // Handle image loading error for image classification questions
     handleImageError(event) {
       console.warn('Image loading failed:', event.target.src)
-      event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y0ZjRmNCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTk5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj7lm77niYfmlKDovb3lpLHotKU8L3RleHQ+PC9zdmc+'
+      event.target.src = '/api/placeholder/300/200?text=Image+Placeholder'
     },
 
     // Mark video as watched
@@ -623,33 +652,50 @@ export default {
       this.loadingQuestions = true
       this.errorMessage = ''
       try {
-        const response = await axios.get('/api/quiz/random')
-        console.log('Random questions response:', response.data)
-
-        if (response.data.code === 1 && response.data.data) {
-          console.log('Raw questions data:', response.data.data)
-          // 随机选择10道题
-          const allQuestions = response.data.data.map(q => {
-            return {
-              ...q,
-              options: [
-                { id: 'A', text: q.optionA },
-                { id: 'B', text: q.optionB },
-                { id: 'C', text: q.optionC },
-                { id: 'D', text: q.optionD }
-              ].filter(opt => opt.text && opt.text.trim() !== '')
+        // 首先获取所有可用的来源标题
+        const sourcesResponse = await axios.get('/quiz/sources')
+        console.log('Sources response:', sourcesResponse.data)
+        
+        if (sourcesResponse.data.code === 1 && sourcesResponse.data.data && sourcesResponse.data.data.length > 0) {
+          // 从所有来源中随机选择题目
+          const allQuestions = []
+          
+          // 从每个来源获取题目
+          for (const sourceTitle of sourcesResponse.data.data) {
+            try {
+              const response = await axios.get(`/quiz/questions?sourceTitle=${encodeURIComponent(sourceTitle)}`)
+              console.log(`Questions from ${sourceTitle}:`, response.data)
+              
+              if (response.data.code === 1 && response.data.data) {
+                const questionsFromSource = response.data.data.map(q => {
+                  return {
+                    ...q,
+                    options: [
+                      { id: 'A', text: q.optionA },
+                      { id: 'B', text: q.optionB },
+                      { id: 'C', text: q.optionC },
+                      { id: 'D', text: q.optionD }
+                    ].filter(opt => opt.text && opt.text.trim() !== '')
+                  }
+                })
+                allQuestions.push(...questionsFromSource)
+              }
+            } catch (sourceError) {
+              console.warn(`Failed to load questions from source ${sourceTitle}:`, sourceError)
             }
-          })
+          }
           
-          // 随机选择10道题
-          this.questions = this.getRandomQuestions(allQuestions, 10)
-          
-          console.log('Final questions array (10 random):', this.questions)
-          this.resetQuiz()
-          this.quizStartTime = new Date()
+          if (allQuestions.length > 0) {
+            // 随机选择10道题
+            this.questions = this.getRandomQuestions(allQuestions, 10)
+            console.log('Final questions array (10 random):', this.questions)
+            this.resetQuiz()
+            this.quizStartTime = new Date()
+          } else {
+            throw new Error('No questions found from any source')
+          }
         } else {
-          this.errorMessage = '未能获取到题目数据：' + (response.data.msg || '后端返回错误')
-          console.error('Backend returned error:', response.data)
+          throw new Error('No sources available or sources API failed')
         }
       } catch (error) {
         console.error('加载题目失败:', error)
@@ -932,6 +978,7 @@ export default {
           title: 'Bronze Medal',
           message: 'Congratulations on earning the Bronze Medal! You have gained basic knowledge about coral reefs!',
           icon: '🥉',
+          image: require('@/assets/bronze.png'),
           color: '#CD7F32'
         }
       } else if (correctCount >= 6 && correctCount <= 9) {
@@ -940,6 +987,7 @@ export default {
           title: 'Silver Medal',
           message: 'Congratulations on earning the Silver Medal! You have performed excellently in coral reef conservation!',
           icon: '🥈',
+          image: require('@/assets/sliver.png'),
           color: '#C0C0C0'
         }
       } else if (correctCount === 10) {
@@ -948,6 +996,7 @@ export default {
           title: 'Gold Medal',
           message: 'Congratulations on earning the Gold Medal! You are a true coral reef conservation expert!',
           icon: '🥇',
+          image: require('@/assets/gold.png'),
           color: '#FFD700'
         }
       }
@@ -1080,6 +1129,71 @@ export default {
       this.loadRandomQuestions()
     },
 
+    /**
+     * 预加载背景图片
+     */
+    preloadBackgroundImage() {
+      // 创建高优先级预加载链接元素
+      const preloadLink = document.createElement('link');
+      preloadLink.rel = 'preload';
+      preloadLink.as = 'image';
+      preloadLink.href = this.backgroundImageUrl || require('@/assets/bg_login5.webp');
+      preloadLink.fetchPriority = 'high'; // 高优先级
+      
+      // 添加到head中
+      document.head.appendChild(preloadLink);
+      
+      // 模拟加载进度
+      this.simulateLoadingProgress();
+      
+      // 预加载图片到浏览器缓存
+      const img = new Image();
+      img.src = this.backgroundImageUrl || require('@/assets/bg_login5.webp');
+      img.onload = () => {
+        console.log('Quiz background image preloaded to cache');
+        this.loadingProgress = 100;
+        this.loadingText = 'Quiz interface loaded successfully!';
+        setTimeout(() => {
+          this.backgroundLoaded = true;
+        }, 500);
+      };
+      img.onerror = () => {
+        console.warn('Failed to preload Quiz background image');
+        this.loadingProgress = 100;
+        this.loadingText = 'Using backup interface...';
+        setTimeout(() => {
+          this.backgroundLoaded = true; // 即使失败也隐藏占位符
+        }, 500);
+      };
+      
+      console.log('Quiz background image preload started');
+    },
+
+    /**
+     * 模拟加载进度
+     */
+    simulateLoadingProgress() {
+      const progressSteps = [
+        { progress: 20, text: 'Loading quiz questions...' },
+        { progress: 40, text: 'Preparing video content...' },
+        { progress: 60, text: 'Setting up interface...' },
+        { progress: 80, text: 'Almost ready...' },
+        { progress: 95, text: 'Finalizing quiz setup...' }
+      ];
+
+      let currentStep = 0;
+      const updateProgress = () => {
+        if (currentStep < progressSteps.length) {
+          const step = progressSteps[currentStep];
+          this.loadingProgress = step.progress;
+          this.loadingText = step.text;
+          currentStep++;
+          setTimeout(updateProgress, 800);
+        }
+      };
+
+      updateProgress();
+    }
 
   }
 }
@@ -1088,11 +1202,119 @@ export default {
 <style scoped>
 .quiz-page {
   min-height: 100vh;
-  background-image: v-bind('bgInterfaceUrl ? `url(${bgInterfaceUrl})` : "none"');
-  background-size: cover;
-  background-position: center;
+  background-image: var(--bg-image, url('@/assets-webp/ed_interface.webp'));
   background-repeat: no-repeat;
+  background-attachment: fixed;   /* 页面滚动时固定 */
+  background-position: center;    /* 居中显示 */
+  background-size: cover;         /* 覆盖整个容器，保持比例 */
   font-family: 'Arial', sans-serif;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  /* 优化背景图片加载 */
+  will-change: transform;      /* 提示浏览器优化 */
+  transform: translateZ(0);     /* 启用硬件加速 */
+}
+
+/* 海洋主题背景加载占位符样式 */
+.bg-placeholder {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #0f4c75 0%, #3282b8 25%, #0f4c75 50%, #1e3a8a 75%, #0f4c75 100%);
+  background-size: 400% 400%;
+  animation: oceanWave 8s ease-in-out infinite;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  color: white;
+  font-size: 18px;
+  overflow: hidden;
+}
+
+.bg-placeholder::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="waves" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M0,50 Q25,30 50,50 T100,50 L100,100 L0,100 Z" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23waves)"/></svg>');
+  animation: waveMotion 6s ease-in-out infinite;
+}
+
+@keyframes oceanWave {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes waveMotion {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(1deg); }
+}
+
+/* 海洋主题进度条样式 */
+.progress-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  width: 300px;
+  text-align: center;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 15px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00d4ff 0%, #00a8cc 50%, #0077be 100%);
+  border-radius: 10px;
+  transition: width 0.8s ease-in-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-fill::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  animation: shimmer 2s infinite;
+}
+
+.loading-text {
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  margin: 0;
+  animation: textGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+@keyframes textGlow {
+  0% { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); }
+  100% { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5), 0 0 10px rgba(0, 212, 255, 0.3); }
 }
 
 .quiz-header {
@@ -1607,7 +1829,7 @@ export default {
 
 .btn-submit-answer {
   padding: 15px 40px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #4882a1ff, #32507bff);
   color: white;
   border: none;
   border-radius: 25px;
@@ -1650,10 +1872,10 @@ export default {
 .answer-result {
   text-align: center;
   padding: 40px 20px;
-  background: linear-gradient(135deg, rgba(26, 29, 37, 0.9) 0%, rgba(1, 162, 235, 0.8) 100%);
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(20px);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -1727,7 +1949,7 @@ export default {
 
 .btn-next-question {
   padding: 15px 30px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #4882a1ff, #32507bff);
   color: white;
   border: none;
   border-radius: 25px;
@@ -1764,12 +1986,12 @@ export default {
 
 /* 奖章显示样式 */
 .medal-display {
-  background: linear-gradient(135deg, rgba(26, 29, 37, 0.85) 0%, rgba(1, 162, 235, 0.75) 100%);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
   border-radius: 20px;
   padding: 40px;
   margin-bottom: 30px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(20px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.2);
   text-align: center;
 }
@@ -1777,6 +1999,16 @@ export default {
 .medal-icon {
   font-size: 80px;
   margin-bottom: 20px;
+  animation: bounceIn 0.6s ease-out;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.medal-image {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
   animation: bounceIn 0.6s ease-out;
 }
 
@@ -1897,11 +2129,12 @@ export default {
 }
 
 .score-summary {
-  background: linear-gradient(135deg, rgba(26, 29, 37, 0.8) 0%, rgba(1, 162, 235, 0.7) 100%);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
   border-radius: 15px;
   padding: 20px;
   margin-top: 20px;
-  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -2187,8 +2420,10 @@ export default {
 }
 
 .share-icon {
-  font-size: 24px;
+  width: 24px;
+  height: 24px;
   margin-bottom: 5px;
+  object-fit: contain;
 }
 
 .copy-notification {
@@ -2235,7 +2470,8 @@ export default {
   }
   
   .share-icon {
-    font-size: 20px;
+    width: 20px;
+    height: 20px;
   }
 }
 

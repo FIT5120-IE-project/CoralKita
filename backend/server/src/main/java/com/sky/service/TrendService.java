@@ -40,6 +40,18 @@ public interface TrendService {
     List<Coral> getCoralDataByIsland(String island);
 
     /**
+     * 批量获取所有岛屿的趋势数据
+     * @return 所有岛屿的趋势数据Map，key为岛屿名称，value为趋势数据列表
+     */
+    Map<String, List<TrendVO>> getAllIslandsTrendData();
+
+    /**
+     * 批量获取所有岛屿的珊瑚数据（bleach数据）
+     * @return 所有岛屿的珊瑚数据Map，key为岛屿名称，value为珊瑚数据列表
+     */
+    Map<String, List<Coral>> getAllIslandsCoralData();
+
+    /**
      * 批量获取多个岛屿的坐标信息
      * @param islands 岛屿名称列表
      * @return 岛屿坐标信息Map，key为岛屿名称，value为坐标信息

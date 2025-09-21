@@ -1,102 +1,239 @@
 <template>
-  <div class="video-container">
-    <!-- 加载状态 -->
-    <div v-if="loading" class="loading-overlay">
-      <div class="loading-content">
-        <div class="loading-spinner"></div>
-        <p>Loading CoralKita...</p>
+  <div class="app-wrapper">
+    <div class="main-container">
+    <!-- Top Navigation -->
+    <div class="top-nav">
+      <div class="nav-left">
+        <!-- Left side logo -->
+        <img :src="imageUrls.appIcon" alt="logo" class="nav-logo" />
+        <h1 class="logo">CoralKita</h1>
+      </div>
+      <div class="nav-right">
+        <div class="nav-items">
+          <div class="nav-item-wrapper">
+            <span class="nav-item map-rec-item" @click="goToMap">
+              <span class="nav-text-line">Map &</span>
+              <span class="nav-text-line">Recommendation</span>
+            </span>
+          </div>
+          <div class="nav-item-dropdown" @mouseenter="showTravelDropdown = true" @mouseleave="showTravelDropdown = false">
+            <span class="nav-item">Island</span>
+            <div class="dropdown-menu" v-show="showTravelDropdown">
+              <div 
+                v-for="island in travelIslands" 
+                :key="island"
+                class="dropdown-item"
+                @click="goToIslandDetail(island)"
+              >
+                <span>{{ island }}</span>
+              </div>
+            </div>
+          </div>
+          <span class="nav-item" @click="goToEducation">Education</span>
+          <span class="nav-item" @click="goToAITools">AI Classification</span>
+        </div>
       </div>
     </div>
-    
-    <!-- 视频背景 -->
-    <video 
-      v-if="!loading && videoSrc"
-      ref="backgroundVideo"
-      class="background-video" 
-      autoplay 
-      muted 
-      loop 
-      playsinline
-    >
-      <source :src="videoSrc" type="video/mp4">
-      您的浏览器不支持视频播放。
-    </video>
-    
-    <!-- 遮罩层 -->
-    <div class="overlay"></div>
-    
-    <!-- 内容 -->
-    <div class="content">
-      <!-- Logo图片 -->
-      <div class="logo-container">
-        <img src="../assets/icon.png" alt="Logo" class="main-logo" />
-      </div>
-      <h1>CoralKita</h1>
 
-      <!-- 新增描述容器 -->
-      <div class="description-box">
-        <p>Protect marine ecosystems and embrace nature's beauty</p>
-        <p>Discover coral reefs, learn their importance, and support sustainable tourism</p>
+    <!-- 滚动内容区域 -->
+    <div class="scroll-content">
+      
+      
+      <!-- 珊瑚礁状态展示区域 -->
+      <div class="coral-status-sections">
+        <!-- 顶部区域：彩色珊瑚礁 -->
+        <div class="status-section top-section">
+          <div class="section-content">
+            <div class="image-container">
+              <img :src="imageUrls.colorfulCoral" alt="Colorful Coral Reef" class="status-image" />
+            </div>
+            <div class="text-container">
+              <h3 class="status-title">Is this the coral reef you remember — bright, colorful, and alive?</h3>
+            </div>
+          </div>
       </div>
-             <div class="buttons">
-         <button class="btn-primary" @click="navigateToTrends">Reef Intelligence Hub</button>
-         <button class="btn-secondary">Discover More</button>
+      
+      <!-- 第一个箭头：跳转到中部区域 -->
+      <div class="scroll-arrow arrow-1" @click="scrollToSection('middle-section')">
+        <img :src="imageUrls.arrowIcon" alt="Scroll Down" class="arrow-icon" />
+      </div>
+      
+        <!-- 中部区域：白化过程 -->
+        <div id="middle-section" class="status-section middle-section">
+          <div class="section-content">
+            <div class="text-container">
+              <h3 class="status-title">Today, most reefs are fading, struggling under climate change and human pressure.</h3>
+            </div>
+            <div class="image-container">
+              <img :src="imageUrls.bleachingCoral" alt="Bleaching Coral" class="status-image" />
+            </div>
+          </div>
+        </div>
+        
+        <!-- 第二个箭头：跳转到底部区域 -->
+        <div class="scroll-arrow arrow-2" @click="scrollToSection('bottom-section')">
+          <img :src="imageUrls.arrowIcon" alt="Scroll Down" class="arrow-icon" />
+          </div>
+        
+        <!-- 底部区域：完全白化 -->
+        <div id="bottom-section" class="status-section bottom-section">
+          <div class="section-content">
+            <div class="image-container">
+              <img :src="imageUrls.bleachedCoral" alt="Bleached Coral" class="status-image" />
+            </div>
+            <div class="text-container">
+              <h3 class="status-title">Without action, they may soon become lifeless white skeletons like this.</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 底部内容区域 -->
+      <div class="bottom-content">
+        <!-- 主标题 -->
+        <div class="intro-section">
+          <h2>Plan Smart. Travel Green. Protect Reefs.</h2>
+          <p>CoralKita guides your trip with real reef data — helping you choose the right island, at the right time, the right way, so you can enjoy Malaysia's reefs while protecting their beauty.</p>
+        </div>
+        
+        <!-- 特点标签 -->
+        <div class="features-section">
+          <div class="feature-tag">
+            <span class="feature-icon">📊</span>
+            <span class="feature-text">Data-Driven</span>
+          </div>
+          <div class="feature-tag">
+            <span class="feature-icon">🌱</span>
+            <span class="feature-text">Responsible</span>
+          </div>
+          <div class="feature-tag">
+            <span class="feature-icon">👥</span>
+            <span class="feature-text">User-friendly</span>
+          </div>
+        </div>
+        
+        <!-- 探索按钮 -->
+        <div class="explore-section">
+          <button class="explore-btn" @click="goToMap">
+            Let's Explore
+          </button>
+        </div>
        </div>
     </div>
+    
+    </div>
+    
+    <!-- Footer -->
+    <footer class="main-footer">
+      <div class="footer-content">
+        © 2025 CoralKita
+        <span class="footer-links">
+          <a href="mailto:coralkita.service@gmail.com">Contact Us</a>
+        </span>
+      </div>
+    </footer>
+    
+    <!-- Chat Widget -->
+    <ChatWidget />
   </div>
 </template>
 
 <script>
-import axios from 'axios'
+import ChatWidget from './ChatWidget.vue'
+import ossService from '@/utils/ossService.js'
 
 export default {
   name: 'VideoBackgroundSimple',
+  components: {
+    ChatWidget
+  },
   data() {
     return {
-      videoSrc: '',
-      loading: true
+      currentLanguage: 'en',
+      // Island dropdown related
+      showTravelDropdown: false,
+      travelIslands: ['Mertang', 'P Singa', 'Sipadan', 'Pulau Lima', 'Seri Buat'],
+      // OSS图片URL
+      imageUrls: {
+        background: '',
+        colorfulCoral: '',
+        bleachingCoral: '',
+        bleachedCoral: '',
+        arrowIcon: '',
+        appIcon: ''
+      }
     }
   },
-  async mounted() {
-    // 从OSS获取主题视频URL
-    await this.loadThemeVideo();
-    
-    // 确保视频自动播放
-    this.$nextTick(() => {
-      const video = this.$refs.backgroundVideo;
-      if (video && this.videoSrc) {
-        video.play().catch(err => {
-          console.log('视频自动播放失败:', err);
-        });
-      }
-    });
+  mounted() {
+    // 加载OSS图片
+    this.loadOssImages();
   },
   methods: {
-    async loadThemeVideo() {
+    /**
+     * 加载所有OSS图片URL
+     */
+    async loadOssImages() {
       try {
-        const response = await axios.get('/oss/video/url', {
-          params: {
-            videoFileName: 'theme.mp4',
-            expireSeconds: 7200 // 2小时过期
-          }
-        });
+        console.log('开始加载OSS图片...')
         
-        if (response.data.code === 1) {
-          this.videoSrc = response.data.data;
-        } else {
-          console.error('Failed to get theme video URL:', response.data.msg);
-          // 使用本地fallback或隐藏视频
-          this.videoSrc = null;
+        // 并行加载所有图片URL
+        const [
+          background,
+          colorfulCoral,
+          bleachingCoral,
+          bleachedCoral,
+          arrowIcon,
+          appIcon
+        ] = await Promise.all([
+          ossService.getMainPageBackgroundUrl(),
+          ossService.getColorfulCoralUrl(),
+          ossService.getBleachingCoralUrl(),
+          ossService.getBleachedCoralUrl(),
+          ossService.getArrowIconUrl(),
+          ossService.getAppIconUrl()
+        ])
+
+        // 更新图片URL
+        this.imageUrls = {
+          background,
+          colorfulCoral,
+          bleachingCoral,
+          bleachedCoral,
+          arrowIcon,
+          appIcon
         }
+
+        // 动态设置背景图片
+        this.setBackgroundImage(background)
+
+        console.log('OSS图片加载完成:', this.imageUrls)
       } catch (error) {
-        console.error('Error loading theme video:', error);
-        // 使用本地fallback或隐藏视频
-        this.videoSrc = null;
-      } finally {
-        this.loading = false;
+        console.error('加载OSS图片失败:', error)
+        // 如果OSS加载失败，使用本地图片作为备用
+        this.loadFallbackImages()
       }
     },
-    
+
+    /**
+     * 加载备用本地图片 - 已移除，完全使用CDN
+     */
+    loadFallbackImages() {
+      console.log('CDN加载失败，但不使用本地图片备用')
+      // 不再使用require()，完全依赖CDN
+      // 如果CDN失败，图片将显示为空或加载失败状态
+    },
+
+    /**
+     * 动态设置背景图片
+     * @param {string} imageUrl - 图片URL
+     */
+    setBackgroundImage(imageUrl) {
+      if (imageUrl) {
+        // 通过JavaScript动态设置CSS变量
+        document.documentElement.style.setProperty('--main-bg-image', `url('${imageUrl}')`)
+      }
+    },
+
     navigateToTrends() {
       // 预加载trends组件
       this.preloadTrends();
@@ -110,234 +247,983 @@ export default {
       // 预加载trends组件
       const trendsComponent = () => import('@/component/TrendsVisualization.vue');
       trendsComponent();
-    }
+    },
+    
+    goToMap() {
+      console.log('Navigating to Map page');
+      this.$router.push('/map').then(() => {
+        // 跳转后直接定位到页面顶部
+        this.$nextTick(() => {
+          window.scrollTo(0, 0);
+        });
+      });
+    },
+
+    goToEducation() {
+      console.log('Navigating to Education page');
+      this.$router.push('/education');
+    },
+
+    goToAITools() {
+      console.log('Navigating to AI Tools page');
+      this.$router.push('/ai-tools');
+    },
+
+    scrollToSection(sectionId) {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    },
+
+    goToIslandDetail(islandName) {
+      console.log('导航到岛屿详情页面:', islandName);
+      this.showTravelDropdown = false;
+      
+      this.$nextTick(() => {
+        this.$router.push(`/travel/${encodeURIComponent(islandName)}`).catch(err => {
+          if (err.name !== 'NavigationDuplicated') {
+            console.error('Navigation error:', err);
+          }
+        });
+      });
+    },
+
+    toggleLanguage() {
+      this.currentLanguage = this.currentLanguage === 'en' ? 'zh' : 'en';
+      console.log('Language switched to:', this.currentLanguage);
+      // 这里可以添加语言切换的逻辑
+    },
+
+
+  },
+  mounted() {
+    console.log('VideoBackgroundSimple 组件已挂载');
+    
+    // Set global refresh detection timestamp for verification system
+    localStorage.setItem('lastPageRefresh', Date.now().toString());
+    
+    // 加载OSS图片
+    this.loadOssImages();
   }
 }
 </script>
 
 <style scoped>
-.video-container {
+.app-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+}
+
+
+.main-container {
+  min-height: 100vh;
   position: relative;
   width: 100%;
+  overflow: visible;   /* ✅ 允许内容自然溢出，由 body 滚动 */
+}
+
+/* 用伪元素承载背景图 */
+.main-container::after {
+  content: "";                        /* 必须加 */
+  position: fixed;                    /* 固定在屏幕，不随滚动动 */
+  top: 0;
+  left: 0;
+  width: 100vw;
   height: 100vh;
-  overflow: hidden;
+
+  background-image: var(--main-bg-image, url('@/assets/bg_mainpage.webp'));
+  background-repeat: no-repeat;
+  background-position: center;        /* 居中显示 */
+  background-size: cover;              /* 覆盖整个容器，保持比例 */
+  
+  z-index: -1;                        /* 放在内容后面 */
+  pointer-events: none;               /* 不影响点击操作 */
 }
 
-/* 加载状态样式 */
-.loading-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
+/* 自定义滚动条样式 */
+.main-container::-webkit-scrollbar {
+  width: 12px;
 }
 
-.loading-content {
-  text-align: center;
-  color: white;
+.main-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
 }
 
-.loading-spinner {
-  width: 50px;
-  height: 50px;
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-top: 4px solid white;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 20px;
+.main-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: content-box;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.main-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+  background-clip: content-box;
 }
 
-.loading-content p {
-  font-size: 18px;
-  font-weight: 300;
-  margin: 0;
-}
-
-
-
-.background-video {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+/* 创建一个滚动内容区域 */
+.scroll-content {
+  position: relative;
+  min-height: 100vh;   /* ✅ 至少一屏高 */
+  height: auto;        /* ✅ 内容自己决定高度 */
   z-index: 1;
 }
 
-.overlay {
+/* 创建渐变遮罩层，增强珊瑚礁健康到白化的视觉效果 */
+.scroll-content::before {
+  content: '';
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 50, 100, 0.4);
-  z-index: 2;
+
+  z-index: 1;
+  pointer-events: none;
 }
 
-.content {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
+/* Top Navigation */
+.top-nav {
+  background: linear-gradient(90deg, rgba(26, 29, 37, 0.95) 0%, rgba(1, 162, 235, 0.95) 100%);
+  backdrop-filter: blur(15px);
   color: white;
-  z-index: 3;
-  max-width: 800px;
-  padding: 20px;
+  padding: 12px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+  transform-origin: center center;
+  will-change: transform;
 }
 
-.logo-container {
-  margin-bottom: 2rem;
-  animation: fadeInDown 1s ease-out;
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.main-logo {
-  max-width: 150px;
-  height: auto;
-  filter: drop-shadow(2px 2px 8px rgba(0, 0, 0, 0.5));
-  transition: transform 0.3s ease;
+.nav-left .logo {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 8px 12px;
+  border-radius: 8px;
 }
 
-.main-logo:hover {
+.nav-left .logo:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05);
+  color: #63b3ed;
+}
+
+.nav-logo {
+  height: 46px;
+  cursor: pointer;
+}
+
+/* Navigation Items */
+.nav-items {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.nav-item-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.map-rec-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+}
+
+.nav-text-line {
+  display: block;
+}
+
+.nav-item {
+  padding: 8px 16px;
+  color: rgba(255, 255, 255, 0.7);
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+.nav-item:hover {
+  color: white;
+  border-bottom-color: rgba(255, 255, 255, 0.5);
+}
+
+.nav-item.active {
+  color: white;
+  border-bottom-color: #63b3ed;
+}
+
+/* Language Toggle */
+.language-toggle {
+  margin-left: 16px;
+}
+
+.lang-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  font-size: 0.9rem;
+  min-width: 40px;
+}
+
+.lang-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
   transform: scale(1.05);
 }
 
-.content h1 {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-  animation: fadeInUp 1s ease-out 0.3s both;
+/* Island 下拉菜单样式 */
+.nav-item-dropdown {
+  position: relative;
 }
 
-.content p {
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1);
+  min-width: 120px;
+  max-width: 140px;
+  z-index: 1000;
+  overflow: hidden;
+  animation: dropdownSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 白色半透明圆角背景容器 */
-.description-box {
-  display: inline-block;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 16px 24px;              
-  border-radius: 16px;               
-  margin: 1rem auto 1.5rem;          
-  backdrop-filter: blur(3px);
-  text-align: center;
+/* 移除小箭头，使用图二样式 */
+
+@keyframes dropdownSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
 }
 
-.description-box p {
-  margin: 6px 0;
-  color: #ffffffff;       
-  font-size: 1.1rem;
-  font-weight: 500;
-  line-height: 1.5;
-}
-
-.buttons {
-  margin-top: 1rem;
-}
-
-.btn-primary, .btn-secondary {
-  padding: 12px 30px;
-  margin: 0 10px;
-  border: none;
-  border-radius: 25px;
-  font-size: 1rem;
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: 14px 20px;
+  color: #1f2937;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.btn-primary {
-  background: linear-gradient(135deg, #264d87ff, #21526dff);
-  color: white;
+.dropdown-item:last-child {
+  border-bottom: none;
 }
 
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 168, 204, 0.4);
-  background: linear-gradient(135deg, #1f4174ff, #1c4358ff);
+.dropdown-item:hover {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(16, 185, 129, 0.08));
+  color: #1e40af;
+  transform: translateX(2px);
 }
 
-.btn-secondary {
-  background: transparent;
-  color: white;
-  border: 2px solid rgba(255, 255, 255, 0.8);
+.dropdown-item:first-child:hover {
+  border-radius: 16px 16px 0 0;
 }
 
-.btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: white;
-  transform: translateY(-2px);
+.dropdown-item:last-child:hover {
+  border-radius: 0 0 16px 16px;
 }
 
-/* 动画效果 */
-@keyframes fadeInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-30px);
+.dropdown-item:first-child:last-child:hover {
+  border-radius: 16px;
+}
+
+
+
+
+
+/* 珊瑚礁状态展示区域样式 */
+.coral-status-sections {
+  position: relative;
+  width: 100%;
+  z-index: 10;
+  margin: 100px 0;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.status-section {
+  width: 100%;
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 40px;
+  margin: 40px 0;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.section-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1700px;
+  gap: 10px;
+  flex-wrap: nowrap;
+  min-width: 0;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.image-container {
+  flex: 0.9;
+  max-width: 650px;
+  min-width: 300px;
+  position: relative;
+  flex-shrink: 0;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.status-image {
+  width: 100%;
+  height: auto;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.status-image:hover {
+  transform: scale(1.05);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+}
+
+.text-container {
+  flex: 1.1;
+  max-width: 700px;
+  min-width: 250px;
+  padding: 40px;
+  margin-right: -40px;
+  min-height: 2.4em; /* 最小高度为两行 */
+  flex-shrink: 0;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.status-title {
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: rgba(24, 40, 58, 1);
+  line-height: 1.2;
+  text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.5);
+  margin: 0;
+  text-align: left;
+  max-width: none;
+  display: block;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+/* 顶部区域：图片在左，文字在右 */
+.top-section .section-content {
+  flex-direction: row;
+}
+
+/* 中部区域：文字在左，图片在右 */
+.middle-section .section-content {
+  flex-direction: row;
+}
+
+/* 底部区域：图片在左，文字在右 */
+.bottom-section .section-content {
+  flex-direction: row;
+}
+
+/* 防止缩放时布局破坏 */
+@media (max-width: 1200px) {
+  .section-content {
+    gap: 8px;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  
+  .image-container {
+    min-width: 280px;
+  }
+  
+  .text-container {
+    min-width: 220px;
+    max-width: 600px;
   }
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
+/* 响应式设计 */
+@media (max-width: 1024px) {
+  .section-content {
+    gap: 15px;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  
+  .status-title {
+    font-size: 2.0rem;
+  }
+  
+  .text-container {
+    padding: 30px;
+  }
+  
+  .image-container {
+    max-width: 700px;
   }
 }
 
-/* 响应式 */
 @media (max-width: 768px) {
-  .main-logo {
-    max-width: 120px;
+  .status-section {
+    min-height: 60vh;
+    padding: 80px 30px;
+    margin: 40px 0;
   }
   
-  .content h1 {
-    font-size: 2rem;
+  .section-content {
+    flex-direction: column !important;
+    gap: 15px;
+    text-align: center;
   }
   
-  .content p {
-    font-size: 1rem;
+  .status-title {
+    text-align: center;
+  font-size: 1.8rem;
   }
   
-  .buttons {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  .image-container,
+  .text-container {
+    max-width: 100%;
+    flex: none;
   }
   
-  .btn-primary, .btn-secondary {
-    margin: 5px 0;
-    width: 200px;
+  .text-container {
+    padding: 30px;
   }
 }
 
 @media (max-width: 480px) {
-  .main-logo {
-    max-width: 100px;
+  .status-section {
+    padding: 60px 20px;
+    margin: 30px 0;
   }
   
-  .logo-container {
-    margin-bottom: 1.5rem;
+  .section-content {
+    gap: 10px;
+  }
+  
+  .status-title {
+    font-size: 1.6rem;
+  }
+  
+  .text-container {
+    padding: 25px;
   }
 }
+
+/* 底部内容区域样式 */
+.bottom-content {
+  margin: 120px auto 200px;       /* 增加底部边距，防止截断 */
+  width: fit-content;
+  max-width: 900px;
+  min-width: 600px;
+  padding: 40px 50px 35px;
+  background: rgba(255, 255, 255, 0.46);
+  backdrop-filter: blur(10px);
+  z-index: 10;
+  border-radius: 25px;
+  border: 10px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  height: auto;              /* 不写死高度，让内容决定 */
+  min-height: 480px;         /* 如果你想保持大概高度，用 min-height */
+}
+
+/* CoralKita简介样式 */
+.intro-section {
+  text-align: center;
+  margin-bottom: 30px;
+ 
+}
+
+.intro-section h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: rgba(21, 48, 71, 0.8);
+  background: linear-gradient(90deg, rgba(26, 29, 37, 0.95) 0%, rgba(43, 135, 179, 0.95) 100%);
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.1);
+  -webkit-background-clip: text;   /* 关键：裁剪背景到文字 */
+  -webkit-text-fill-color: transparent; /* 透明文字，显示背景 */
+}
+
+.intro-section p {
+  font-size: 1.2rem;
+  color: rgba(17, 39, 58, 0.8);
+  line-height: 1.6;
+  max-width: 800px;
+  margin: 0 auto;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.1);
+}
+
+/* 目标介绍样式 */
+.goals-section {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.goals-section h3 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: rgba(26, 60, 89, 0.8);
+  margin-bottom: 16px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.goals-section p {
+  font-size: 1.1rem;
+  color: rgba(26, 60, 89, 0.8);
+  line-height: 1.6;
+  max-width: 700px;
+  margin: 0 auto;
+  text-shadow: 1px 1px 2px rgba(83, 83, 83, 0.8);
+  font-weight: bold;
+}
+
+/* 特点标签样式 */
+.features-section {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  margin-bottom: 35px;
+  flex-wrap: wrap;
+}
+
+.feature-tag {
+  background: rgba(255, 255, 255, 0.48);
+
+  backdrop-filter: blur(5px);
+  border-radius: 20px;
+  padding: 15px 15px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.feature-tag:hover {
+  background: linear-gradient(45deg, #427aba27, #87bbeb7d);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.feature-icon {
+  font-size: 1.5rem;
+}
+
+.feature-text {
+  color: rgba(75, 112, 157, 1);
+  font-weight: 600;
+  font-size: 1rem;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.1);
+}
+
+/* 探索按钮样式 */
+.explore-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.explore-btn {
+  width: 120px;
+  height: 120px;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  background: linear-gradient(45deg, #427abaff, #488fd2ff);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+  box-shadow: 0 0 10px rgba(0, 114, 255, 0.5);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.explore-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 20px rgba(0, 114, 255, 0.8);
+}
+
+/* 悬停时的光晕效果 */
+.explore-btn::after {
+  content: "";
+  position: absolute;
+  width: 200%;
+  height: 300%;
+  top: -100%;
+  left: -50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.4) 10%, transparent 10.01%);
+  background-size: 50px 50px;
+  animation: glow 2s linear infinite;
+  opacity: 0;
+}
+
+.explore-btn:hover::after {
+  opacity: 1;
+}
+
+@keyframes glow {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 100px 100px;
+  }
+}
+
+/* 移除了不再需要的按钮和动画样式 */
+
+/* 响应式 */
+@media (max-width: 1024px) {
+  .nav-items {
+    gap: 20px;
+  }
+  
+  .nav-item {
+    font-size: 0.9rem;
+    padding: 6px 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .top-nav {
+    padding: 8px 16px;
+  }
+  
+  .nav-left .logo {
+    font-size: 1.3rem;
+  }
+  
+  .nav-logo {
+    height: 38px;
+  }
+  
+  .nav-items {
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  
+  .nav-item {
+    font-size: 0.85rem;
+    padding: 4px 8px;
+  }
+  
+  .lang-btn {
+    padding: 4px 8px;
+    font-size: 0.8rem;
+    min-width: 35px;
+  }
+  
+  .top-scroll-hint {
+    top: 90px;
+  }
+  
+  .top-scroll-hint p {
+    font-size: 1rem;
+    padding: 10px 20px;
+  }
+  
+  /* 分界线箭头响应式 */
+  .section-arrow {
+    width: 55px;
+    height: 55px;
+    top: -35px;
+  }
+  
+  .arrow-icon {
+    font-size: 1.6rem;
+  }
+  
+  /* 底部内容响应式 */
+  .bottom-content {
+    padding: 35px 40px 30px;
+    margin: 120px auto 150px; /* 调整响应式边距 */
+    min-width: 500px;
+    max-width: 700px;
+  }
+  
+  .intro-section h2 {
+    font-size: 2rem;
+  }
+  
+  .intro-section p {
+    font-size: 1.1rem;
+  }
+  
+  .goals-section h3 {
+    font-size: 1.6rem;
+  }
+  
+  .goals-section p {
+    font-size: 1rem;
+  }
+  
+  .features-section {
+    gap: 20px;
+  }
+  
+  .feature-tag {
+    padding: 15px 20px;
+    flex: 1;
+    min-width: 200px;
+  }
+  
+  .feature-text {
+    font-size: 0.9rem;
+  }
+  
+  .explore-btn {
+    width: 100px;
+    height: 100px;
+    font-size: 14px;
+  }
+  
+  /* 移动端滚动条样式调整 */
+  .main-container::-webkit-scrollbar {
+    width: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-items {
+    gap: 8px;
+  }
+  
+  .nav-item {
+    font-size: 0.75rem;
+    padding: 4px 6px;
+  }
+  
+  /* Map & Recommendation换行显示 */
+  .nav-item-wrapper .nav-item {
+    font-size: 0.7rem;
+    text-align: center;
+    line-height: 1.2;
+    padding: 2px 4px;
+  }
+  
+  .top-scroll-hint {
+    top: 80px;
+  }
+  
+  .top-scroll-hint p {
+    font-size: 0.9rem;
+    padding: 8px 16px;
+  }
+  
+  /* 小屏幕分界线箭头 */
+  .section-arrow {
+    width: 50px;
+    height: 50px;
+    top: -25px;
+  }
+  
+  .arrow-icon {
+    font-size: 1.4rem;
+  }
+  
+  /* 小屏幕底部内容 */
+  .bottom-content {
+    padding: 25px 30px 20px;
+    margin: 80px auto 120px; /* 调整移动端边距 */
+    min-width: 350px;
+    max-width: 600px;
+  }
+  
+  .intro-section h2 {
+    font-size: 1.8rem;
+  }
+  
+  .intro-section p {
+    font-size: 1rem;
+  }
+  
+  .goals-section h3 {
+    font-size: 1.4rem;
+  }
+  
+  .goals-section p {
+    font-size: 0.95rem;
+  }
+  
+  .features-section {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .feature-tag {
+    padding: 12px 16px;
+    min-width: auto;
+  }
+  
+  .feature-icon {
+    font-size: 1.3rem;
+  }
+  
+  .feature-text {
+    font-size: 0.85rem;
+  }
+  
+  .explore-btn {
+    width: 80px;
+    height: 80px;
+    font-size: 12px;
+  }
+
+  /* 移动端箭头样式调整 */
+  .arrow-icon {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .scroll-arrow {
+    margin: 20px 0;
+  }
+
+}
+
+/* Footer Styles */
+.main-footer {
+  width: 100%;
+  background: rgba(26, 43, 66, 1);
+  color: #e0e7ef;
+  text-align: center;
+  padding: 18px 0 12px 0;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  margin-top: 40px;
+  box-shadow: 0 -2px 12px rgba(59,130,246,0.08);
+  z-index: 10;
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.footer-links {
+  margin-top: 4px;
+  font-size: 14px;
+}
+
+.footer-links a {
+  color: #a5d8ff;
+  text-decoration: none;
+  margin: 0 6px;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+/* 滚动箭头样式 */
+.scroll-arrow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 40px 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 20;
+}
+
+.scroll-arrow:hover {
+  transform: translateY(-5px);
+}
+
+.scroll-arrow:hover .arrow-icon {
+  transform: scale(1.1);
+  filter: brightness(1.2);
+}
+
+.arrow-icon {
+  width: 40px;
+  height: 40px;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
+/* 箭头动画效果 */
+.scroll-arrow {
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+.scroll-arrow:hover {
+  animation: none;
+}
+
 </style>

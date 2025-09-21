@@ -1,30 +1,5 @@
 <template>
-  <div class="video-background-container">
-    <!-- 加载状态 -->
-    <div v-if="loading" class="loading-overlay">
-      <div class="loading-content">
-        <div class="loading-spinner"></div>
-        <p>Loading CoralKita...</p>
-      </div>
-    </div>
-    
-    <!-- 视频背景 -->
-    <video 
-      v-if="!loading && videoSrc"
-      ref="backgroundVideo"
-      class="background-video" 
-      autoplay 
-      muted 
-      loop 
-      playsinline
-    >
-      <source :src="videoSrc" type="video/mp4">
-      您的浏览器不支持视频播放。
-    </video>
-    
-    <!-- 遮罩层 -->
-    <div class="video-overlay"></div>
-    
+  <div class="background-container">
     <!-- 主要内容 -->
     <div class="main-content">
       <div class="hero-section">
@@ -43,133 +18,41 @@
 </template>
 
 <script>
-import axios from 'axios'
-
 export default {
   name: 'VideoBackground',
   data() {
     return {
-      videoSrc: '',
-      loading: true
+      // 移除视频背景，不再需要videoSrc
     }
   },
-  async mounted() {
-    // 从OSS获取主题视频URL
-    await this.loadThemeVideo();
-    
-    // 确保视频自动播放
-    this.$nextTick(() => {
-      const video = this.$refs.backgroundVideo;
-      if (video && this.videoSrc) {
-        video.play().catch(err => {
-          console.log('视频自动播放失败:', err);
-        });
-      }
-    });
-  },
-  methods: {
-    async loadThemeVideo() {
-      try {
-        const response = await axios.get('/oss/video/url', {
-          params: {
-            videoFileName: 'theme.mp4',
-            expireSeconds: 7200 // 2小时过期
-          }
-        });
-        
-        if (response.data.code === 1) {
-          this.videoSrc = response.data.data;
-        } else {
-          console.error('Failed to get theme video URL:', response.data.msg);
-          // 使用本地fallback或隐藏视频
-          this.videoSrc = null;
-        }
-      } catch (error) {
-        console.error('Error loading theme video:', error);
-        // 使用本地fallback或隐藏视频
-        this.videoSrc = null;
-      } finally {
-        this.loading = false;
-      }
-    }
+  mounted() {
+    console.log('VideoBackground 组件已挂载');
   }
 }
 </script>
 
 <style scoped>
-.video-background-container {
+.background-container {
   position: relative;
   width: 100%;
   height: 100vh;
   overflow: hidden;
-}
-
-/* 加载状态样式 */
-.loading-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-}
-
-.loading-content {
-  text-align: center;
-  color: white;
-}
-
-.loading-spinner {
-  width: 50px;
-  height: 50px;
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-top: 4px solid white;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 20px;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.loading-content p {
-  font-size: 18px;
-  font-weight: 300;
-  margin: 0;
-}
-
-.background-video {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  min-width: 100%;
-  min-height: 100%;
-  width: auto;
-  height: auto;
-  transform: translateX(-50%) translateY(-50%);
-  z-index: -2;
-  object-fit: cover;
-}
-
-.video-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
   background: linear-gradient(
     135deg,
-    rgba(0, 100, 150, 0.3) 0%,
-    rgba(0, 50, 100, 0.4) 50%,
-    rgba(0, 30, 80, 0.5) 100%
+    #0077b6 0%,
+    #00a8cc 25%,
+    #0096c7 50%,
+    #0077b6 75%,
+    #023e8a 100%
   );
-  z-index: -1;
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .main-content {

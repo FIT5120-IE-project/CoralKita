@@ -1,5 +1,23 @@
 <template>
   <div class="travel-checklist-page">
+    <!-- 背景图片加载占位符 -->
+    <div class="bg-placeholder" v-if="!backgroundLoaded">
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill" :style="{ width: loadingProgress + '%' }"></div>
+        </div>
+        <p class="loading-text">{{ loadingText }}</p>
+      </div>
+    </div>
+    
+    <!-- 独立的进度条容器 -->
+    <div class="top-progress-container" v-if="!backgroundLoaded">
+      <div class="progress-bar">
+        <div class="progress-fill" :style="{ width: loadingProgress + '%' }"></div>
+      </div>
+      <p class="loading-text">{{ loadingText }}</p>
+    </div>
+    
     <!-- Header with Navigation -->
     <div class="checklist-header">
       <div class="header-left">
@@ -105,47 +123,7 @@
 
     </div>
 
-    <!-- Feedback Modal -->
-    <div v-if="showFeedback" class="feedback-overlay">
-      <div class="feedback-modal">
-        <div class="feedback-header">
-          <h2>Travel Checklist Results</h2>
-          <button class="close-btn" @click="closeFeedback">×</button>
-        </div>
-        <div class="feedback-content">
-          <div class="feedback-summary">
-            <div class="completion-earned">
-              <h3>Great Progress!</h3>
-              <p>You completed {{ getTotalCompleted() }} out of {{ getTotalItems() }} items!</p>
-            </div>
-          </div>
-          
-          <!-- Suggestions for uncompleted items -->
-          <div v-if="getUncompletedItems().length > 0" class="suggestions">
-            <h3>Suggestions for Better Responsible Travel:</h3>
-            <div class="suggestion-list">
-              <div 
-                v-for="suggestion in getUncompletedItems()" 
-                :key="suggestion.id"
-                class="suggestion-item"
-              >
-                <div class="suggestion-icon">💡</div>
-                <div class="suggestion-content">
-                  <h4>{{ suggestion.title }}</h4>
-                  <p>{{ suggestion.suggestion }}</p>
-                </div>
-              </div>
-            </div>
-          </div>
 
-          <div class="feedback-actions">
-            <button class="btn-continue" @click="continueWithSubmission">
-              Continue with Submission
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <!-- Completion Results Modal -->
     <div v-if="showCompletionModal" class="completion-overlay">
@@ -155,16 +133,6 @@
           <button class="close-btn" @click="closeCompletionModal">×</button>
         </div>
         <div class="completion-content">
-          <!-- Overall Medal Display -->
-          <div v-if="medalInfo" class="medal-display">
-            <div class="medal-icon">
-              <img v-if="medalInfo.image" :src="medalInfo.image" :alt="medalInfo.title" class="medal-image" />
-              <span v-else :style="{ color: medalInfo.color }">{{ medalInfo.icon }}</span>
-            </div>
-            <h2 class="medal-title">{{ medalInfo.title }}</h2>
-            <p class="medal-message">{{ medalInfo.message }}</p>
-          </div>
-
           <!-- Phase Medals -->
           <div v-if="completionMedals.length > 0" class="phase-medals">
             <h3>🎖️ Phase Completion Medals</h3>
@@ -176,7 +144,7 @@
               </div>
             </div>
           </div>
-
+          
           <!-- Statistics -->
           <div class="completion-statistics">
             <div class="stats-grid">
@@ -199,10 +167,10 @@
                 <div class="stat-info">
                   <span class="stat-number">{{ getTotalItems() }}</span>
                   <span class="stat-label">Total</span>
-                </div>
               </div>
             </div>
-            
+          </div>
+
             <div class="completion-summary">
               <h4>Checklist Results</h4>
               <p class="completion-text">Completed: <span class="completion-number">{{ getTotalCompleted() }}</span> / {{ getTotalItems() }}</p>
@@ -233,17 +201,17 @@
             
             <div class="share-options">
               <button class="btn-share twitter" @click="shareToTwitter">
-                <i class="share-icon">🐦</i>
+                <img :src="twitterIconUrl" alt="Twitter" class="share-icon" />
                 <span>Twitter</span>
               </button>
               
               <button class="btn-share facebook" @click="shareToFacebook">
-                <i class="share-icon">📘</i>
+                <img :src="facebookIconUrl" alt="Facebook" class="share-icon" />
                 <span>Facebook</span>
               </button>
               
               <button class="btn-share copy" @click="copyShareLink">
-                <i class="share-icon">🔗</i>
+                <img :src="linkIconUrl" alt="Copy Link" class="share-icon" />
                 <span>Copy Link</span>
               </button>
             </div>
@@ -260,21 +228,43 @@
         </div>
       </div>
     </div>
+    
+    <!-- Footer -->
+    <footer class="main-footer">
+      <div class="footer-content">
+        © 2025 CoralKita
+        <span class="footer-links">
+          <a href="mailto:coralkita.service@gmail.com">Contact Us</a>
+        </span>
+      </div>
+    </footer>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
+import ossService from '@/utils/ossService.js'
 
 export default {
   name: 'TravelChecklist',
   data() {
     return {
+      backgroundLoaded: false, // 背景图片加载状态
+      loadingProgress: 0, // 加载进度
+      loadingText: 'Loading travel checklist...', // 加载文本
       currentPhase: 0,
-      showFeedback: false,
+
       showCompletionModal: false,
       medalInfo: null,
       completionMedals: [],
+      
+      // 分享图标URL
+      twitterIconUrl: null,
+      facebookIconUrl: null,
+      linkIconUrl: null,
+      
+      // 背景图片URL
+      backgroundImageUrl: null,
       // Question mapping: map frontend phases structure to backend q1-q17
       questionMapping: [
         // Plan & Prepare (phase 0)
@@ -451,6 +441,15 @@ export default {
     ...mapGetters(['isAuthenticated', 'currentUser'])
   },
   async mounted() {
+    // 立即开始预加载背景图片
+    this.preloadBackgroundImage();
+    
+    // 加载分享图标
+    this.loadShareIcons();
+    
+    // 加载背景图片
+    this.loadBackgroundImage();
+    
     // Set global refresh detection timestamp for verification system
     localStorage.setItem('lastPageRefresh', Date.now().toString());
     
@@ -458,14 +457,54 @@ export default {
     console.log('Component mounted, initializing checklist data');
   },
   methods: {
+    /**
+     * 加载分享图标
+     */
+    async loadShareIcons() {
+      try {
+        // 并行加载所有分享图标
+        const [twitterIconUrl, facebookIconUrl, linkIconUrl] = await Promise.all([
+          ossService.getFileUrl('assets/icons/icon_twiter.png'),
+          ossService.getFileUrl('assets/icons/icon_facebook.png'),
+          ossService.getFileUrl('assets/icons/icon_link.png')
+        ])
+        
+        this.twitterIconUrl = twitterIconUrl
+        this.facebookIconUrl = facebookIconUrl
+        this.linkIconUrl = linkIconUrl
+      } catch (error) {
+        console.warn('加载分享图标失败，使用默认图标:', error)
+        // 保持为null，使用默认图标
+      }
+    },
+
+    /**
+     * 加载背景图片
+     */
+    async loadBackgroundImage() {
+      try {
+        this.backgroundImageUrl = await ossService.getFileUrl('ed_interface.webp')
+        // 设置CSS变量
+        document.documentElement.style.setProperty('--bg-image', `url(${this.backgroundImageUrl})`)
+      } catch (error) {
+        console.warn('加载背景图片失败，使用默认图片:', error)
+        this.backgroundImageUrl = null
+      }
+    },
+
     goBack() {
       this.$router.go(-1);
     },
     
     goToEducation() {
-      // Set navigation marker to indicate this is route navigation not page refresh
-      localStorage.setItem('hasNavigatedToEducation', 'true');
-      this.$router.push('/education');
+      // Set functional navigation marker to indicate return from functional page
+      localStorage.setItem('functionalNavigation', 'true');
+      this.$router.push('/education').catch(err => {
+        // Ignore navigation duplicated error
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
     },
 
     // Update frontend phases based on local data
@@ -568,12 +607,8 @@ export default {
     },
     
     submitChecklist() {
-      const uncompletedItems = this.getUncompletedItems();
-      if (uncompletedItems.length > 0) {
-        this.showFeedback = true;
-      } else {
+      // 直接提交并显示成就界面，不显示未完成项目的反馈
         this.continueWithSubmission();
-      }
     },
     
     async continueWithSubmission() {
@@ -596,9 +631,7 @@ export default {
           const result = await response.json();
           console.log('Submit successful, response:', result);
           
-                     this.closeFeedback();
-           
-          // 显示奖章和结果
+          // 显示成就结果
           this.showCompletionResults();
         } else {
           const errorText = await response.text();
@@ -611,9 +644,7 @@ export default {
       }
     },
     
-    closeFeedback() {
-      this.showFeedback = false;
-    },
+
 
     // 计算总体奖章（根据完成数量）
     calculateOverallMedal(completedCount) {
@@ -623,7 +654,7 @@ export default {
           title: 'Bronze Conservation Guardian',
           message: 'You\'ve taken the first steps towards responsible coral reef tourism! Keep building your sustainable travel practices.',
           icon: '🥉',
-          image: require('@/assets/bronze.png'),
+          image: 'http://static.coralkita.site/assets/bronze.png',
           color: '#CD7F32'
         }
       } else if (completedCount >= 9 && completedCount <= 14) {
@@ -632,7 +663,7 @@ export default {
           title: 'Silver Reef Protector',
           message: 'Excellent progress! You demonstrate strong commitment to coral reef conservation during your travels.',
           icon: '🥈',
-          image: require('@/assets/sliver.png'),
+          image: 'http://static.coralkita.site/assets/sliver.png',
           color: '#C0C0C0'
         }
       } else if (completedCount >= 15 && completedCount <= 17) {
@@ -641,7 +672,7 @@ export default {
           title: 'Gold Coral Champion',
           message: 'Outstanding! You are a true coral reef conservation champion, leading by example in sustainable tourism.',
           icon: '🥇',
-          image: require('@/assets/gold.png'),
+          image: 'http://static.coralkita.site/assets/gold.png',
           color: '#FFD700'
         }
       }
@@ -692,11 +723,11 @@ export default {
       return medals;
     },
 
-    // 提交后显示奖章和结果
+    // 提交后显示成就结果
     showCompletionResults() {
-      const completedCount = this.getTotalCompleted();
-      this.medalInfo = this.calculateOverallMedal(completedCount);
+      // 只计算大项成就，不显示整体奖章
       this.completionMedals = this.calculatePhaseMedals();
+      this.medalInfo = null; // 不显示整体奖章
       this.showCompletionModal = true;
     },
 
@@ -772,6 +803,72 @@ export default {
         accuracy: Math.round((completedCount / totalCount) * 100)
       });
       return `${baseUrl}/checklist?${params.toString()}`;
+    },
+
+    /**
+     * 预加载背景图片
+     */
+    preloadBackgroundImage() {
+      // 创建高优先级预加载链接元素
+      const preloadLink = document.createElement('link');
+      preloadLink.rel = 'preload';
+      preloadLink.as = 'image';
+      preloadLink.href = this.backgroundImageUrl;
+      preloadLink.fetchPriority = 'high'; // 高优先级
+      
+      // 添加到head中
+      document.head.appendChild(preloadLink);
+      
+      // 模拟加载进度
+      this.simulateLoadingProgress();
+      
+      // 预加载图片到浏览器缓存
+      const img = new Image();
+      img.src = this.backgroundImageUrl;
+      img.onload = () => {
+        console.log('Travel Checklist background image preloaded to cache');
+        this.loadingProgress = 100;
+        this.loadingText = 'Travel checklist loaded successfully!';
+        setTimeout(() => {
+          this.backgroundLoaded = true;
+        }, 500);
+      };
+      img.onerror = () => {
+        console.warn('Failed to preload Travel Checklist background image');
+        this.loadingProgress = 100;
+        this.loadingText = 'Using backup interface...';
+        setTimeout(() => {
+          this.backgroundLoaded = true; // 即使失败也隐藏占位符
+        }, 500);
+      };
+      
+      console.log('Travel Checklist background image preload started');
+    },
+
+    /**
+     * 模拟加载进度
+     */
+    simulateLoadingProgress() {
+      const progressSteps = [
+        { progress: 20, text: 'Loading travel checklist...' },
+        { progress: 40, text: 'Preparing conservation tips...' },
+        { progress: 60, text: 'Setting up interface...' },
+        { progress: 80, text: 'Almost ready...' },
+        { progress: 95, text: 'Finalizing checklist setup...' }
+      ];
+
+      let currentStep = 0;
+      const updateProgress = () => {
+        if (currentStep < progressSteps.length) {
+          const step = progressSteps[currentStep];
+          this.loadingProgress = step.progress;
+          this.loadingText = step.text;
+          currentStep++;
+          setTimeout(updateProgress, 800);
+        }
+      };
+
+      updateProgress();
     }
   }
 }
@@ -780,11 +877,134 @@ export default {
 <style scoped>
 .travel-checklist-page {
   min-height: 100vh;
-  background-image: url('@/assets/ed_interface.png');
-  background-size: cover;
-  background-position: center;
+  background-image: var(--bg-image, url('@/assets-webp/ed_interface.webp'));
   background-repeat: no-repeat;
+  background-attachment: fixed;   /* 页面滚动时固定 */
+  background-position: center;    /* 居中显示 */
+  background-size: cover;         /* 覆盖整个容器，保持比例 */
   font-family: 'Arial', sans-serif;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  /* 优化背景图片加载 */
+  will-change: transform;      /* 提示浏览器优化 */
+  transform: translateZ(0);     /* 启用硬件加速 */
+}
+
+/* 海洋主题背景加载占位符样式 */
+.bg-placeholder {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #0f4c75 0%, #3282b8 25%, #0f4c75 50%, #1e3a8a 75%, #0f4c75 100%);
+  background-size: 400% 400%;
+  animation: oceanWave 8s ease-in-out infinite;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  color: white;
+  font-size: 18px;
+  overflow: hidden;
+}
+
+.bg-placeholder::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="waves" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M0,50 Q25,30 50,50 T100,50 L100,100 L0,100 Z" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23waves)"/></svg>');
+  animation: waveMotion 6s ease-in-out infinite;
+}
+
+@keyframes oceanWave {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes waveMotion {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(1deg); }
+}
+
+/* 海洋主题进度条样式 */
+.progress-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  width: 300px;
+  text-align: center;
+}
+
+/* 顶部独立进度条样式 */
+.top-progress-container {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1002;
+  width: 300px;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 10px 20px;
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 15px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00d4ff 0%, #00a8cc 50%, #0077be 100%);
+  border-radius: 10px;
+  transition: width 0.8s ease-in-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-fill::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  animation: shimmer 2s infinite;
+}
+
+.loading-text {
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  margin: 0;
+  animation: textGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+@keyframes textGlow {
+  0% { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); }
+  100% { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5), 0 0 10px rgba(0, 212, 255, 0.3); }
 }
 
 /* Header */
@@ -1182,158 +1402,9 @@ export default {
   transform: translateY(-2px);
 }
 
-/* Feedback Modal */
-.feedback-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(5px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  animation: fadeIn 0.3s ease;
-}
 
-.feedback-modal {
-  background: linear-gradient(135deg, rgba(156, 160, 181, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
-  border-radius: 25px;
-  padding: 0;
-  max-width: 600px;
-  width: 90%;
-  max-height: 80vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-  animation: slideUp 0.3s ease;
-}
 
-.feedback-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 25px 30px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-}
 
-.feedback-header h2 {
-  color: white;
-  font-size: 24px;
-  margin: 0;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 28px;
-  cursor: pointer;
-  padding: 5px;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
-
-.close-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: rotate(90deg);
-}
-
-.feedback-content {
-  padding: 30px;
-}
-
-.feedback-summary {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.completion-earned h3 {
-  color: #FFD700;
-  font-size: 28px;
-  margin: 0 0 10px 0;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-}
-
-.completion-earned p {
-  color: white;
-  font-size: 16px;
-  margin: 0;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
-}
-
-.suggestions h3 {
-  color: white;
-  font-size: 20px;
-  margin: 0 0 20px 0;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-}
-
-.suggestion-list {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.suggestion-item {
-  display: flex;
-  gap: 15px;
-  padding: 15px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.suggestion-icon {
-  font-size: 24px;
-  flex-shrink: 0;
-}
-
-.suggestion-content h4 {
-  color: white;
-  margin: 0 0 8px 0;
-  font-size: 16px;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
-}
-
-.suggestion-content p {
-  color: white;
-  opacity: 0.9;
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.5;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
-}
-
-.feedback-actions {
-  text-align: center;
-  margin-top: 30px;
-}
-
-.btn-continue {
-  padding: 15px 30px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  border-radius: 25px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-}
-
-.btn-continue:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
-}
 
 /* Completion Modal Styles */
 .completion-overlay {
@@ -1377,6 +1448,30 @@ export default {
   font-size: 24px;
   margin: 0;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.close-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.6);
+  transform: rotate(90deg) scale(1.1);
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
 }
 
 .completion-content {
@@ -1707,7 +1802,9 @@ export default {
 }
 
 .completion-modal .share-icon {
-  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
 }
 
 /* Completion Actions */
@@ -1719,36 +1816,73 @@ export default {
 
 .btn-back-education,
 .btn-close-modal {
-  padding: 12px 25px;
+  padding: 15px 30px;
   border: none;
-  border-radius: 25px;
+  border-radius: 30px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
 }
 
 .btn-back-education {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-back-education::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-back-education:hover::before {
+  left: 100%;
 }
 
 .btn-back-education:hover {
   background: linear-gradient(135deg, #5a6fd8 0%, #6a5acd 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 .btn-close-modal {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.15);
   color: white;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-close-modal::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.5s;
+}
+
+.btn-close-modal:hover::before {
+  left: 100%;
 }
 
 .btn-close-modal:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-3px);
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
 }
 
 /* Animations */
@@ -1810,10 +1944,7 @@ export default {
     gap: 10px;
   }
 
-  .feedback-modal {
-    width: 95%;
-    margin: 20px;
-  }
+
 
   .completion-modal {
     width: 95%;
@@ -1846,5 +1977,44 @@ export default {
   .medal-title {
     font-size: 24px;
   }
+}
+
+/* Footer Styles */
+.main-footer {
+  width: 100%;
+  background: rgba(26, 43, 66, 1);
+  color: #e0e7ef;
+  text-align: center;
+  padding: 18px 0 12px 0;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  margin-top: 40px;
+  box-shadow: 0 -2px 12px rgba(59,130,246,0.08);
+  z-index: 10;
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.footer-links {
+  margin-top: 4px;
+  font-size: 14px;
+}
+
+.footer-links a {
+  color: #a5d8ff;
+  text-decoration: none;
+  margin: 0 6px;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover {
+  color: #fff;
+  text-decoration: underline;
 }
 </style>

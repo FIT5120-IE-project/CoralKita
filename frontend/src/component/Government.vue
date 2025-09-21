@@ -1,24 +1,53 @@
 <template>
   <div class="government-container">
+    <!-- 背景图片加载占位符 -->
+    <div class="bg-placeholder" v-if="!backgroundLoaded">
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill" :style="{ width: loadingProgress + '%' }"></div>
+        </div>
+        <p class="loading-text">{{ loadingText }}</p>
+      </div>
+    </div>
+    
     <!-- Top Navigation -->
     <div class="top-nav">
       <div class="nav-left">
         <!-- Left side logo -->
-        <img src="@/assets/icon.png" alt="logo" class="nav-logo" @click="goToHome" />
+        <img :src="appIconUrl" alt="logo" class="nav-logo" @click="goToHome" />
         <h1 class="logo" @click="goToHome">CoralKita</h1>
       </div>
       <div class="nav-right">
         <div class="nav-items">
-          <span class="nav-item" @click="goToMap">Map</span>
-          <span class="nav-item" @click="goToTrends">Trends</span>
+          <div class="nav-item-wrapper">
+            <span class="nav-item map-rec-item" @click="goToMap">
+              <span class="nav-text-line">Map &</span>
+              <span class="nav-text-line">Recommendation</span>
+            </span>
+          </div>
+          <div class="nav-item-dropdown" @mouseenter="showTravelDropdown = true" @mouseleave="showTravelDropdown = false">
+            <span class="nav-item">Island</span>
+            <div class="dropdown-menu" v-show="showTravelDropdown">
+              <div 
+                v-for="island in travelIslands" 
+                :key="island"
+                class="dropdown-item"
+                @click="goToIslandDetail(island)"
+              >
+                <span>{{ island }}</span>
+              </div>
+            </div>
+          </div>
           <span class="nav-item" @click="goToEducation">Education</span>
-          <span class="nav-item active">Government</span>
+          <span class="nav-item" @click="goToAITools">AI Classification</span>
         </div>
       </div>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
+
+      <!-- Government Portal Content -->
       <div class="coming-soon-card">
         <div class="icon-container">
           <div class="government-icon">🏛️</div>
@@ -44,34 +73,155 @@
         </button>
       </div>
     </div>
+    
+    <!-- Footer -->
+    <footer class="main-footer">
+      <div class="footer-content">
+        © 2025 CoralKita
+        <span class="footer-links">
+          <a href="mailto:coralkita.service@gmail.com">Contact Us</a>
+        </span>
+      </div>
+    </footer>
   </div>
 </template>
 
 <script>
+import ossService from '@/utils/ossService.js'
+
 export default {
   name: 'Government',
-      mounted() {
-      // Set global refresh detection timestamp for verification system
-      localStorage.setItem('lastPageRefresh', Date.now().toString());
-    },
+  data() {
+    return {
+      backgroundLoaded: false, // 背景图片加载状态
+      loadingProgress: 0, // 加载进度
+      loadingText: 'Loading government data...', // 加载文本
+      appIconUrl: null, // 应用图标URL
+      backgroundImageUrl: null, // 背景图片URL
+      // Travel dropdown related
+      showTravelDropdown: false,
+      currentLanguage: 'en',
+      travelIslands: ['Mertang', 'P Singa', 'Sipadan', 'Pulau Lima', 'Seri Buat']
+    }
+  },
+  mounted() {
+    // 立即开始预加载背景图片
+    this.preloadBackgroundImage();
+    
+    // 加载应用图标
+    this.loadAppIcon();
+    
+    // 加载背景图片
+    this.loadBackgroundImage();
+    
+    // Set global refresh detection timestamp for verification system
+    localStorage.setItem('lastPageRefresh', Date.now().toString());
+  },
   methods: {
+    /**
+     * 加载应用图标
+     */
+    async loadAppIcon() {
+      try {
+        this.appIconUrl = await ossService.getAppIconUrl()
+      } catch (error) {
+        console.warn('加载应用图标失败，使用默认图标:', error)
+        this.appIconUrl = null
+      }
+    },
+
+    /**
+     * 加载背景图片
+     */
+    async loadBackgroundImage() {
+      try {
+        this.backgroundImageUrl = await ossService.getFileUrl('bg_login5.webp')
+        // 设置CSS变量
+        document.documentElement.style.setProperty('--bg-image', `url(${this.backgroundImageUrl})`)
+      } catch (error) {
+        console.warn('加载背景图片失败，使用默认图片:', error)
+        this.backgroundImageUrl = null
+      }
+    },
+
+    /**
+     * 预加载背景图片
+     */
+    preloadBackgroundImage() {
+      // 创建高优先级预加载链接元素
+      const preloadLink = document.createElement('link');
+      preloadLink.rel = 'preload';
+      preloadLink.as = 'image';
+      preloadLink.href = this.backgroundImageUrl;
+      preloadLink.fetchPriority = 'high'; // 高优先级
+      
+      // 添加到head中
+      document.head.appendChild(preloadLink);
+      
+      // 预加载图片到浏览器缓存
+      const img = new Image();
+      img.src = this.backgroundImageUrl;
+      img.onload = () => {
+        console.log('Government background image preloaded to cache');
+        this.backgroundLoaded = true;
+      };
+      img.onerror = () => {
+        console.warn('Failed to preload Government background image');
+        this.backgroundLoaded = true; // 即使失败也隐藏占位符
+      };
+      
+      console.log('Government background image preload started');
+    },
+
+    // Travel navigation methods
+    goToIslandDetail(islandName) {
+      console.log('导航到岛屿详情页面:', islandName);
+      this.showTravelDropdown = false;
+      
+      this.$nextTick(() => {
+        this.$router.push(`/travel/${encodeURIComponent(islandName)}`).catch(err => {
+          if (err.name !== 'NavigationDuplicated') {
+            console.error('Navigation error:', err);
+          }
+        });
+      });
+    },
+    
     goToHome() {
       window.location.href = '/';
     },
 
     goToMap() {
-      localStorage.setItem('hasNavigatedToEducation', 'true');
-      this.$router.push('/map');
+      this.$router.push('/map').catch(err => {
+        // Ignore navigation duplicated error
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
     },
 
-    goToTrends() {
-      localStorage.setItem('hasNavigatedToEducation', 'true');
-      this.$router.push('/trends');
-    },
 
     goToEducation() {
-      localStorage.setItem('hasNavigatedToEducation', 'true');
-      this.$router.push('/education');
+      // 主页面导航，不设置标记，应该显示验证
+      this.$router.push('/education').catch(err => {
+        // Ignore navigation duplicated error
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
+    },
+
+    goToAITools() {
+      console.log('Navigate to AI Tools page');
+      this.$router.push('/ai-tools').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
+    },
+
+    toggleLanguage() {
+      this.currentLanguage = this.currentLanguage === 'en' ? 'zh' : 'en'
     },
 
     goBack() {
@@ -93,7 +243,61 @@ export default {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   position: relative;
   overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  /* 优化背景图片加载 */
+  will-change: transform;      /* 提示浏览器优化 */
+  transform: translateZ(0);     /* 启用硬件加速 */
 }
+
+/* 海洋主题背景加载占位符样式 */
+.bg-placeholder {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #0f4c75 0%, #3282b8 25%, #0f4c75 50%, #1e3a8a 75%, #0f4c75 100%);
+  background-size: 400% 400%;
+  animation: oceanWave 8s ease-in-out infinite;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  color: white;
+  font-size: 18px;
+  overflow: hidden;
+}
+
+.bg-placeholder::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="waves" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M0,50 Q25,30 50,50 T100,50 L100,100 L0,100 Z" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23waves)"/></svg>');
+  animation: waveMotion 6s ease-in-out infinite;
+}
+
+
+
+@keyframes oceanWave {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes waveMotion {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(1deg); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(5deg); }
+}
+
 
 .government-container::before {
   content: "";
@@ -102,7 +306,11 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: url('@/assets/bg_login5.jpg') center/cover;
+  background-image: var(--bg-image, url('@/assets/bg_login5.webp'));
+  background-repeat: no-repeat;
+  background-attachment: fixed;   /* 页面滚动时固定 */
+  background-position: center;    /* 居中显示 */
+  background-size: cover;         /* 覆盖整个容器，保持比例 */
   opacity: 0.3;
   z-index: 1;
 }
@@ -153,6 +361,24 @@ export default {
   display: flex;
   gap: 32px;
   align-items: center;
+  flex-wrap: wrap;
+}
+
+.nav-item-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.map-rec-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+}
+
+.nav-text-line {
+  display: block;
 }
 
 .nav-item {
@@ -175,16 +401,113 @@ export default {
   border-bottom-color: #63b3ed;
 }
 
+/* Island 下拉菜单样式 */
+.nav-item-dropdown {
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px); /* 在Island正下方，留8px间距 */
+  left: 50%;
+  transform: translateX(-50%); /* 居中对齐 */
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1);
+  min-width: 120px;
+  max-width: 140px;
+  z-index: 1000;
+  overflow: hidden;
+  animation: dropdownSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 移除小箭头，使用图二样式 */
+
+@keyframes dropdownSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: 14px 20px;
+  color: #1f2937;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+/* Language Toggle */
+.language-toggle {
+  margin-left: 16px;
+}
+
+.lang-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  font-size: 0.9rem;
+  min-width: 40px;
+}
+
+.lang-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.05);
+}
+
+.dropdown-item:hover {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(16, 185, 129, 0.08));
+  color: #1e40af;
+  transform: translateX(2px);
+}
+
+.dropdown-item:first-child:hover {
+  border-radius: 16px 16px 0 0;
+}
+
+.dropdown-item:last-child:hover {
+  border-radius: 0 0 16px 16px;
+}
+
+.dropdown-item:first-child:last-child:hover {
+  border-radius: 16px;
+}
+
 /* Main Content */
 .main-content {
   position: relative;
   z-index: 2;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
   min-height: calc(100vh - 70px);
   padding: 40px 20px;
 }
+
+
 
 .coming-soon-card {
   background: rgba(255, 255, 255, 0.95);
@@ -312,6 +635,22 @@ export default {
     gap: 20px;
   }
   
+  .mode-toggle {
+    flex-direction: column;
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .toggle-btn {
+    text-align: center;
+  }
+  
+  .maze-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  
   .coming-soon-card {
     padding: 40px 30px;
     margin: 20px;
@@ -351,5 +690,104 @@ export default {
   .coming-soon-card h1 {
     font-size: 1.8rem;
   }
+}
+
+/* Footer Styles */
+.main-footer {
+  width: 100%;
+  background: rgba(26, 43, 66, 1);
+  color: #e0e7ef;
+  text-align: center;
+  padding: 18px 0 12px 0;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  margin-top: 40px;
+  box-shadow: 0 -2px 12px rgba(59,130,246,0.08);
+  z-index: 10;
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.footer-links {
+  margin-top: 4px;
+  font-size: 14px;
+}
+
+.footer-links a {
+  color: #a5d8ff;
+  text-decoration: none;
+  margin: 0 6px;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+/* 海洋主题进度条样式 */
+.progress-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  width: 300px;
+  text-align: center;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 15px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00d4ff 0%, #00a8cc 50%, #0077be 100%);
+  border-radius: 10px;
+  transition: width 0.8s ease-in-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-fill::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  animation: shimmer 2s infinite;
+}
+
+.loading-text {
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  margin: 0;
+  animation: textGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+@keyframes textGlow {
+  0% { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); }
+  100% { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5), 0 0 10px rgba(0, 212, 255, 0.3); }
 }
 </style>

@@ -6,11 +6,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const BACKEND_URL = 'http://localhost:8080';
 const FRONTEND_PORT = 3001;
 
-module.exports = (env, argv) => {
-  const isProduction = argv.mode === 'production';
-  
-  return {
-    mode: isProduction ? 'production' : 'development', // 根据构建模式设置
+module.exports = {
+  mode: 'development', // 开发模式
   entry: './src/main.js', // 入口文件
   output: {
     path: path.resolve(__dirname, 'dist'), // 打包目录
@@ -37,10 +34,6 @@ module.exports = (env, argv) => {
       },
       '/checklist': {
         target: BACKEND_URL,  // 代理清单相关的API
-        changeOrigin: true
-      },
-      '/oss': {
-        target: BACKEND_URL,  // 代理OSS相关的API
         changeOrigin: true
       }
     }
@@ -71,6 +64,13 @@ module.exports = (env, argv) => {
         type: 'asset/resource'
       },
       {
+        test: /\.webp$/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'images/[name][hash][ext][query]'
+        }
+      },
+      {
         test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)$/,
         type: 'asset/resource',
         generator: {
@@ -92,5 +92,4 @@ module.exports = (env, argv) => {
     },
     extensions: ['.js', '.vue', '.json']
   }
-  };
 };

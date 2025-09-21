@@ -3,9 +3,13 @@ server:
 
 spring:
   profiles:
-    active: dev
+    active: ser
   main:
     allow-circular-references: true
+  servlet:
+    multipart:
+      max-file-size: 16MB
+      max-request-size: 16MB
   datasource:
     druid:
       driver-class-name: ${sky.datasource.driver-class-name}
@@ -47,7 +51,5 @@ aliyun:
 
 # RAG系统配置
 rag:
-  script:
-    path: rag_api.py
-python:
-  executable: uv run python  # 使用uv虚拟环境
+  http:
+    url: ${RAG_HTTP_URL:http://localhost:5001}  # RAG HTTP服务地址

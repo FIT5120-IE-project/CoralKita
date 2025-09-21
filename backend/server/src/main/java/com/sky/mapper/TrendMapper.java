@@ -81,4 +81,11 @@ public interface TrendMapper {
             ") t2 ON t1.island = t2.island AND t1.date = t2.max_date " +
             "ORDER BY t1.island")
     List<TrendAnalysisMetadata> getLatestYearAllIslandsMetadata();
+
+    /**
+     * 批量获取所有岛屿的珊瑚数据
+     * @return 珊瑚数据列表
+     */
+    @Select("select * from coral order by island, date desc")
+    List<Coral> getAllIslandsCoralData();
 }

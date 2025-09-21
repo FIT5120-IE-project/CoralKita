@@ -240,4 +240,104 @@ public class TrendServiceImpl implements TrendService {
         log.info("查询到{}条各岛屿最新年份的趋势分析元数据", metadataList.size());
         return metadataList;
     }
+
+    /**
+     * 批量获取所有岛屿的趋势数据
+     * @return 所有岛屿的趋势数据Map，key为岛屿名称，value为趋势数据列表
+     */
+    @Override
+    public Map<String, List<TrendVO>> getAllIslandsTrendData() {
+        log.info("批量获取所有岛屿的趋势数据");
+        
+        Map<String, List<TrendVO>> allIslandsTrendData = new HashMap<>();
+        
+        try {
+            // 获取所有岛屿列表
+            List<String> allIslands = trendMapper.getAllIslands();
+            log.info("获取到{}个岛屿", allIslands.size());
+            
+            // 批量查询所有岛屿的趋势数据
+            List<Trend> allTrends = trendMapper.getByIslands(allIslands);
+            log.info("批量查询到{}条趋势数据", allTrends.size());
+            
+            // 按岛屿分组并转换为VO
+            Map<String, List<Trend>> trendsByIsland = allTrends.stream()
+                    .collect(Collectors.groupingBy(Trend::getIsland));
+            
+            // 为每个岛屿转换数据
+            for (Map.Entry<String, List<Trend>> entry : trendsByIsland.entrySet()) {
+                String island = entry.getKey();
+                List<Trend> islandTrends = entry.getValue();
+                
+                List<TrendVO> trendVOList = islandTrends.stream().map(trend -> {
+                    return TrendVO.builder()
+                            .date(trend.getDate())
+                            .LCC(trend.getLcc())
+                            .OT(trend.getOt())
+                            .AS(trend.getAs())
+                            .SD(trend.getSd())
+                            .DI(trend.getDi())
+                            .PI(trend.getPi())
+                            .build();
+                }).collect(Collectors.toList());
+                
+                allIslandsTrendData.put(island, trendVOList);
+                log.info("岛屿 {} 有 {} 条趋势数据", island, trendVOList.size());
+            }
+            
+            // 为没有数据的岛屿添加空列表
+            for (String island : allIslands) {
+                if (!allIslandsTrendData.containsKey(island)) {
+                    allIslandsTrendData.put(island, new ArrayList<>());
+                    log.warn("岛屿 {} 没有趋势数据", island);
+                }
+            }
+            
+        } catch (Exception e) {
+            log.error("批量获取所有岛屿趋势数据失败: {}", e.getMessage(), e);
+            // 返回空Map而不是抛出异常
+            return new HashMap<>();
+        }
+        
+        log.info("成功获取{}个岛屿的趋势数据", allIslandsTrendData.size());
+        return allIslandsTrendData;
+    }
+
+    /**
+     * 批量获取所有岛屿的珊瑚数据（bleach数据）
+     * @return 所有岛屿的珊瑚数据Map，key为岛屿名称，value为珊瑚数据列表
+     */
+    @Override
+    public Map<String, List<Coral>> getAllIslandsCoralData() {
+        log.info("批量获取所有岛屿的珊瑚数据");
+        
+        Map<String, List<Coral>> allIslandsCoralData = new HashMap<>();
+        
+        try {
+            // 批量查询所有岛屿的珊瑚数据
+            List<Coral> allCorals = trendMapper.getAllIslandsCoralData();
+            log.info("批量查询到{}条珊瑚数据", allCorals.size());
+            
+            // 按岛屿分组
+            Map<String, List<Coral>> coralsByIsland = allCorals.stream()
+                    .collect(Collectors.groupingBy(Coral::getIsland));
+            
+            // 为每个岛屿处理数据
+            for (Map.Entry<String, List<Coral>> entry : coralsByIsland.entrySet()) {
+                String island = entry.getKey();
+                List<Coral> islandCorals = entry.getValue();
+                
+                allIslandsCoralData.put(island, islandCorals);
+                log.info("岛屿 {} 有 {} 条珊瑚数据", island, islandCorals.size());
+            }
+            
+        } catch (Exception e) {
+            log.error("批量获取所有岛屿珊瑚数据失败: {}", e.getMessage(), e);
+            // 返回空Map而不是抛出异常
+            return new HashMap<>();
+        }
+        
+        log.info("成功获取{}个岛屿的珊瑚数据", allIslandsCoralData.size());
+        return allIslandsCoralData;
+    }
 }

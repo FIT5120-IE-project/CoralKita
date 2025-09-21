@@ -15,3 +15,8 @@ aliyun:
     accessKeyId: ${ALIYUN_AK} 
     accessKeySecret: ${ALIYUN_SK}
     bucket: coralkita
+
+# RAG系统配置
+rag:
+  http:
+    url: ${RAG_HTTP_URL:http://localhost:5001}  # RAG HTTP服务地址
