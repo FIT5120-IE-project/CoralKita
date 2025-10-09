@@ -15,18 +15,17 @@
       <div class="nav-left">
         <!-- Left side logo -->
         <img :src="imageUrls.appIcon" alt="logo" class="nav-logo" @click="goToHome" />
-        <h1 class="logo" @click="goToHome">CoralKita</h1>
+        <h1 class="logo" @click="goToHome">{{ $t('nav.logo') }}</h1>
       </div>
       <div class="nav-right">
         <div class="nav-items">
-          <div class="nav-item-wrapper">
-            <span class="nav-item map-rec-item" @click="goToMap">
-              <span class="nav-text-line">Map &</span>
-              <span class="nav-text-line">Recommendation</span>
-            </span>
-          </div>
           <div class="nav-item-dropdown" @mouseenter="showTravelDropdown = true" @mouseleave="showTravelDropdown = false">
-            <span class="nav-item">Island</span>
+            <div class="nav-item-wrapper">
+              <span class="nav-item map-rec-item" @click="goToMap">
+                <span class="nav-text-line">{{ $t('nav.mapRecommendation.line1') }}</span>
+                <span class="nav-text-line">{{ $t('nav.mapRecommendation.line2') }}</span>
+              </span>
+            </div>
             <div class="dropdown-menu" v-show="showTravelDropdown">
               <div 
                 v-for="island in travelIslands" 
@@ -38,26 +37,44 @@
               </div>
             </div>
           </div>
-          <span class="nav-item active">Education</span>
-          <span class="nav-item" @click="goToAITools">AI Classification</span>
+          <div class="nav-item-dropdown" @mouseenter="showEducationDropdown = true" @mouseleave="showEducationDropdown = false">
+            <span class="nav-item active">{{ $t('nav.education') }}</span>
+            <div class="dropdown-menu" v-show="showEducationDropdown">
+              <div class="dropdown-item" @click="goToEducation">
+                <span>{{ $t('education.dropdown.tourismHub') }}</span>
+              </div>
+              <div class="dropdown-item" @click="goToTravelChecklist">
+                <span>{{ $t('education.dropdown.tourismChecklist') }}</span>
+              </div>
+            </div>
+          </div>
+          <span class="nav-item" @click="goToAITools">{{ $t('nav.aiClassification') }}</span>
+          <span class="nav-item" @click="goToGovernment">{{ $t('nav.government') }}</span>
+          <span class="nav-item" @click="goToFAQ">{{ $t('nav.faq') }}</span>
+          <LanguageSwitcher />
         </div>
       </div>
     </div>
 
     <!-- Header -->
     <div class="education-header">
-      <h1>Education & Responsible Tourism Hub</h1>
-      <p>Learn about coral reefs and become a responsible traveler</p>
-      <button class="verification-game-btn" @click="startVerificationGame">
-        🎮 Wanna Try a Game?
-      </button>
+      <h1>{{ $t('education.title') }}</h1>
+      <p>{{ $t('education.subtitle') }}</p>
+      <div class="header-buttons">
+        <button class="verification-game-btn" @click="startVerificationGame">
+          {{ $t('education.gameButton') }}
+        </button>
+        <button class="tips-guides-btn" @click="goToTravelChecklist">
+          {{ $t('education.tipsGuidesButton') }}
+        </button>
+      </div>
     </div>
 
     <!-- Main Content Area -->
     <div class="education-content">
       <!-- Video Learning Section -->
       <div class="video-learning-section">
-        <h2>Video Learning</h2>
+        <h2>{{ $t('education.sections.videos') }}</h2>
         <div class="video-grid-2x2">
           <div 
             v-for="(video, index) in localVideos" 
@@ -66,49 +83,49 @@
             @click="playVideo(video)"
           >
             <div class="video-thumbnail">
-              <img :src="video.thumbnail" :alt="video.title" />
+              <img :src="video.thumbnail" :alt="$t(video.titleKey)" />
               <div class="play-overlay">
                 <div class="play-button">
                   <span class="play-icon">▶</span>
           </div>
               </div>
           </div>
-            <div class="video-title">{{ video.title }}</div>
+            <div class="video-title">{{ $t(video.titleKey) }}</div>
         </div>
             </div>
       </div>
 
       <!-- Coral Reefs Numbers Section -->
       <div class="coral-numbers-section">
-        <h2 class="numbers-title" id="reef-title">CORAL REEFS IN NUMBERS</h2>
+        <h2 class="numbers-title" id="reef-title">{{ $t('education.sections.numbers') }}</h2>
 
         <div class="numbers-row">
           <article class="numbers-card">
             <div class="numbers-stat"><span class="numbers-count" data-to="3">0</span></div>
-            <div class="numbers-headline">main types of coral reefs</div>
-            <p class="numbers-desc">Fringing reefs hug coastlines, barrier reefs sit behind lagoons, and atolls form rings in the open ocean. Knowing their formation helps us understand why certain reefs thrive in specific places.</p>
-            <a class="numbers-cta" href="https://www.youtube.com/watch?v=mPA9Ze16lGw" target="_blank">Learn More</a>
+            <div class="numbers-headline">{{ $t('education.numbers.mainTypes.title') }}</div>
+            <p class="numbers-desc">{{ $t('education.numbers.mainTypes.description') }}</p>
+            <a class="numbers-cta" href="https://www.youtube.com/watch?v=mPA9Ze16lGw" target="_blank">{{ $t('education.numbers.mainTypes.learnMore') }}</a>
           </article>
           <article class="numbers-card">
             <div class="numbers-stat"><span class="numbers-count" data-to="3.4" data-decimals="1">0</span><span class="numbers-suffix">billion</span></div>
-            <div class="numbers-headline">RM annual tourism value on Tioman</div>
-            <p class="numbers-desc">Healthy reefs attract divers, protect coasts, and support fisheries—driving Malaysia's tourism economy.</p>
-            <a class="numbers-cta" href="https://www.youtube.com/watch?v=3JfiN6s85p0" target="_blank">Learn More</a>
+            <div class="numbers-headline">{{ $t('education.numbers.tourismValue.title') }}</div>
+            <p class="numbers-desc">{{ $t('education.numbers.tourismValue.description') }}</p>
+            <a class="numbers-cta" href="https://www.youtube.com/watch?v=3JfiN6s85p0" target="_blank">{{ $t('education.numbers.tourismValue.learnMore') }}</a>
           </article>
         </div>
 
         <div class="numbers-row">
           <article class="numbers-card">
             <div class="numbers-stat"><span class="numbers-fraction"><sup>1</sup>/<sub>4</sub></span></div>
-            <div class="numbers-headline">marine species depend on reefs</div>
-            <p class="numbers-desc">Reefs cover less than 1% of the ocean yet support 25% of marine life, protect coasts, feed communities, and hold potential medical cures.</p>
-            <a class="numbers-cta" href="https://www.youtube.com/watch?v=bHO-z-1xJDY" target="_blank">Learn More</a>
+            <div class="numbers-headline">{{ $t('education.numbers.marineSpecies.title') }}</div>
+            <p class="numbers-desc">{{ $t('education.numbers.marineSpecies.description') }}</p>
+            <a class="numbers-cta" href="https://www.youtube.com/watch?v=bHO-z-1xJDY" target="_blank">{{ $t('education.numbers.marineSpecies.learnMore') }}</a>
           </article>
           <article class="numbers-card">
             <div class="numbers-stat"><span class="numbers-count" data-to="4600">0</span></div>
-            <div class="numbers-headline">bomb fishing incidents</div>
-            <p class="numbers-desc">AI helps protect reefs—from tracking fish "songs" that signal recovery to detecting illegal blast fishing across vast waters.</p>
-            <a class="numbers-cta" href="https://www.youtube.com/watch?v=GnB8OoT2UAE" target="_blank">Learn More</a>
+            <div class="numbers-headline">{{ $t('education.numbers.bombFishing.title') }}</div>
+            <p class="numbers-desc">{{ $t('education.numbers.bombFishing.description') }}</p>
+            <a class="numbers-cta" href="https://www.youtube.com/watch?v=GnB8OoT2UAE" target="_blank">{{ $t('education.numbers.bombFishing.learnMore') }}</a>
           </article>
         </div>
 
@@ -116,15 +133,15 @@
         <div class="numbers-row">
           <article class="numbers-card">
             <div class="numbers-stat"><span class="numbers-count" data-to="4000">0</span></div>
-            <div class="numbers-headline">fish species on a single reef</div>
-            <p class="numbers-desc">Like underwater cities, reefs teem with life—from tiny reef fish to apex predators—making them highly productive ecosystems.</p>
-            <a class="numbers-cta" href="https://www.youtube.com/watch?v=14ot4DrXdds&t=383s" target="_blank">Learn More</a>
+            <div class="numbers-headline">{{ $t('education.numbers.fishSpecies.title') }}</div>
+            <p class="numbers-desc">{{ $t('education.numbers.fishSpecies.description') }}</p>
+            <a class="numbers-cta" href="https://www.youtube.com/watch?v=14ot4DrXdds&t=383s" target="_blank">{{ $t('education.numbers.fishSpecies.learnMore') }}</a>
           </article>
           <article class="numbers-card">
             <div class="numbers-stat"><span class="numbers-count" data-to="30000">0</span><span class="numbers-suffix">+</span></div>
-            <div class="numbers-headline">corals outplanted on the GBR</div>
-            <p class="numbers-desc">The Coral Nurture Programme grows fragments in nurseries and restores reefs—science and tourism working together.</p>
-            <a class="numbers-cta" href="https://www.youtube.com/watch?v=pgwcPlX5Kzo&t=104s" target="_blank">Learn More</a>
+            <div class="numbers-headline">{{ $t('education.numbers.coralsOutplanted.title') }}</div>
+            <p class="numbers-desc">{{ $t('education.numbers.coralsOutplanted.description') }}</p>
+            <a class="numbers-cta" href="https://www.youtube.com/watch?v=pgwcPlX5Kzo&t=104s" target="_blank">{{ $t('education.numbers.coralsOutplanted.learnMore') }}</a>
           </article>
         </div>
       </div>
@@ -139,8 +156,8 @@
             <button class="btn-close-verification" @click="closeVerification">
               ×
             </button>
-            <h2>Coral Reef Health Verification</h2>
-            <p>Please identify whether the coral reefs in the following 6 images are healthy</p>
+            <h2>{{ $t('education.verification.title') }}</h2>
+            <p>{{ $t('education.verification.description') }}</p>
           </div>
     
         <div class="verification-content">
@@ -219,9 +236,9 @@
     <!-- Footer -->
     <footer class="main-footer">
       <div class="footer-content">
-        © 2025 CoralKita
+        {{ $t('footer.copyright') }}
         <span class="footer-links">
-          <a href="mailto:coralkita.service@gmail.com">Contact Us</a>
+          <a href="mailto:coralkita.service@gmail.com">{{ $t('footer.contact') }}</a>
         </span>
       </div>
     </footer>
@@ -233,8 +250,13 @@ import { mapGetters } from 'vuex'
 import axios from 'axios'
 import ossService from '@/utils/ossService.js'
 
+import LanguageSwitcher from './LanguageSwitcher.vue'
+
 export default {
   name: 'Education',
+  components: {
+    LanguageSwitcher
+  },
   data() {
     return {
       backgroundLoaded: false, // 背景图片加载状态
@@ -242,6 +264,7 @@ export default {
       loadingText: 'Loading map data...', // 加载文本
       // Travel dropdown related
       showTravelDropdown: false,
+      showEducationDropdown: false,
       currentLanguage: 'en',
       travelIslands: ['Mertang', 'P Singa', 'Sipadan', 'Pulau Lima', 'Seri Buat'],
       
@@ -267,27 +290,27 @@ export default {
         video4Thumbnail: '',
         video4Video: ''
       },
-      // Local video data
+      // Local video data - now pointing to YouTube links
       localVideos: [
         {
-          title: "Why are coral reefs so important",
+          titleKey: "education.videos.important",
           thumbnail: 'http://static.coralkita.site/assets/Why are coral reefs so important.jpg',
-          video: 'http://static.coralkita.site/assets/Why are coral reefs so important.mp4'
+          video: 'https://youtu.be/eNqbSi_6KdA?si=pmOStLJfsyXi__Jl'
         },
         {
-          title: "What Would Happen If All The Coral Reefs Died Off",
+          titleKey: "education.videos.dieOff",
           thumbnail: 'http://static.coralkita.site/assets/What Would Happen If All The Coral Reefs Died Off.jpg',
-          video: 'http://static.coralkita.site/assets/What Would Happen If All The Coral Reefs Died Off.mp4'
+          video: 'https://youtu.be/_5DooxgwEiw?si=p9U4ANsPrIRu2wDn'
         },
         {
-          title: "Coral Reefs Are Dying. Here's How We Can Save Them",
+          titleKey: "education.videos.dying",
           thumbnail: 'http://static.coralkita.site/assets/Coral Reefs Are Dying. Here\'s How We Can Save Them.jpg',
-          video: 'http://static.coralkita.site/assets/Coral Reefs Are Dying. Here\'s How We Can Save Them.mp4'
+          video: 'https://youtu.be/MUAsFZuFQvQ?si=86Ns9Qj6SMD65cfP'
         },
         {
-          title: "Coral Bleaching Explained: The Story of Frank the Coral",
+          titleKey: "education.videos.bleaching",
           thumbnail: 'http://static.coralkita.site/assets/Coral Bleaching Explained The Story of Frank the Coral.jpg',
-          video: 'http://static.coralkita.site/assets/Coral Bleaching Explained The Story of Frank the Coral.mp4'
+          video: 'https://youtu.be/UyEw_Rl8mqM?si=w4m9p53ynq5XX2HY'
         }
       ]
     }
@@ -385,40 +408,28 @@ export default {
       try {
         console.log('开始加载OSS图片...')
         
-        // 并行加载所有图片URL
+        // 并行加载所有图片URL（只加载缩略图，视频使用YouTube链接）
         const [
           appIcon,
           video1Thumbnail,
-          video1Video,
           video2Thumbnail,
-          video2Video,
           video3Thumbnail,
-          video3Video,
-          video4Thumbnail,
-          video4Video
+          video4Thumbnail
         ] = await Promise.all([
           ossService.getSignedUrl('assets/icon.png'),
           ossService.getSignedUrl('assets/Why are coral reefs so important.jpg'),
-          ossService.getSignedUrl('assets/Why are coral reefs so important.mp4'),
           ossService.getSignedUrl('assets/What Would Happen If All The Coral Reefs Died Off.jpg'),
-          ossService.getSignedUrl('assets/What Would Happen If All The Coral Reefs Died Off.mp4'),
           ossService.getSignedUrl('assets/Coral Reefs Are Dying. Here\'s How We Can Save Them.jpg'),
-          ossService.getSignedUrl('assets/Coral Reefs Are Dying. Here\'s How We Can Save Them.mp4'),
-          ossService.getSignedUrl('assets/Coral Bleaching Explained The Story of Frank the Coral.jpg'),
-          ossService.getSignedUrl('assets/Coral Bleaching Explained The Story of Frank the Coral.mp4')
+          ossService.getSignedUrl('assets/Coral Bleaching Explained The Story of Frank the Coral.jpg')
         ])
 
-        // 更新图片URL
+        // 更新图片URL（只更新缩略图）
         this.imageUrls = {
           appIcon,
           video1Thumbnail,
-          video1Video,
           video2Thumbnail,
-          video2Video,
           video3Thumbnail,
-          video3Video,
-          video4Thumbnail,
-          video4Video
+          video4Thumbnail
         }
 
         // 更新视频数据
@@ -433,29 +444,29 @@ export default {
     },
 
     /**
-     * 更新视频数据
+     * 更新视频数据 - 只更新缩略图，保留YouTube链接
      */
     updateVideoData() {
       this.localVideos = [
         {
-          title: "Why are coral reefs so important",
+          titleKey: "education.videos.important",
           thumbnail: this.imageUrls.video1Thumbnail,
-          video: this.imageUrls.video1Video
+          video: 'https://youtu.be/eNqbSi_6KdA?si=pmOStLJfsyXi__Jl'
         },
         {
-          title: "What Would Happen If All The Coral Reefs Died Off",
+          titleKey: "education.videos.dieOff",
           thumbnail: this.imageUrls.video2Thumbnail,
-          video: this.imageUrls.video2Video
+          video: 'https://youtu.be/_5DooxgwEiw?si=p9U4ANsPrIRu2wDn'
         },
         {
-          title: "Coral Reefs Are Dying. Here's How We Can Save Them",
+          titleKey: "education.videos.dying",
           thumbnail: this.imageUrls.video3Thumbnail,
-          video: this.imageUrls.video3Video
+          video: 'https://youtu.be/MUAsFZuFQvQ?si=86Ns9Qj6SMD65cfP'
         },
         {
-          title: "Coral Bleaching Explained: The Story of Frank the Coral",
+          titleKey: "education.videos.bleaching",
           thumbnail: this.imageUrls.video4Thumbnail,
-          video: this.imageUrls.video4Video
+          video: 'https://youtu.be/UyEw_Rl8mqM?si=w4m9p53ynq5XX2HY'
         }
       ]
     },
@@ -468,13 +479,9 @@ export default {
       this.imageUrls = {
         appIcon: 'http://static.coralkita.site/assets/icon.png',
         video1Thumbnail: 'http://static.coralkita.site/assets/Why are coral reefs so important.jpg',
-        video1Video: 'http://static.coralkita.site/assets/Why are coral reefs so important.mp4',
         video2Thumbnail: 'http://static.coralkita.site/assets/What Would Happen If All The Coral Reefs Died Off.jpg',
-        video2Video: 'http://static.coralkita.site/assets/What Would Happen If All The Coral Reefs Died Off.mp4',
         video3Thumbnail: 'http://static.coralkita.site/assets/Coral Reefs Are Dying. Here\'s How We Can Save Them.jpg',
-        video3Video: 'http://static.coralkita.site/assets/Coral Reefs Are Dying. Here\'s How We Can Save Them.mp4',
-        video4Thumbnail: 'http://static.coralkita.site/assets/Coral Bleaching Explained The Story of Frank the Coral.jpg',
-        video4Video: 'http://static.coralkita.site/assets/Coral Bleaching Explained The Story of Frank the Coral.mp4'
+        video4Thumbnail: 'http://static.coralkita.site/assets/Coral Bleaching Explained The Story of Frank the Coral.jpg'
       }
       
       // 更新视频数据
@@ -524,10 +531,61 @@ export default {
         }
       });
     },
+    
+    goToEducation() {
+      console.log('Navigate to Tourism Hub page');
+      // We're already on the Education page, so just refresh the current view
+      this.$router.push('/education').catch(err => {
+        // Ignore navigation duplicated error
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
+    },
+    
+    goToTravelChecklist() {
+      console.log('Navigate to Travel Checklist page');
+      // Set functional navigation flag
+      localStorage.setItem('functionalNavigation', 'true');
+      this.$router.push('/travel-checklist').catch(err => {
+        // Ignore navigation duplicated error
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
+    },
 
     goToAITools() {
       console.log('Navigate to AI Tools page');
       this.$router.push('/ai-tools').catch(err => {
+        // Ignore navigation duplicated error
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
+    },
+
+    goToActionHub() {
+      console.log('Navigate to Action Hub page');
+      this.$router.push('/action-hub').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
+    },
+
+    goToPolicies() {
+      console.log('Navigate to Policies page');
+      this.$router.push('/policies').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
+    },
+
+    goToFAQ() {
+      console.log('Navigate to FAQ page');
+      this.$router.push('/faq').catch(err => {
         // Ignore navigation duplicated error
         if (err.name !== 'NavigationDuplicated') {
           console.error('Navigation error:', err);
@@ -628,95 +686,11 @@ export default {
 
     playVideo(video) {
       try {
-        // 创建全屏视频播放器
-        const videoPlayer = document.createElement('div');
-        videoPlayer.className = 'fullscreen-video-player';
-        videoPlayer.innerHTML = `
-          <div class="video-overlay">
-            <button class="close-video-btn" onclick="this.parentElement.parentElement.remove()">×</button>
-            <video controls autoplay class="fullscreen-video">
-              <source src="${video.video}" type="video/mp4">
-              您的浏览器不支持视频播放
-            </video>
-            <div class="video-info">
-              <h3>${video.title}</h3>
-            </div>
-          </div>
-        `;
-        
-        // 添加样式
-        const style = document.createElement('style');
-        style.textContent = `
-          .fullscreen-video-player {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 9999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-          }
-          .video-overlay {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-          }
-          .close-video-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            font-size: 24px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            z-index: 10000;
-          }
-          .close-video-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-          }
-          .fullscreen-video {
-            max-width: 90%;
-            max-height: 80%;
-            border-radius: 10px;
-          }
-          .video-info {
-            color: white;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            text-align: center;
-          }
-          .video-info h3 {
-            margin: 0;
-            font-size: 18px;
-          }
-        `;
-        
-        document.head.appendChild(style);
-        document.body.appendChild(videoPlayer);
-        
-        // 点击背景关闭视频
-        videoPlayer.addEventListener('click', (e) => {
-          if (e.target === videoPlayer) {
-            videoPlayer.remove();
-            style.remove();
-          }
-        });
+        // Open YouTube link in a new tab
+        window.open(video.video, '_blank', 'noopener,noreferrer');
       } catch (error) {
-        console.error('Error playing video:', error);
-        alert('无法播放视频，请检查视频文件是否存在');
+        console.error('Error opening video:', error);
+        alert('Unable to open video link. Please check your browser settings.');
       }
     },
 
@@ -1207,7 +1181,7 @@ export default {
   color: white;
   padding: 40px 20px 18px;
   margin-bottom: 24px;
-  margin-top: 20px;
+  margin-top: 80px;
 }
 
 .education-header h1 {
@@ -1222,6 +1196,14 @@ export default {
   opacity: 0.95;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
   margin-bottom: 25px;
+}
+
+/* Header buttons container */
+.header-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 /* 验证游戏按钮样式 */
@@ -1250,6 +1232,34 @@ export default {
 .verification-game-btn:active {
   transform: translateY(0);
   box-shadow: 0 3px 10px rgba(102, 126, 234, 0.5);
+}
+
+/* Tips and Guides按钮样式 */
+.tips-guides-btn {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.22);
+  text-shadow: none;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.tips-guides-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.29);
+  background: linear-gradient(135deg, #218838, #1ea085);
+}
+
+.tips-guides-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 10px rgba(40, 167, 69, 0.5);
 }
 
 .education-content {
@@ -1783,16 +1793,19 @@ export default {
 
 /* Top Navigation */
 .top-nav {
-  background: linear-gradient(90deg, #1A1D25 0%, #01A2EB 100%);
-  backdrop-filter: blur(10px);
+  background: linear-gradient(90deg, rgba(26, 29, 37, 0.95) 0%, rgba(1, 162, 235, 0.95) 100%);
+  backdrop-filter: blur(15px);
   color: white;
   padding: 12px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: relative;
-  z-index: 10;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
 }
 
 .nav-left {
@@ -1867,23 +1880,41 @@ export default {
   border-bottom-color: #63b3ed;
 }
 
-/* Island 下拉菜单样式 */
+/* Map & Recommendation 下拉菜单样式 */
 .nav-item-dropdown {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nav-item-dropdown .nav-item-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nav-item-dropdown::before {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background: transparent;
 }
 
 .dropdown-menu {
   position: absolute;
-  top: calc(100% + 8px); /* 在Island正下方，留8px间距 */
+  top: calc(100% + 4px);
   left: 50%;
-  transform: translateX(-50%); /* 居中对齐 */
+  transform: translateX(-50%);
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(25px);
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 16px;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1);
-  min-width: 120px;
-  max-width: 140px;
+  min-width: 160px;
   z-index: 1000;
   overflow: hidden;
   animation: dropdownSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);

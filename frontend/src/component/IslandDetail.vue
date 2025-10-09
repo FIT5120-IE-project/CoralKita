@@ -6,7 +6,7 @@
         <div class="progress-bar">
           <div class="progress-fill" :style="{ width: loadingProgress + '%' }"></div>
         </div>
-        <p class="loading-text">{{ loadingText }}</p>
+        <p class="loading-text">{{ $t('islandDetail.loading') }}</p>
       </div>
     </div>
     
@@ -15,18 +15,17 @@
       <div class="nav-left">
         <!-- Left side logo -->
         <img :src="appIconUrl || '@/assets/icon.png'" alt="logo" class="nav-logo" @click="goToHome" />
-        <h1 class="logo" @click="goToHome">CoralKita</h1>
+        <h1 class="logo" @click="goToHome">{{ $t('nav.logo') }}</h1>
       </div>
       <div class="nav-right">
         <div class="nav-items">
-          <div class="nav-item-wrapper">
-            <span class="nav-item map-rec-item" @click="goToMap">
-              <span class="nav-text-line">Map &</span>
-              <span class="nav-text-line">Recommendation</span>
-            </span>
-          </div>
           <div class="nav-item-dropdown" @mouseenter="showTravelDropdown = true" @mouseleave="showTravelDropdown = false">
-            <span class="nav-item active">Island</span>
+            <div class="nav-item-wrapper">
+              <span class="nav-item map-rec-item active" @click="goToMap">
+                <span class="nav-text-line">{{ $t('nav.mapRecommendation.line1') }}</span>
+                <span class="nav-text-line">{{ $t('nav.mapRecommendation.line2') }}</span>
+              </span>
+            </div>
             <div class="dropdown-menu" v-show="showTravelDropdown">
               <div 
                 v-for="island in travelIslands" 
@@ -38,8 +37,21 @@
               </div>
             </div>
           </div>
-          <span class="nav-item" @click="goToEducation">Education</span>
-          <span class="nav-item" @click="goToAITools">AI Classification</span>
+          <div class="nav-item-dropdown" @mouseenter="showEducationDropdown = true" @mouseleave="showEducationDropdown = false">
+            <span class="nav-item" @click="goToEducation">{{ $t('nav.education') }}</span>
+            <div class="dropdown-menu" v-show="showEducationDropdown">
+              <div class="dropdown-item" @click="goToEducation">
+                <span>{{ $t('education.dropdown.tourismHub') }}</span>
+              </div>
+              <div class="dropdown-item" @click="goToTravelChecklist">
+                <span>{{ $t('education.dropdown.tourismChecklist') }}</span>
+              </div>
+            </div>
+          </div>
+          <span class="nav-item" @click="goToAITools">{{ $t('nav.aiClassification') }}</span>
+          <span class="nav-item" @click="goToGovernment">{{ $t('nav.government') }}</span>
+          <span class="nav-item" @click="goToFAQ">{{ $t('nav.faq') }}</span>
+          <LanguageSwitcher />
         </div>
       </div>
     </div>
@@ -52,12 +64,12 @@
         <div class="section-container">
           
           
-          <!-- Description Section -->
+          <!-- {{ $t('islandDetail.description') }} Section -->
           <div class="description-section">
-            <h3 class="description-title">Pulau Singa, Langkawi</h3>
+            <h3 class="description-title">{{ $t('islandDetail.pSinga.title') }}</h3>
             <div class="description-content">
-              <h4>Description</h4>
-              <p>Pulau Singa, part of the Langkawi archipelago in Kedah, is a small island within the Langkawi Marine Park. Known for its clear waters, shallow reefs, and peaceful sandy stretches, it is often included in island-hopping itineraries from Langkawi. The island is uninhabited and does not have accommodation or permanent facilities, making it primarily a day-trip and snorkeling stop.</p>
+              <h4>{{ $t('islandDetail.description') }}</h4>
+              <p>{{ $t('islandDetail.pSinga.description') }}</p>
             </div>
           </div>
           
@@ -73,19 +85,19 @@
             </div>
           </div>
           
-          <!-- Travel Information Section -->
+          <!-- {{ $t('islandDetail.travelInfo') }} Section -->
           <div class="travel-info-section">
             <div class="travel-info-section">
   <div class="info-card">
-    <h3 class="info-title">Travel Information</h3>
+    <h3 class="info-title">{{ $t('islandDetail.travelInfo') }}</h3>
     <div class="info-content">
-      <p><strong>Arrive:</strong> Pulau Singa is reached by speedboat from Langkawi (20–40 min from Kuah Jetty or Pantai Cenang), often combined with Dayang Bunting and Beras Basah in island-hopping tours.</p>
+      <p><strong>{{ $t('islandDetail.arrive') }}:</strong> {{ $t('islandDetail.pSinga.arrive') }}</p>
       
-      <p class="reminder"><strong>Reminder:</strong> No jetty exists, so landings depend on weather; some trips may be snorkeling-only.</p>
+      <p class="reminder"><strong>{{ $t('islandDetail.reminder') }}:</strong> {{ $t('islandDetail.pSinga.reminder') }}</p>
       
-      <p><strong>Snorkeling & Diving:</strong> Shallow coral gardens suit beginners and families, with colorful fish (clownfish, damselfish, wrasses) and occasional turtles. Diving is limited but available via Langkawi Marine Park packages.</p>
+      <p><strong>{{ $t('islandDetail.snorkelingDiving') }}:</strong> {{ $t('islandDetail.pSinga.snorkeling') }}</p>
       
-      <p><strong>Accommodation:</strong> No stays on Pulau Singa; visitors stay in Langkawi, where hotels and eco-lodges are available. Operators arrange day trips.</p>
+      <p><strong>{{ $t('islandDetail.accommodation') }}:</strong> {{ $t('islandDetail.pSinga.accommodation') }}</p>
     </div>
   </div>
 </div>
@@ -93,50 +105,50 @@
             
             <!-- Hotel Recommendation Section -->
             <div class="hotel-recommendation-section">
-              <h3 class="hotel-section-title">Hotel / Resort Recommendation</h3>
+              <h3 class="hotel-section-title">{{ $t('islandDetail.hotelRecommendation') }}</h3>
               <div class="hotel-row">
                 <div class="hotel-card">
                   <div class="hotel-img">
-                    <img :src="pSingaImages.hotels.datai" alt="The Datai Langkawi">
+                    <img :src="pSingaImages.hotels.datai" :alt="$t('islandDetail.pSinga.dataiResort')">
                   </div>
                   <div class="hotel-body">
-                    <div class="hotel-name">The Datai Langkawi</div>
-                    <div class="hotel-desc">Luxury rainforest resort with stunning Andaman Sea views</div>
+                    <div class="hotel-name">{{ $t('islandDetail.pSinga.dataiResort') }}</div>
+                    <div class="hotel-desc">{{ $t('islandDetail.pSinga.dataiDesc') }}</div>
                   </div>
-                  <a class="hotel-book" href="https://www.thedatai.com/" target="_blank">Booking</a>
+                  <a class="hotel-book" href="https://www.thedatai.com/" target="_blank">{{ $t('islandDetail.pSinga.booking') }}</a>
                 </div>
 
                 <div class="hotel-card">
                   <div class="hotel-img">
-                    <img :src="pSingaImages.hotels.danna" alt="The Danna Langkawi">
+                    <img :src="pSingaImages.hotels.danna" :alt="$t('islandDetail.pSinga.dannaResort')">
                   </div>
                   <div class="hotel-body">
-                    <div class="hotel-name">The Danna Langkawi</div>
-                    <div class="hotel-desc">Colonial-style luxury resort with private beach access</div>
+                    <div class="hotel-name">{{ $t('islandDetail.pSinga.dannaResort') }}</div>
+                    <div class="hotel-desc">{{ $t('islandDetail.pSinga.dannaDesc') }}</div>
                   </div>
-                  <a class="hotel-book" href="https://www.thedanna.com/" target="_blank">Booking</a>
+                  <a class="hotel-book" href="https://www.thedanna.com/" target="_blank">{{ $t('islandDetail.pSinga.booking') }}</a>
                 </div>
 
                 <div class="hotel-card">
                   <div class="hotel-img">
-                    <img :src="pSingaImages.hotels.frangipani" alt="The Frangipani Langkawi Resort & Spa">
+                    <img :src="pSingaImages.hotels.frangipani" :alt="$t('islandDetail.pSinga.frangipaniResort')">
                   </div>
                   <div class="hotel-body">
-                    <div class="hotel-name">The Frangipani Langkawi</div>
-                    <div class="hotel-desc">Award-winning eco-friendly resort with beachfront location</div>
+                    <div class="hotel-name">{{ $t('islandDetail.pSinga.frangipaniResort') }}</div>
+                    <div class="hotel-desc">{{ $t('islandDetail.pSinga.frangipaniDesc') }}</div>
                   </div>
-                  <a class="hotel-book" href="https://www.frangipanilangkawi.com/" target="_blank">Booking</a>
+                  <a class="hotel-book" href="https://www.frangipanilangkawi.com/" target="_blank">{{ $t('islandDetail.pSinga.booking') }}</a>
                 </div>
 
                 <div class="hotel-card">
                   <div class="hotel-img">
-                    <img :src="pSingaImages.hotels.ambong" alt="Ambong Ambong">
+                    <img :src="pSingaImages.hotels.ambong" :alt="$t('islandDetail.pSinga.ambongResort')">
                   </div>
                   <div class="hotel-body">
-                    <div class="hotel-name">Ambong Ambong</div>
-                    <div class="hotel-desc">Sustainable luxury villas with private pools and sea views</div>
+                    <div class="hotel-name">{{ $t('islandDetail.pSinga.ambongResort') }}</div>
+                    <div class="hotel-desc">{{ $t('islandDetail.pSinga.ambongDesc') }}</div>
                   </div>
-                  <a class="hotel-book" href="https://www.ambong-ambong.com/" target="_blank">Booking</a>
+                  <a class="hotel-book" href="https://www.ambong-ambong.com/" target="_blank">{{ $t('islandDetail.pSinga.booking') }}</a>
                 </div>
               </div>
             </div>
@@ -144,9 +156,9 @@
             <!-- Operators & Tours Section -->
             <div class="operators-tours-section">
               <div class="tours-header">
-                <h3 class="tours-title">Operators & Tours</h3>
-                <p class="tours-subtitle">Island-hopping tours from Pantai Cenang and Kuah Jetty (multiple local operators)</p>
-                <p class="tours-subtitle">Custom eco-tours available with licensed Langkawi Marine Park guides.</p>
+                <h3 class="tours-title">{{ $t('islandDetail.pSinga.operatorsTours') }}</h3>
+                <p class="tours-subtitle">{{ $t('islandDetail.pSinga.operatorsDesc') }}</p>
+                <p class="tours-subtitle">{{ $t('islandDetail.pSinga.operatorsDesc2') }}</p>
               </div>
               
               <!-- Tours Duel Panels -->
@@ -156,34 +168,34 @@
                 
                 <div class="duel-wrap">
                   <!-- Left: PADI Dive Center -->
-                  <label class="panel left" for="pick-left" title="Choose Diving">
-                    <img :src="pSingaImages.activities.tour1" alt="PADI Langkawi Scuba">
+                    <label class="panel left" for="pick-left" :title="$t('islandDetail.chooseDiving')">
+                    <img :src="pSingaImages.activities.tour1" :alt="$t('islandDetail.pSinga.padiDiving')">
                     <div class="meta">
                       <div>
-                        <h3 class="title">PADI Langkawi Scuba – Dive Center</h3>
+                        <h3 class="title">{{ $t('islandDetail.pSinga.padiDiving') }}</h3>
                         <ul class="points">
-                          <li>Boat dives around Langkawi Marine Park</li>
-                          <li>Beginner friendly & certification options</li>
+                          <li>{{ $t('islandDetail.pSinga.padiDesc1') }}</li>
+                          <li>{{ $t('islandDetail.pSinga.padiDesc2') }}</li>
                         </ul>
                       </div>
-                      <a class="cta" href="https://www.padi.com/dive-center/malaysia/langkawi-scuba/" target="_blank" rel="noopener">Check Tour</a>
+                      <a class="cta" href="https://www.padi.com/dive-center/malaysia/langkawi-scuba/" target="_blank" rel="noopener">{{ $t('islandDetail.pSinga.checkTour') }}</a>
                     </div>
                   </label>
 
                   <div class="vs"><span>VS</span></div>
 
                   <!-- Right: Jet Ski Tour -->
-                  <label class="panel right" for="pick-right" title="Choose Jet Ski">
-                    <img :src="pSingaImages.activities.tour2" alt="Langkawi Jet Ski Tour">
+                  <label class="panel right" for="pick-right" :title="$t('islandDetail.chooseSnorkeling')">
+                    <img :src="pSingaImages.activities.tour2" :alt="$t('islandDetail.pSinga.unescoJetSki')">
                     <div class="meta">
                       <div>
-                        <h3 class="title">UNESCO Geopark Jet-Ski – 8 Islands</h3>
+                        <h3 class="title">{{ $t('islandDetail.pSinga.unescoJetSki') }}</h3>
                         <ul class="points">
-                          <li>Island-hopping from Pantai Cenang</li>
-                          <li>Guide & safety briefing included</li>
+                          <li>{{ $t('islandDetail.pSinga.jetSkiDesc1') }}</li>
+                          <li>{{ $t('islandDetail.pSinga.jetSkiDesc2') }}</li>
                         </ul>
                       </div>
-                      <a class="cta" href="https://www.getyourguide.com/en-gb/langkawi-l903/langkawi-premium-unesco-geopark-jet-ski-tour-of-8-islands-t24907/" target="_blank" rel="noopener">Check Tour</a>
+                      <a class="cta" href="https://www.getyourguide.com/en-gb/langkawi-l903/langkawi-premium-unesco-geopark-jet-ski-tour-of-8-islands-t24907/" target="_blank" rel="noopener">{{ $t('islandDetail.pSinga.checkTour') }}</a>
                     </div>
                   </label>
                 </div>
@@ -194,22 +206,34 @@
             <div class="tips-conservation-section">
               <!-- Tips Section -->
               <div class="info-card">
-                <h3 class="info-title">Tips</h3>
+                <h3 class="info-title">{{ $t('islandDetail.pSinga.tips') }}</h3>
                 <div class="info-content">
-                  <p>The best time to visit is during the dry season (November – April) when seas are calmer and visibility is better.</p>
-                  <p>During the wetter months (May – October), sea conditions may be choppier.</p>
-                  <p>Watch out for jellyfish, which may occasionally be present in the waters.</p>
-                  <p>Don't miss the sunrise and sunset — true highlights of the island.</p>
+                  <p>{{ $t('islandDetail.pSinga.tipsContent') }}</p>
+                  <p>{{ $t('islandDetail.pSinga.tipsContent2') }}</p>
                 </div>
               </div>
               
               <!-- Conservation Section -->
               <div class="info-card">
-                <h3 class="info-title">Conservation-friendly practices</h3>
+                <h3 class="info-title">{{ $t('islandDetail.pSinga.conservation') }}</h3>
                 <div class="info-content">
-                  <p>Visitors are encouraged to use reef-safe sunscreen, avoid touching or stepping on corals and seagrass beds, and take all rubbish back to Langkawi as the island has no waste facilities. Feeding fish or disturbing marine life should be avoided, and tours are best arranged with licensed operators who follow Langkawi Marine Park guidelines to ensure the reefs remain healthy for future visitors.</p>
+                  <p>{{ $t('islandDetail.pSinga.conservationContent') }}</p>
                 </div>
               </div>
+            </div>
+            
+            <!-- Action Buttons Section -->
+            <div class="action-buttons-section">
+              <button class="action-btn reef-policy-btn" @click="goToGovernment">
+                <span class="btn-icon">🏛️</span>
+                <span class="btn-text">{{ $t('islandDetail.actionButtons.reefPolicies') }}</span>
+                <span class="btn-arrow">→</span>
+              </button>
+              <button class="action-btn education-btn" @click="goToEducation">
+                <span class="btn-icon">📚</span>
+                <span class="btn-text">{{ $t('islandDetail.actionButtons.reefConservation') }}</span>
+                <span class="btn-arrow">→</span>
+              </button>
             </div>
           </div>
         </div>
@@ -219,15 +243,15 @@
       <div class="content-sections" v-else-if="islandName === 'Mertang'">
         <div class="section-container">
           
-          <!-- Description Section -->
+          <!-- {{ $t('islandDetail.description') }} Section -->
           <div class="description-section">
-            <h3 class="description-title">Pulau Mertang, Johor</h3>
+            <h3 class="description-title">{{ $t('islandDetail.mertang.title') }}</h3>
             <div class="description-content">
-              <h4>Description</h4>
-              <p>Pulau Mertang, situated within the state of Johor, Malaysia, comprises a group of very small offshore islets (Mertang Barat / Mertang Timur) located off the east coast of Johor near the waters of Mersing. Geographical records classify them as 'islets' (small islands or sandbanks), typically lacking accommodation.</p>
+              <h4>{{ $t('islandDetail.description') }}</h4>
+              <p>{{ $t('islandDetail.mertang.description') }}</p>
             </div>
           </div>
-          
+
           <!-- Carousel Section -->
           <div class="carousel-section">
             <div class="carousel" id="carousel">
@@ -240,46 +264,46 @@
             </div>
           </div>
           
-          <!-- Travel Information Section -->
+          <!-- {{ $t('islandDetail.travelInfo') }} Section -->
           <div class="travel-info-section">
             <!-- Arrive Section -->
             <div class="info-card">
-              <h3 class="info-title">Arrive</h3>
+              <h3 class="info-title">{{ $t('islandDetail.arrive') }}</h3>
               <div class="info-content">
-                <p>You may choose to depart from piers in the Mersing/Endau area. Please confirm with local boat operators or resort management whether they offer stops at Mertang's island-hopping/snorkelling sites. It is advisable to combine Mertang with more commonly visited neighbouring island groups (such as Rawa, Sembilang, Sri Buat, Dayang, etc.) to enhance trip feasibility and route flexibility. The geographical and destination overview indicates that the Mersing area serves as the primary departure point for accessing these offshore islands.</p>
-                <p class="reminder"><strong>Kindly reminder:</strong> Mertang is a very small island with no publicly available permanent landing facilities or scheduled ferry services. It is essential to confirm with the boat operator the day's sea conditions, whether snorkelling will be the sole activity without island landings, and other details (to avoid trampling/disturbing bird or reptile habitats).</p>
+                <p>{{ $t('islandDetail.mertang.arrive') }}</p>
+                <p class="reminder"><strong>{{ $t('islandDetail.reminder') }}:</strong> {{ $t('islandDetail.mertang.reminder') }}</p>
               </div>
             </div>
             
             <!-- Snorkeling/Diving Section -->
             <div class="info-card">
-              <h3 class="info-title">Snorkeling / Diving</h3>
+              <h3 class="info-title">{{ $t('islandDetail.snorkelingDiving') }}</h3>
               <div class="info-content">
-                <p>If you choose to snorkel in coastal activities in the Pulau Mertang area, please adhere to the principles of "no touching, no trampling, and no collecting".</p>
+                <p>{{ $t('islandDetail.mertang.snorkeling') }}</p>
               </div>
             </div>
             
-            <!-- Accommodation Section -->
+            <!-- {{ $t('islandDetail.accommodation') }} Section -->
             <div class="info-card">
-              <h3 class="info-title">Accommodation</h3>
+              <h3 class="info-title">{{ $t('islandDetail.accommodation') }}</h3>
               <div class="info-content">
-                <p><strong>Mersing / Johor</strong></p>
-                <p>As Mertang consists primarily of uninhabited islets, accommodation is typically arranged in Mersing or neighbouring islands such as Rawa. From there, visitors undertake day trips, island-hopping, or charter shared boats to explore the Mertang waters. Rawa offers comprehensive destination guides and resort product information, facilitating tailored trips in collaboration with boat operators.</p>
+                <p><strong>{{ $t('islandDetail.mertang.accommodation') }}</strong></p>
+                <p>{{ $t('islandDetail.mertang.accommodationDesc') }}</p>
               </div>
             </div>
             
             <!-- Hotel Recommendation Section -->
             <div class="hotel-recommendation-section">
-              <h3 class="hotel-section-title">Hotel / Resort Recommendation</h3>
+              <h3 class="hotel-section-title">{{ $t('islandDetail.hotelRecommendation') }}</h3>
               <div class="hotel-row">
                 <div class="hotel-card">
                   <div class="hotel-img">
                     <img :src="'http://static.coralkita.site/assets/Mertang/rawaislandresort.png'" alt="Rawa Island Resort">
                   </div>
-                  <div class="hotel-body">
-                    <div class="hotel-name">Rawa Island Resort</div>
-                    <div class="hotel-desc">Idyllic tropical island resort with pristine beaches and coral reefs</div>
-                  </div>
+                <div class="hotel-body">
+                  <div class="hotel-name">{{ $t('islandDetail.mertang.rawaResort') }}</div>
+                  <div class="hotel-desc">{{ $t('islandDetail.mertang.rawaDesc') }}</div>
+                </div>
                   <a class="hotel-book" href="https://rawaislandresort.com/" target="_blank">Booking</a>
                 </div>
 
@@ -287,10 +311,10 @@
                   <div class="hotel-img">
                     <img :src="'http://static.coralkita.site/assets/Mertang/orcanation.png'" alt="Orca Nation Resort">
                   </div>
-                  <div class="hotel-body">
-                    <div class="hotel-name">Orca Nation Resort</div>
-                    <div class="hotel-desc">Private island escape with crystal-clear waters and white sand beaches</div>
-                  </div>
+                <div class="hotel-body">
+                  <div class="hotel-name">{{ $t('islandDetail.mertang.orcaResort') }}</div>
+                  <div class="hotel-desc">{{ $t('islandDetail.mertang.orcaResortDesc') }}</div>
+                </div>
                   <a class="hotel-book" href="https://www.alangsrawa.com/" target="_blank">Booking</a>
                 </div>
               </div>
@@ -298,15 +322,15 @@
             
             <!-- Tour Activities Section -->
             <div class="tour-activities-section">
-              <h3 class="tour-section-title">Tour Activities & Adventures</h3>
+              <h3 class="tour-section-title">{{ $t('islandDetail.tourActivities') }}</h3>
               
               <!-- Hero Diving Card -->
               <div class="hero-tour-card">
                 <img :src="'http://static.coralkita.site/assets/Mertang/diving.jpg'" alt="Diving">
                 <div class="hero-tour-overlay">
-                  <h2 class="hero-tour-title">Orca Nation Diving</h2>
-                  <p class="hero-tour-desc">Discover the underwater world with certified guides and pristine coral reefs.</p>
-                  <a href="https://orcanation.org/diving/" target="_blank" class="hero-tour-btn">Explore Diving</a>
+                  <h2 class="hero-tour-title">{{ $t('islandDetail.mertang.orcaDiving') }}</h2>
+                  <p class="hero-tour-desc">{{ $t('islandDetail.mertang.orcaDesc') }}</p>
+                  <a href="https://orcanation.org/diving/" target="_blank" class="hero-tour-btn">{{ $t('islandDetail.exploreDiving') }}</a>
                 </div>
               </div>
 
@@ -315,22 +339,22 @@
                 <div class="sub-activity-card">
                   <img :src="'http://static.coralkita.site/assets/Mertang/rawaislandresort.png'" alt="Rawa Island Resort">
                   <div class="sub-activity-overlay">
-                    <h3 class="sub-activity-title">Rawa Island Resort</h3>
-                    <a href="https://rawaislandresort.com/" target="_blank" class="sub-activity-btn">Book</a>
+                    <h3 class="sub-activity-title">{{ $t('islandDetail.mertang.rawaResort') }}</h3>
+                    <a href="https://rawaislandresort.com/" target="_blank" class="sub-activity-btn">{{ $t('islandDetail.mertang.book') }}</a>
                   </div>
                 </div>
                 <div class="sub-activity-card">
                   <img :src="'http://static.coralkita.site/assets/Mertang/orcanation.png'" alt="Orca Nation">
                   <div class="sub-activity-overlay">
-                    <h3 class="sub-activity-title">Orca Nation</h3>
-                    <a href="https://www.alangsrawa.com/" target="_blank" class="sub-activity-btn">Book</a>
+                    <h3 class="sub-activity-title">{{ $t('islandDetail.mertang.orcaDiving') }}</h3>
+                    <a href="https://www.alangsrawa.com/" target="_blank" class="sub-activity-btn">{{ $t('islandDetail.mertang.book') }}</a>
                   </div>
                 </div>
                 <div class="sub-activity-card">
                   <img :src="'http://static.coralkita.site/assets/Mertang/vacation_279.png'" alt="Island Hopping">
                   <div class="sub-activity-overlay">
-                    <h3 class="sub-activity-title">Island Hopping</h3>
-                    <a href="https://ami.travel/en/vacations/279" target="_blank" class="sub-activity-btn">Book</a>
+                    <h3 class="sub-activity-title">{{ $t('islandDetail.mertang.islandHopping') }}</h3>
+                    <a href="https://ami.travel/en/vacations/279" target="_blank" class="sub-activity-btn">{{ $t('islandDetail.mertang.book') }}</a>
                   </div>
                 </div>
               </div>
@@ -338,21 +362,35 @@
             
             <!-- Tips & Conservation Section -->
             <div class="tips-conservation-section">
-              <!-- Tips Section -->
-              <div class="info-card">
-                <h3 class="info-title">Tips</h3>
-                <div class="info-content">
-                  <p>During the monsoon season (around November to February), sea conditions are unstable and trips are frequently adjusted or cancelled.</p>
-                </div>
+            <!-- Tips Section -->
+            <div class="info-card">
+              <h3 class="info-title">{{ $t('islandDetail.mertang.tips') }}</h3>
+              <div class="info-content">
+                <p>{{ $t('islandDetail.mertang.tipsContent') }}</p>
               </div>
-              
-              <!-- Conservation Section -->
-              <div class="info-card">
-                <h3 class="info-title">Conservation-friendly practices</h3>
-                <div class="info-content">
-                  <p>Use reef-safe sunscreen, avoid touching the seabed or grabbing objects while snorkelling, don't feed fish, and don't tread on nesting areas on sandbanks. Rawa is situated within Sultan Iskandar Marine Park, where fishing and motorised water activities are restricted.</p>
-                </div>
+            </div>
+            
+            <!-- Conservation Section -->
+            <div class="info-card">
+              <h3 class="info-title">{{ $t('islandDetail.mertang.conservation') }}</h3>
+              <div class="info-content">
+                <p>{{ $t('islandDetail.mertang.conservationContent') }}</p>
               </div>
+            </div>
+            </div>
+            
+            <!-- Action Buttons Section -->
+            <div class="action-buttons-section">
+              <button class="action-btn reef-policy-btn" @click="goToGovernment">
+                <span class="btn-icon">🏛️</span>
+                <span class="btn-text">{{ $t('islandDetail.actionButtons.reefPolicies') }}</span>
+                <span class="btn-arrow">→</span>
+              </button>
+              <button class="action-btn education-btn" @click="goToEducation">
+                <span class="btn-icon">📚</span>
+                <span class="btn-text">{{ $t('islandDetail.actionButtons.reefConservation') }}</span>
+                <span class="btn-arrow">→</span>
+              </button>
             </div>
           </div>
           
@@ -363,15 +401,15 @@
       <div class="content-sections" v-else-if="islandName === 'Sipadan'">
         <div class="section-container">
           
-          <!-- Description Section -->
+          <!-- {{ $t('islandDetail.description') }} Section -->
           <div class="description-section">
-            <h3 class="description-title">Pulau Sipadan, Sabah</h3>
+            <h3 class="description-title">{{ $t('islandDetail.sipadan.title') }}</h3>
             <div class="description-content">
-              <h4>Description</h4>
-              <p>Pulau Sipadan, located off the east coast of Sabah, is Malaysia's only true oceanic island, formed by an extinct volcano rising 600 metres from the seabed. Recognised worldwide as one of the top diving destinations, Sipadan is home to extraordinary marine biodiversity including turtles, barracuda, reef sharks, and vibrant coral walls. The island is a protected marine park, and overnight stays are not permitted.</p>
+              <h4>{{ $t('islandDetail.description') }}</h4>
+              <p>{{ $t('islandDetail.sipadan.description') }}</p>
             </div>
           </div>
-          
+
           <!-- Carousel Section -->
           <div class="carousel-section">
             <div class="carousel" id="carousel">
@@ -384,70 +422,70 @@
             </div>
           </div>
           
-          <!-- Travel Information Section -->
+          <!-- {{ $t('islandDetail.travelInfo') }} Section -->
           <div class="travel-info-section">
             <!-- Arrive Section -->
             <div class="info-card">
-              <h3 class="info-title">Arrive</h3>
+              <h3 class="info-title">{{ $t('islandDetail.arrive') }}</h3>
               <div class="info-content">
-                <p>Access to Sipadan is via the town of Semporna. Visitors usually fly to Tawau Airport in Sabah from major cities such as Kuala Lumpur or Kota Kinabalu. From Tawau, it is about a 1-hour drive to Semporna, followed by a 45–60 minute speedboat ride from the Semporna Jetty to Sipadan, or to nearby islands such as Mabul or Kapalai, where resorts and dive operators arrange day trips to Sipadan.</p>
-                <p class="reminder"><strong>Reminder:</strong> Sipadan is a protected marine park with no overnight stays or public facilities. Access is limited to 120 permits per day via licensed dive operators, so visitors should confirm permits, boat schedules, and sea conditions well in advance.</p>
+                <p>{{ $t('islandDetail.sipadan.arrive') }}</p>
+                <p class="reminder"><strong>{{ $t('islandDetail.reminder') }}:</strong> {{ $t('islandDetail.sipadan.reminder') }}</p>
               </div>
             </div>
             
             <!-- Snorkeling/Diving Section -->
             <div class="info-card">
-              <h3 class="info-title">Snorkeling / Diving</h3>
+              <h3 class="info-title">{{ $t('islandDetail.snorkelingDiving') }}</h3>
               <div class="info-content">
-                <p>Sipadan is globally recognised as a premier diving destination. The island's steep drop-offs and surrounding reefs provide some of the most spectacular underwater experiences in the world.</p>
-                <p><strong>Iconic dive sites:</strong> Barracuda Point, Turtle Cavern, and The Drop-Off.</p>
-                <p><strong>Marine life:</strong> Large schools of jackfish, swirling barracuda, bumphead parrotfish, reef sharks, and dozens of green and hawksbill turtles. Advanced divers may also encounter hammerheads and whale sharks during certain seasons.</p>
-                <p><strong>Snorkeling:</strong> Limited snorkeling is possible in shallow areas, but the island is primarily suited to experienced divers due to depth, currents, and the protected permit system.</p>
+                <p>{{ $t('islandDetail.sipadan.snorkeling') }}</p>
+                <p><strong>{{ $t('islandDetail.sipadan.iconicSites') }}</strong></p>
+                <p><strong>{{ $t('islandDetail.sipadan.marineLife') }}</strong></p>
+                <p><strong>{{ $t('islandDetail.sipadan.snorkelingNote') }}</strong></p>
               </div>
             </div>
             
-            <!-- Accommodation Section -->
+            <!-- {{ $t('islandDetail.accommodation') }} Section -->
             <div class="info-card">
-              <h3 class="info-title">Accommodation</h3>
+              <h3 class="info-title">{{ $t('islandDetail.accommodation') }}</h3>
               <div class="info-content">
-                <p>There is no accommodation on Sipadan. Most visitors stay on nearby islands such as Mabul or Kapalai, which offer resorts, water chalets, and full dive packages including Sipadan permits.</p>
+                <p>{{ $t('islandDetail.sipadan.accommodation') }}</p>
               </div>
             </div>
           </div>
           
           <!-- Hotel Recommendation Section -->
           <div class="hotel-recommendation-section">
-            <h3 class="hotel-section-title">Hotel / Resort Recommendation</h3>
+            <h3 class="hotel-section-title">{{ $t('islandDetail.hotelRecommendation') }}</h3>
             <div class="hotel-row">
               <div class="hotel-card">
                 <div class="hotel-img">
                   <img :src="'http://static.coralkita.site/assets/Sipadan/Kapalai_Dive.png'" alt="Sipadan Kapalai Dive Resort">
                 </div>
                 <div class="hotel-body">
-                  <div class="hotel-name">Sipadan Kapalai Dive Resort</div>
-                  <div class="hotel-desc">Water village resort on stilts with world-class diving access to Sipadan</div>
+                  <div class="hotel-name">{{ $t('islandDetail.sipadan.kapalaiResort') }}</div>
+                  <div class="hotel-desc">{{ $t('islandDetail.sipadan.kapalaiDesc') }}</div>
                 </div>
-                <a class="hotel-book" href="https://dive-malaysia.com/sipadan-kapalai-dive-resort/" target="_blank">Booking</a>
+                <a class="hotel-book" href="https://dive-malaysia.com/sipadan-kapalai-dive-resort/" target="_blank">{{ $t('islandDetail.sipadan.booking') }}</a>
               </div>
               <div class="hotel-card">
                 <div class="hotel-img">
                   <img :src="'http://static.coralkita.site/assets/Sipadan/Mabul_Beach.png'" alt="Mabul Beach Resort">
                 </div>
                 <div class="hotel-body">
-                  <div class="hotel-name">Mabul Beach Resort</div>
-                  <div class="hotel-desc">Eco-friendly beachfront resort with award-winning PADI dive center</div>
+                  <div class="hotel-name">{{ $t('islandDetail.sipadan.mabulResort') }}</div>
+                  <div class="hotel-desc">{{ $t('islandDetail.sipadan.mabulDesc') }}</div>
                 </div>
-                <a class="hotel-book" href="https://www.scuba-junkie.com/mabul-beach-resort/" target="_blank">Booking</a>
+                <a class="hotel-book" href="https://www.scuba-junkie.com/mabul-beach-resort/" target="_blank">{{ $t('islandDetail.sipadan.booking') }}</a>
               </div>
               <div class="hotel-card">
                 <div class="hotel-img">
                   <img :src="'http://static.coralkita.site/assets/Sipadan/Seaventures_Dive.png'" alt="Seaventures Dive Rig">
                 </div>
                 <div class="hotel-body">
-                  <div class="hotel-name">Seaventures Dive Rig</div>
-                  <div class="hotel-desc">Unique oil rig converted into luxury dive resort with direct Sipadan access</div>
+                  <div class="hotel-name">{{ $t('islandDetail.sipadan.seaventuresResort') }}</div>
+                  <div class="hotel-desc">{{ $t('islandDetail.sipadan.seaventuresDesc') }}</div>
                 </div>
-                <a class="hotel-book" href="https://seaventuresdive.com/" target="_blank">Booking</a>
+                <a class="hotel-book" href="https://seaventuresdive.com/" target="_blank">{{ $t('islandDetail.sipadan.booking') }}</a>
               </div>
             </div>
           </div>
@@ -456,21 +494,35 @@
           <div class="tips-conservation-section">
             <!-- Tips Section -->
             <div class="info-card">
-              <h3 class="info-title">Tips</h3>
+              <h3 class="info-title">{{ $t('islandDetail.sipadan.tips') }}</h3>
               <div class="info-content">
-                <p>The best time to visit is April – December, when seas are calm and visibility is 20–40 metres. From January – March, seas may be rougher, though there are fewer tourists.</p>
-                <p>Book early as permits are limited to 120 per day and usually tied to resort or dive packages. Carry dive certification cards; Sipadan is not suitable for beginners.</p>
-                <p>There are no facilities on the island; accommodation, meals, and dive logistics are arranged from Mabul, Kapalai, or Semporna. Bring reef-safe sunscreen and other essentials.</p>
+                <p>{{ $t('islandDetail.sipadan.tipsContent') }}</p>
+                <p>{{ $t('islandDetail.sipadan.tipsContent2') }}</p>
+                <p>{{ $t('islandDetail.sipadan.tipsContent3') }}</p>
               </div>
             </div>
             
             <!-- Conservation Section -->
             <div class="info-card">
-              <h3 class="info-title">Conservation-friendly practices</h3>
+              <h3 class="info-title">{{ $t('islandDetail.sipadan.conservation') }}</h3>
               <div class="info-content">
-                <p>Sipadan is a strictly protected marine park. Visitors should dive only with licensed operators, avoid touching or disturbing marine life, and maintain proper buoyancy to protect fragile corals.</p>
-                <p>Fishing, motorised water activities, and overnight stays are prohibited. Choosing eco-certified dive resorts helps ensure the island remains pristine for future generations.</p>
+                <p>{{ $t('islandDetail.sipadan.conservationContent') }}</p>
+                <p>{{ $t('islandDetail.sipadan.conservationContent2') }}</p>
               </div>
+            </div>
+            
+            <!-- Action Buttons Section -->
+            <div class="action-buttons-section">
+              <button class="action-btn reef-policy-btn" @click="goToGovernment">
+                <span class="btn-icon">🏛️</span>
+                <span class="btn-text">{{ $t('islandDetail.actionButtons.reefPolicies') }}</span>
+                <span class="btn-arrow">→</span>
+              </button>
+              <button class="action-btn education-btn" @click="goToEducation">
+                <span class="btn-icon">📚</span>
+                <span class="btn-text">{{ $t('islandDetail.actionButtons.reefConservation') }}</span>
+                <span class="btn-arrow">→</span>
+              </button>
             </div>
           </div>
           
@@ -480,15 +532,15 @@
       <!-- Pulau Lima Content -->
       <div class="content-sections" v-else-if="islandName === 'Pulau Lima'">
         <div class="section-container">
-          <!-- Description Section -->
+          <!-- {{ $t('islandDetail.description') }} Section -->
           <div class="description-section">
-            <h3 class="description-title">Pulau Lima, Terengganu</h3>
+            <h3 class="description-title">{{ $t('islandDetail.pulauLima.title') }}</h3>
             <div class="description-content">
-              <h4>Description</h4>
-              <p>Pulau Lima comprises a pair of small islands (Lima Besar / Lima Kecil) within the Sultan Iskandar Marine Park. Managed by Johor Parks, the marine park encompasses multiple islands off the coast of Mersing, conducting conservation and educational activities.</p>
+              <h4>{{ $t('islandDetail.description') }}</h4>
+              <p>{{ $t('islandDetail.pulauLima.description') }}</p>
             </div>
           </div>
-          
+
           <!-- Carousel Section -->
           <div class="carousel-section">
             <div class="carousel" id="carousel">
@@ -501,105 +553,103 @@
             </div>
           </div>
           
-          <!-- Travel Information Section -->
+          <!-- {{ $t('islandDetail.travelInfo') }} Section -->
           <div class="travel-info-section">
             <!-- Arrive Section -->
             <div class="info-card">
-              <h3 class="info-title">Arrive</h3>
+              <h3 class="info-title">{{ $t('islandDetail.arrive') }}</h3>
               <div class="info-content">
-                <p>You may first proceed to Mersing in Johor (the staging point for embarking on sea journeys) to complete formalities at Mersing Harbour Centre (Mersing Ferry Terminal Service Centre). Here, you will confirm ferry schedules/assembly points and pay marine park/conservation fees (charges apply for both island access and entry into marine park zones). (<a href="https://mersingharbourcentre.com/" target="_blank">mersingharbourcentre.com</a>)</p>
-                <p>Alternatively, you may choose to take a speedboat/chartered vessel or join an organised island-hopping tour from Mersing Jetty to the Pulau Lima area. As an uninhabited island, Pulau Lima typically lacks regular public ferry services. Common approaches include:</p>
-                <p>• Booking an island-hopping/snorkelling tour departing from Mersing, allowing the tour leader to determine the day's stops and snorkelling sites based on sea conditions (inquire before booking whether Lima Besar/Lima Kechil waters are included).</p>
-                <p>• Stay on nearby Pulau Sibu and arrange offshore trips to the Lima area through local resorts/dive centres (e.g., Sea Gypsy Village Resort & Dive Base explicitly covers the Lima region in its itineraries and dive sites page).</p>
+                <p>{{ $t('islandDetail.pulauLima.arrive') }}</p>
+                <p class="reminder"><strong>{{ $t('islandDetail.reminder') }}:</strong> {{ $t('islandDetail.pulauLima.reminder') }}</p>
               </div>
             </div>
             
             <!-- Snorkeling/Diving Section -->
             <div class="info-card">
-              <h3 class="info-title">Snorkeling / Diving</h3>
+              <h3 class="info-title">{{ $t('islandDetail.snorkelingDiving') }}</h3>
               <div class="info-content">
-                <p><strong>Lima Besar & Lima Kecil Snorkelling Sites:</strong> Local dive centres and resorts in the Sibu area explicitly list Lima Besar and Lima Kecil as snorkelling routes and coastal experience points, suitable for beginners and families (subject to visibility and sea conditions).</p>
+                <p>{{ $t('islandDetail.pulauLima.snorkeling') }}</p>
               </div>
             </div>
             
-            <!-- Marine Park Snorkeling Card -->
+            <!-- {{ $t('islandDetail.marineParkSnorkeling') }} Card -->
             <div class="hero-tour-card">
-              <img :src="'http://static.coralkita.site/assets/Pulau Lima/dive.png'" alt="Marine Park Snorkeling">
+                <img :src="'http://static.coralkita.site/assets/Pulau Lima/dive.png'" :alt="$t('islandDetail.marineParkSnorkeling')">
               <div class="hero-tour-overlay">
-                <h2 class="hero-tour-title">Marine Park Snorkeling</h2>
-                <p class="hero-tour-desc">Explore pristine coral reefs and diverse marine life in Sultan Iskandar Marine Park with certified guides.</p>
-                <a href="https://www.siburesort.com/dive-base/snorkel-trips-to-tropical-islands-within-the-marine-park.html" target="_blank" class="hero-tour-btn">Explore Snorkeling</a>
+                <h2 class="hero-tour-title">{{ $t('islandDetail.marineParkSnorkeling') }}</h2>
+                <p class="hero-tour-desc">{{ $t('islandDetail.pulauLima.marineParkDesc') }}</p>
+                <a href="https://www.siburesort.com/dive-base/snorkel-trips-to-tropical-islands-within-the-marine-park.html" target="_blank" class="hero-tour-btn">{{ $t('islandDetail.exploreSnorkeling') }}</a>
               </div>
             </div>
             
           </div>
           
-          <!-- Accommodation Section -->
+          <!-- {{ $t('islandDetail.accommodation') }} Section -->
           <div class="travel-info-section">
             <div class="info-card">
-              <h3 class="info-title">Accommodation</h3>
+              <h3 class="info-title">{{ $t('islandDetail.accommodation') }}</h3>
               <div class="info-content">
-                <p><strong>Mersing / Johor</strong></p>
-                <p>As Pulau Lima consists primarily of uninhabited islets, accommodation is typically arranged in Mersing or neighbouring islands such as Sibu. From there, visitors undertake day trips, island-hopping, or charter shared boats to explore the Lima waters. Sibu offers comprehensive destination guides and resort product information, facilitating tailored trips in collaboration with boat operators.</p>
+                <p><strong>{{ $t('islandDetail.pulauLima.accommodation') }}</strong></p>
+                <p>{{ $t('islandDetail.pulauLima.accommodationDesc') }}</p>
               </div>
             </div>
           </div>
           
           <!-- Hotel Recommendation Section -->
           <div class="hotel-recommendation-section">
-            <h3 class="hotel-section-title">Hotel / Resort Recommendation</h3>
+            <h3 class="hotel-section-title">{{ $t('islandDetail.hotelRecommendation') }}</h3>
             <div class="hotel-row">
               <div class="hotel-card">
                 <div class="hotel-img">
-                  <img :src="'http://static.coralkita.site/assets/Pulau Lima/sibu.png'" alt="Sea Gypsy Village Resort">
+                  <img :src="'http://static.coralkita.site/assets/Pulau Lima/sibu.png'" :alt="$t('islandDetail.pulauLima.seaGypsyResort')">
                 </div>
                 <div class="hotel-body">
-                  <div class="hotel-name">Sea Gypsy Village Resort</div>
-                  <div class="hotel-desc">Eco-friendly resort with professional snorkeling guides and marine park access</div>
+                  <div class="hotel-name">{{ $t('islandDetail.pulauLima.seaGypsyResort') }}</div>
+                  <div class="hotel-desc">{{ $t('islandDetail.pulauLima.seaGypsyDesc') }}</div>
                 </div>
-                <a class="hotel-book" href="https://www.siburesort.com/dive-base/snorkel-trips-to-tropical-islands-within-the-marine-park.html" target="_blank">Booking</a>
+                <a class="hotel-book" href="https://www.siburesort.com/dive-base/snorkel-trips-to-tropical-islands-within-the-marine-park.html" target="_blank">{{ $t('islandDetail.pSinga.booking') }}</a>
               </div>
               <div class="hotel-card">
                 <div class="hotel-img">
-                  <img :src="'http://static.coralkita.site/assets/Pulau Lima/rimbaresort.png'" alt="Rimba Resort">
+                  <img :src="'http://static.coralkita.site/assets/Pulau Lima/rimbaresort.png'" :alt="$t('islandDetail.pulauLima.rimbaResort')">
                 </div>
                 <div class="hotel-body">
-                  <div class="hotel-name">Rimba Resort</div>
-                  <div class="hotel-desc">Natural bay resort with diving school and pristine beachfront accommodation</div>
+                  <div class="hotel-name">{{ $t('islandDetail.pulauLima.rimbaResort') }}</div>
+                  <div class="hotel-desc">{{ $t('islandDetail.pulauLima.rimbaDesc') }}</div>
                 </div>
-                <a class="hotel-book" href="https://rimbaresort.com/" target="_blank">Booking</a>
+                <a class="hotel-book" href="https://rimbaresort.com/" target="_blank">{{ $t('islandDetail.pSinga.booking') }}</a>
               </div>
             </div>
           </div>
           
           <!-- Arc Gallery Activities Section -->
           <div class="arc-activities-section">
-            <h3 class="arc-section-title">Tour Activities & Adventures</h3>
+            <h3 class="arc-section-title">{{ $t('islandDetail.tourActivities') }}</h3>
             <div class="arc">
               <div class="orbit">
                 <div class="ph">
-                  <img :src="'http://static.coralkita.site/assets/Pulau Lima/act1.png'" alt="MYVilla Recreation">
+                  <img :src="'http://static.coralkita.site/assets/Pulau Lima/act1.png'" :alt="$t('islandDetail.pulauLima.myVillaRecreation')">
                   <div class="ph-overlay">
-                    <h4 class="ph-title">MYVilla Recreation</h4>
-                    <p class="ph-desc">Eco-friendly homestay with fishing, diving, and jungle trekking activities</p>
+                    <h4 class="ph-title">{{ $t('islandDetail.pulauLima.myVillaRecreation') }}</h4>
+                    <p class="ph-desc">{{ $t('islandDetail.pulauLima.myVillaDesc') }}</p>
                   </div>
-                  <a class="cta" href="https://myvillasibu.com/Recreation-Facilities.html" target="_blank">Book</a>
+                  <a class="cta" href="https://myvillasibu.com/Recreation-Facilities.html" target="_blank">{{ $t('islandDetail.pulauLima.book') }}</a>
                 </div>
                 <div class="ph">
-                  <img :src="'http://static.coralkita.site/assets/Pulau Lima/act2.png'" alt="Island Hopping">
+                  <img :src="'http://static.coralkita.site/assets/Pulau Lima/act2.png'" :alt="$t('islandDetail.pulauLima.islandHopping')">
                   <div class="ph-overlay">
-                    <h4 class="ph-title">Island Hopping</h4>
-                    <p class="ph-desc">Explore multiple islands with guided tours and snorkeling adventures</p>
+                    <h4 class="ph-title">{{ $t('islandDetail.pulauLima.islandHopping') }}</h4>
+                    <p class="ph-desc">{{ $t('islandDetail.pulauLima.islandHoppingDesc') }}</p>
                   </div>
-                  <a class="cta" href="https://causewaylinkholidays.com/product-detail/?id=2145-Mersing-Island-Hopping-1-Day-Trip" target="_blank">Book</a>
+                  <a class="cta" href="https://causewaylinkholidays.com/product-detail/?id=2145-Mersing-Island-Hopping-1-Day-Trip" target="_blank">{{ $t('islandDetail.pulauLima.book') }}</a>
                 </div>
                 <div class="ph">
-                  <img :src="'http://static.coralkita.site/assets/Pulau Lima/act3.png'" alt="VReal Island Hopping">
+                  <img :src="'http://static.coralkita.site/assets/Pulau Lima/act3.png'" :alt="$t('islandDetail.pulauLima.marineParkTours')">
                   <div class="ph-overlay">
-                    <h4 class="ph-title">VReal Adventures</h4>
-                    <p class="ph-desc">Professional island hopping tours with marine park access</p>
+                    <h4 class="ph-title">{{ $t('islandDetail.pulauLima.marineParkTours') }}</h4>
+                    <p class="ph-desc">{{ $t('islandDetail.pulauLima.marineParkToursDesc') }}</p>
                   </div>
-                  <a class="cta" href="https://www.tripadvisor.com/Attraction_Review-g298279-d26267273-Reviews-VReal_Mersing_Island_Hopping-Mersing_Mersing_District_Johor.html" target="_blank">Book</a>
+                  <a class="cta" href="https://www.tripadvisor.com/Attraction_Review-g298279-d26267273-Reviews-VReal_Mersing_Island_Hopping-Mersing_Mersing_District_Johor.html" target="_blank">{{ $t('islandDetail.pulauLima.book') }}</a>
                 </div>
               </div>
             </div>
@@ -608,11 +658,25 @@
           <!-- Tips Section -->
           <div class="tips-conservation-section">
             <div class="info-card">
-              <h3 class="info-title">Tips</h3>
+              <h3 class="info-title">{{ $t('islandDetail.pulauLima.tips') }}</h3>
               <div class="info-content">
-                <p>Diving conditions and visibility in the Mersing region (best from March to September; multiple operators suspend or reduce services during the northeast monsoon season from November to February).</p>
+                <p>{{ $t('islandDetail.pulauLima.tipsContent') }}</p>
               </div>
             </div>
+          </div>
+          
+          <!-- Action Buttons Section -->
+          <div class="action-buttons-section">
+            <button class="action-btn reef-policy-btn" @click="goToGovernment">
+              <span class="btn-icon">🏛️</span>
+              <span class="btn-text">Learn about Reef Policies</span>
+              <span class="btn-arrow">→</span>
+            </button>
+            <button class="action-btn education-btn" @click="goToEducation">
+              <span class="btn-icon">📚</span>
+              <span class="btn-text">Learn about Reef Conservation</span>
+              <span class="btn-arrow">→</span>
+            </button>
           </div>
         </div>
       </div>
@@ -620,15 +684,15 @@
       <!-- Pulau Seri Buat Content -->
       <div class="content-sections" v-else-if="islandName === 'Seri Buat'">
         <div class="section-container">
-          <!-- Description Section -->
+          <!-- {{ $t('islandDetail.description') }} Section -->
           <div class="description-section">
-            <h3 class="description-title">Pulau Seri Buat, Pahang</h3>
+            <h3 class="description-title">{{ $t('islandDetail.seriBuat.title') }}</h3>
             <div class="description-content">
-              <h4>Description</h4>
-              <p>Pulau Seri Buat, also known as Pulau Rahsia, is one of Pahang's best-kept secrets within the Sultan Iskandar Marine Park. Known for its limestone cliffs, crystal-clear waters, and secluded beaches, Seri Buat is a peaceful stop often combined with nearby islands such as Pulau Rawa and Pulau Sembilang. Often called the "Krabi of Malaysia" for its resemblance to Thailand's Krabi coastline, the island offers both tranquility and adventure, making it a perfect getaway for eco-travelers and weekend explorers.</p>
+              <h4>{{ $t('islandDetail.description') }}</h4>
+              <p>{{ $t('islandDetail.seriBuat.description') }}</p>
             </div>
           </div>
-          
+
           <!-- Carousel Section -->
           <div class="carousel-section">
             <div class="carousel" id="carousel">
@@ -641,94 +705,106 @@
             </div>
           </div>
           
-          <!-- Travel Information Section -->
+          <!-- {{ $t('islandDetail.travelInfo') }} Section -->
           <div class="travel-info-section">
             <!-- Arrive Section -->
             <div class="info-card">
-              <h3 class="info-title">Arrive</h3>
+              <h3 class="info-title">{{ $t('islandDetail.arrive') }}</h3>
               <div class="info-content">
-                <p>Access to Pulau Seri Buat is by boat from either Mersing Jetty (Johor) or Tanjung Gemok Jetty (Pahang), with travel times of about 30–45 minutes depending on the departure point. Visitors typically charter boats or join island-hopping tours that include Seri Buat along with other islands in the Mersing cluster, such as Pulau Rawa, Pulau Sembilang, and Pulau Harimau.</p>
-                <p class="reminder"><strong>Reminder:</strong> Seri Buat has no public ferry services, scheduled routes, or permanent jetty. Trips depend on sea conditions, and in some cases, visits may be limited to snorkeling or offshore stops.</p>
+                <p>{{ $t('islandDetail.seriBuat.arrive') }}</p>
+                <p class="reminder"><strong>{{ $t('islandDetail.reminder') }}:</strong> {{ $t('islandDetail.seriBuat.reminder') }}</p>
               </div>
             </div>
             
             <!-- Snorkeling/Diving Section -->
             <div class="info-card">
-              <h3 class="info-title">Snorkeling / Diving</h3>
+              <h3 class="info-title">{{ $t('islandDetail.snorkelingDiving') }}</h3>
               <div class="info-content">
-                <p>Seri Buat's turquoise waters are ideal for snorkeling, with colorful reef fish and good visibility. While diving opportunities are more developed around nearby islands, Seri Buat is a popular stop for:</p>
-                <p>• Snorkeling in sheltered coves</p>
-                <p>• Swimming in emerald waters beneath dramatic cliffs</p>
-                <p>• Cliff-jumping into the sea at designated safe spots</p>
+                <p>{{ $t('islandDetail.seriBuat.snorkeling') }}</p>
+                <p v-for="(item, index) in $t('islandDetail.seriBuat.snorkelingList')" :key="index">• {{ item }}</p>
               </div>
             </div>
             
             <!-- Hiking & Adventure Section -->
             <div class="info-card">
-              <h3 class="info-title">Hiking & Adventure</h3>
+              <h3 class="info-title">{{ $t('islandDetail.seriBuat.hikingAdventure') }}</h3>
               <div class="info-content">
-                <p>A short 10–15 minute hike leads to a scenic viewpoint with panoramic views of Seri Buat and the surrounding waters. For more adventure, visitors can explore rocky outcrops or join island-hopping tours that include nearby Pulau Harimau, known for its hidden natural pool and popular cliff-jumping spots.</p>
+                <p>{{ $t('islandDetail.seriBuat.hikingContent') }}</p>
               </div>
             </div>
           </div>
           
           <!-- Recommended Resorts & Operators Section -->
           <div class="polaroid-operators-section">
-            <h3 class="polaroid-section-title">Recommended Resorts & Operators</h3>
+            <h3 class="polaroid-section-title">{{ $t('islandDetail.seriBuat.recommendedResorts') }}</h3>
             <div class="polaroids">
               <div class="pol">
                 <div class="ph">
                   <img :src="'http://static.coralkita.site/assets/Seri Buat/operator1.png'" alt="Rawa Island Resort">
                   <div class="ph-overlay">
-                    <p class="ph-desc">Luxury island resort with pristine beaches and water activities</p>
+                    <p class="ph-desc">{{ $t('islandDetail.seriBuat.rawaDesc') }}</p>
                   </div>
                 </div>
-                <div class="title">Rawa Island Resort</div>
-                <a class="btn" href="https://rawaislandresort.com/" target="_blank">Explore</a>
+                <div class="title">{{ $t('islandDetail.seriBuat.rawaResort') }}</div>
+                <a class="btn" href="https://rawaislandresort.com/" target="_blank">{{ $t('islandDetail.seriBuat.explore') }}</a>
               </div>
               
               <div class="pol">
                 <div class="ph">
                   <img :src="'http://static.coralkita.site/assets/Seri Buat/operator2.png'" alt="1Step1Footprint">
                   <div class="ph-overlay">
-                    <p class="ph-desc">Professional island hopping tours with hiking and snorkeling</p>
+                    <p class="ph-desc">{{ $t('islandDetail.seriBuat.stepFootprintDesc') }}</p>
                   </div>
                 </div>
-                <div class="title">1Step1Footprint</div>
-                <a class="btn" href="https://1step1footprint.com/johor-island-hopping-day-trip-package/" target="_blank">Explore</a>
+                <div class="title">{{ $t('islandDetail.seriBuat.stepFootprint') }}</div>
+                <a class="btn" href="https://1step1footprint.com/johor-island-hopping-day-trip-package/" target="_blank">{{ $t('islandDetail.seriBuat.explore') }}</a>
               </div>
               
               <div class="pol">
                 <div class="ph">
                   <img :src="'http://static.coralkita.site/assets/Seri Buat/operator3.png'" alt="AMI Travel">
                   <div class="ph-overlay">
-                    <p class="ph-desc">8-island day trip package with comprehensive activities</p>
+                    <p class="ph-desc">{{ $t('islandDetail.seriBuat.amiTravelDesc') }}</p>
                   </div>
                 </div>
-                <div class="title">AMI Travel</div>
-                <a class="btn" href="https://ami.travel/ms/pakej-percutian/965" target="_blank">Explore</a>
+                <div class="title">{{ $t('islandDetail.seriBuat.amiTravel') }}</div>
+                <a class="btn" href="https://ami.travel/ms/pakej-percutian/965" target="_blank">{{ $t('islandDetail.seriBuat.explore') }}</a>
               </div>
             </div>
           </div>
           <!-- Tips Section -->
           <div class="tips-conservation-section">
             <div class="info-card">
-              <h3 class="info-title">Tips</h3>
+              <h3 class="info-title">{{ $t('islandDetail.seriBuat.tips') }}</h3>
               <div class="info-content">
-                <p>The best time to visit is March – October, when seas are calm.</p>
-                <p>Avoid November – February (monsoon season), when sea conditions can be rough.</p>
-                <p>Bring reef-safe sunscreen, water, and snacks, as there are no facilities on the island.</p>
-                <p>Book island-hopping tours in advance to secure your spot.</p>
-                <p>Don't miss the short hike to the viewpoint for breathtaking scenery.</p>
-                <p>Be cautious when snorkeling or cliff-jumping, and always follow operator guidance.</p>
+                <p>{{ $t('islandDetail.seriBuat.tipsContent') }}</p>
+                <p>{{ $t('islandDetail.seriBuat.tipsContent2') }}</p>
+                <p>{{ $t('islandDetail.seriBuat.tipsContent3') }}</p>
+                <p>{{ $t('islandDetail.seriBuat.tipsContent4') }}</p>
+                <p>{{ $t('islandDetail.seriBuat.tipsContent5') }}</p>
+                <p>{{ $t('islandDetail.seriBuat.tipsContent6') }}</p>
               </div>
             </div>
             <div class="info-card">
-              <h3 class="info-title">Conservation-friendly practices</h3>
+              <h3 class="info-title">{{ $t('islandDetail.seriBuat.conservation') }}</h3>
               <div class="info-content">
-                <p>As part of the Sultan Iskandar Marine Park, Seri Buat is under protection. Visitors should avoid touching or stepping on corals, refrain from feeding fish, and carry all rubbish back to the mainland. Use reef-safe sunscreen to protect marine life, and respect nesting areas on sandbanks or rocky outcrops. Choosing licensed eco-friendly operators helps preserve the island's natural beauty for future visitors.</p>
+                <p>{{ $t('islandDetail.seriBuat.conservationContent') }}</p>
               </div>
             </div>
+          </div>
+          
+          <!-- Action Buttons Section -->
+          <div class="action-buttons-section">
+            <button class="action-btn reef-policy-btn" @click="goToGovernment">
+              <span class="btn-icon">🏛️</span>
+              <span class="btn-text">Learn about Reef Policies</span>
+              <span class="btn-arrow">→</span>
+            </button>
+            <button class="action-btn education-btn" @click="goToEducation">
+              <span class="btn-icon">📚</span>
+              <span class="btn-text">Learn about Reef Conservation</span>
+              <span class="btn-arrow">→</span>
+            </button>
           </div>
         </div>
       </div>
@@ -746,9 +822,9 @@
     <!-- Footer -->
     <div class="page-footer">
       <div class="footer-content">
-        © 2025 CoralKita
+        {{ $t('footer.copyright') }}
         <span class="footer-links">
-          <a href="mailto:coralkita.service@gmail.com">Contact Us</a>
+          <a href="mailto:coralkita.service@gmail.com">{{ $t('footer.contact') }}</a>
         </span>
       </div>
     </div>
@@ -758,8 +834,13 @@
 <script>
 import ossService from '../utils/ossService.js'
 
+import LanguageSwitcher from './LanguageSwitcher.vue'
+
 export default {
   name: 'IslandDetail',
+  components: {
+    LanguageSwitcher
+  },
   data() {
     return {
       backgroundLoaded: false, // 背景图片加载状态
@@ -768,6 +849,7 @@ export default {
       islandName: '',
       // Travel dropdown related
       showTravelDropdown: false,
+      showEducationDropdown: false,
       currentLanguage: 'en',
       travelIslands: ['Mertang', 'P Singa', 'Sipadan', 'Pulau Lima', 'Seri Buat'],
       // OSS图片URL
@@ -966,6 +1048,14 @@ export default {
       });
     },
     
+    goToTravelChecklist() {
+      this.$router.push('/travel-checklist').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
+    },
+    
     goToGovernment() {
       this.$router.push('/government').catch(err => {
         if (err.name !== 'NavigationDuplicated') {
@@ -977,6 +1067,33 @@ export default {
     goToAITools() {
       console.log('Navigate to AI Tools page');
       this.$router.push('/ai-tools').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
+    },
+
+    goToActionHub() {
+      console.log('Navigate to Action Hub page');
+      this.$router.push('/action-hub').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
+    },
+
+    goToPolicies() {
+      console.log('Navigate to Policies page');
+      this.$router.push('/policies').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
+    },
+
+    goToFAQ() {
+      console.log('Navigate to FAQ page');
+      this.$router.push('/faq').catch(err => {
         if (err.name !== 'NavigationDuplicated') {
           console.error('Navigation error:', err);
         }
@@ -1231,13 +1348,15 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 12px 24px;
-  background: linear-gradient(90deg, #1A1D25 0%, #01A2EB 100%);
-  backdrop-filter: blur(10px);
+  background: linear-gradient(90deg, rgba(26, 29, 37, 0.95) 0%, rgba(1, 162, 235, 0.95) 100%);
+  backdrop-filter: blur(15px);
   color: white;
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 100;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
 }
 
 .nav-left {
@@ -1312,23 +1431,41 @@ export default {
   border-bottom-color: #63b3ed;
 }
 
-/* Island 下拉菜单样式 - 改进版 */
+/* Map & Recommendation 下拉菜单样式 */
 .nav-item-dropdown {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nav-item-dropdown .nav-item-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nav-item-dropdown::before {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background: transparent;
 }
 
 .dropdown-menu {
   position: absolute;
-  top: calc(100% + 8px); /* 在Island正下方，留8px间距 */
+  top: calc(100% + 4px);
   left: 50%;
-  transform: translateX(-50%); /* 居中对齐 */
+  transform: translateX(-50%);
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(25px);
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 16px;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1);
-  min-width: 120px;
-  max-width: 140px;
+  min-width: 160px;
   z-index: 1000;
   overflow: hidden;
   animation: dropdownSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1482,7 +1619,7 @@ export default {
 
 /* Content Sections */
 .content-sections {
-  padding: 60px 0;
+  padding: 140px 0 60px 0;
 }
 
 .content-section {
@@ -1504,7 +1641,7 @@ export default {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-/* Description Section */
+/* {{ $t('islandDetail.description') }} Section */
 .description-section {
   margin-bottom: 40px;
   margin-top: 20px;
@@ -1611,7 +1748,7 @@ export default {
   text-decoration: underline;
 }
 
-/* Travel Information Section */
+/* {{ $t('islandDetail.travelInfo') }} Section */
 .travel-info-section {
   margin-top: 50px;
   display: flex;
@@ -2755,5 +2892,133 @@ export default {
 @keyframes textGlow {
   0% { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); }
   100% { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5), 0 0 10px rgba(0, 212, 255, 0.3); }
+}
+
+/* Action Buttons Section Styles */
+.action-buttons-section {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 40px 0;
+  padding: 30px 0;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: none;
+  padding: 18px 40px;
+  border-radius: 50px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+  min-width: 280px;
+}
+
+.reef-policy-btn {
+  background: linear-gradient(135deg, #01A2EB 0%, #0077BE 100%);
+  color: white;
+  box-shadow: 0 8px 25px rgba(1, 162, 235, 0.35);
+}
+
+.education-btn {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.35);
+}
+
+.action-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s ease;
+}
+
+.action-btn:hover::before {
+  left: 100%;
+}
+
+.reef-policy-btn:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 12px 35px rgba(1, 162, 235, 0.5);
+  background: linear-gradient(135deg, #0077BE 0%, #005F9E 100%);
+}
+
+.education-btn:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 12px 35px rgba(16, 185, 129, 0.5);
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+.action-btn:active {
+  transform: translateY(-1px) scale(1.02);
+}
+
+.reef-policy-btn:active {
+  box-shadow: 0 6px 20px rgba(1, 162, 235, 0.4);
+}
+
+.education-btn:active {
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.action-btn .btn-icon {
+  font-size: 1.5rem;
+  animation: float 2s ease-in-out infinite;
+}
+
+.action-btn .btn-text {
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+}
+
+.action-btn .btn-arrow {
+  font-size: 1.4rem;
+  transition: transform 0.3s ease;
+}
+
+.action-btn:hover .btn-arrow {
+  transform: translateX(5px);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+/* Responsive adjustments for action buttons */
+@media (max-width: 768px) {
+  .action-buttons-section {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .action-btn {
+    padding: 15px 30px;
+    font-size: 1rem;
+    min-width: 250px;
+  }
+
+  .action-btn .btn-icon {
+    font-size: 1.3rem;
+  }
+
+  .action-btn .btn-text {
+    font-size: 1rem;
+  }
+
+  .action-btn .btn-arrow {
+    font-size: 1.2rem;
+  }
 }
 </style>

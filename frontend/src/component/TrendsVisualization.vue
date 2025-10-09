@@ -36,18 +36,17 @@
       <div class="nav-left">
         <!-- Left side icon -->
         <img :src="imageUrls.appIcon" alt="logo" class="nav-logo" @click="goToHome" />
-        <h1 class="logo" @click="goToHome">CoralKita</h1>
+        <h1 class="logo" @click="goToHome">{{ $t('nav.logo') }}</h1>
       </div>
       <div class="nav-right">
         <div class="nav-items">
-          <div class="nav-item-wrapper">
-            <span class="nav-item map-rec-item active">
-              <span class="nav-text-line">Map &</span>
-              <span class="nav-text-line">Recommendation</span>
-            </span>
-          </div>
           <div class="nav-item-dropdown" @mouseenter="showTravelDropdown = true" @mouseleave="showTravelDropdown = false">
-            <span class="nav-item">Island</span>
+            <div class="nav-item-wrapper">
+              <span class="nav-item map-rec-item active">
+                <span class="nav-text-line">{{ $t('nav.mapRecommendation.line1') }}</span>
+                <span class="nav-text-line">{{ $t('nav.mapRecommendation.line2') }}</span>
+              </span>
+            </div>
             <div class="dropdown-menu" v-show="showTravelDropdown">
               <div 
                 v-for="island in recommendedIslands" 
@@ -59,16 +58,29 @@
               </div>
             </div>
           </div>
-          <span class="nav-item" @click="goToEducation">Education</span>
-          <span class="nav-item" @click="goToAITools">AI Classification</span>
+          <div class="nav-item-dropdown" @mouseenter="showEducationDropdown = true" @mouseleave="showEducationDropdown = false">
+            <span class="nav-item" @click="goToEducation">{{ $t('nav.education') }}</span>
+            <div class="dropdown-menu" v-show="showEducationDropdown">
+              <div class="dropdown-item" @click="goToEducation">
+                <span>{{ $t('education.dropdown.tourismHub') }}</span>
+              </div>
+              <div class="dropdown-item" @click="goToTravelChecklist">
+                <span>{{ $t('education.dropdown.tourismChecklist') }}</span>
+              </div>
+            </div>
+          </div>
+          <span class="nav-item" @click="goToAITools">{{ $t('nav.aiClassification') }}</span>
+          <span class="nav-item" @click="goToGovernment">{{ $t('nav.government') }}</span>
+          <span class="nav-item" @click="goToFAQ">{{ $t('nav.faq') }}</span>
+          <LanguageSwitcher />
         </div>
       </div>
     </div>
 
     <!-- Main title -->
     <div class="page-title">
-      <h2>Interactive Heat Map</h2>
-
+      <h2>{{ $t('map.title') }}</h2>
+      <p class="data-source">{{ $t('map.dataSource') }}</p>
     </div>
 
     <!-- Loading indicator removed -->
@@ -79,20 +91,20 @@
       <div class="heat-map-section">
         <!-- Left: Select Panel -->
         <div class="select-panel">
-          <h3>Select Panel</br></br></h3>
+          <h3>{{ $t('map.selectPanel.title') }}</br></br></h3>
           
           <!-- Location Type Selection -->
           <div class="control-group">
-            <label>Filter by State/Island</label>
+            <label>{{ $t('map.selectPanel.filterByLocation') }}</label>
             <div class="combobox-container">
               <select 
                 v-model="selectedLocationType"
                 @change="onLocationTypeChange"
                 class="location-type-select"
               >
-                <option value="">Select type...</option>
-                <option value="state">State</option>
-                <option value="island">Island</option>
+                <option value="">{{ $t('map.selectPanel.selectType') }}</option>
+                <option value="state">{{ $t('map.selectPanel.state') }}</option>
+                <option value="island">{{ $t('map.selectPanel.island') }}</option>
               </select>
               <div class="select-arrow">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
@@ -104,7 +116,7 @@
           
           <!-- Dynamic Selection Combobox -->
           <div class="control-group">
-            <label>{{ selectedLocationType === 'state' ? 'Select State' : selectedLocationType === 'island' ? 'Select Island' : 'Select Location' }}</label>
+            <label>{{ selectedLocationType === 'state' ? $t('map.selectPanel.selectState') : selectedLocationType === 'island' ? $t('map.selectPanel.selectIsland') : $t('map.selectPanel.selectLocation') }}</label>
             <div class="combobox-container">
               <input 
                 type="text" 
@@ -113,7 +125,7 @@
                 @focus="onDynamicInputFocus"
                 @blur="onDynamicInputBlur"
                 @keydown="onDynamicKeyDown"
-                :placeholder="selectedLocationType === 'state' ? 'Type or select a state...' : selectedLocationType === 'island' ? 'Type or select an island...' : 'Select location type first...'"
+                :placeholder="selectedLocationType === 'state' ? $t('map.selectPanel.typeState') : selectedLocationType === 'island' ? $t('map.selectPanel.typeIsland') : $t('map.selectPanel.selectFirst')"
                 class="island-input"
                 :disabled="!selectedLocationType"
                 ref="dynamicInput"
@@ -136,7 +148,7 @@
                   v-if="filteredDynamicOptions.length === 0"
                   class="dropdown-item no-results"
                 >
-                  {{ selectedLocationType === 'state' ? 'No states found' : 'No islands found' }}
+                  {{ selectedLocationType === 'state' ? $t('map.selectPanel.noStates') : $t('map.selectPanel.noIslands') }}
                 </div>
                 <div 
                   v-for="option in filteredDynamicOptions" 
@@ -158,13 +170,13 @@
             <div v-if="selectedIsland" class="location-info">
               <span class="island-name">{{ selectedIsland }}</span>
               <div v-if="selectedCoordinates" class="coordinates">
-                <span class="coord-label">Coordinates:</span>
+                <span class="coord-label">{{ $t('map.coordinates') }}:</span>
                 <span class="coord-values">{{ selectedCoordinates.lat.toFixed(4) }}°N, {{ selectedCoordinates.lng.toFixed(4) }}°E</span>
           </div>
               </div>
             <div class="map-instructions" v-if="!selectedIsland">
               <p>
-                🎯 Use the left panel to filter by state or island.<br>🗺 Click the markers on the map to explore island details.<br>⭐ The right panel shows recommended islands, which you can click to view more information.
+                🎯 {{ $t('map.mapInstructions.useLeftPanel') }}<br>🗺 {{ $t('map.mapInstructions.clickMarkers') }}<br>⭐ {{ $t('map.mapInstructions.rightPanel') }}
               </p>
               </div>
             </div>
@@ -187,8 +199,8 @@
           
         <!-- Right: Recommended Islands -->
         <div class="recommendations-panel">
-          <h3>Recommended Islands List</h3>
-          <p class="recommendation-subtitle">The list is based on Live Coral Cover and the overall health status.</br></p>
+          <h3>{{ $t('map.recommendedIslands.title') }}</h3>
+          <p class="recommendation-subtitle">{{ $t('map.recommendedIslands.subtitle') }}</br></p>
           
           <div class="recommended-islands">
             <div 
@@ -216,7 +228,7 @@
           </div>
           
           <div class="location-note">
-            <p>Click to enter the island page</p>
+            <p>{{ $t('map.recommendedIslands.clickToEnter') }}</p>
         </div>
       </div>
     </div>
@@ -225,16 +237,16 @@
     <div class="comparison-section">
     
     <div class="comparison-bg-wrapper">
-      <h2 class="comparison-title">Island Comparison Visualization</h2>
+      <h2 class="comparison-title">{{ $t('map.comparison.title') }}</h2>
       <div class="comparison-layout-container">
         <!-- Left: Island Selection Panel -->
         <div class="external-island-selection-panel">
-        <h3>Comparison Panel</h3>
-        <p>Select two islands and an attribute to compare coral reef health trends</p>
+        <h3>{{ $t('map.comparison.panel.title') }}</h3>
+        <p>{{ $t('map.comparison.panel.description') }}</p>
             <div class="island-selector">
-              <label>🏝️Select Island:</label>
+              <label>{{ $t('map.comparison.panel.selectIsland') }}</label>
               <select v-model="compareIsland1" @change="updateComparisonChart" class="island-select">
-                <option value="">Choose Island</option>
+                <option value="">{{ $t('map.comparison.panel.chooseIsland') }}</option>
                 <option 
                   v-for="island in availableIslands" 
                   :key="island"
@@ -247,9 +259,9 @@
           </div>
             
             <div class="island-selector">
-              <label>⚖️Compare Island:</label>
+              <label>{{ $t('map.comparison.panel.compareIsland') }}</label>
               <select v-model="compareIsland2" @change="updateComparisonChart" class="island-select">
-                    <option value="">Choose Island</option>
+                    <option value="">{{ $t('map.comparison.panel.chooseIsland') }}</option>
                     <option 
                       v-for="island in availableIslands" 
                       :key="island"
@@ -262,7 +274,7 @@
           </div>
         <!-- 把 Select Attribute 放到这里 -->
           <div class="island-selector">
-            <label>📊Select Attribute:</label>
+            <label>{{ $t('map.comparison.panel.selectAttribute') }}</label>
             <div class="indicator-dropdown" @click.stop>
               <div class="selected" @click="toggleIndicatorDropdown">
                 {{ selectedIndicatorLabel }}
@@ -296,19 +308,19 @@
         <div class="horizon-chart-container">
           <canvas ref="horizonChart" class="horizon-chart"></canvas>
               <div v-if="!compareIsland1 && !compareIsland2" class="chart-placeholder">
-                <p>Select at least one island to view data</p>
+                <p>{{ $t('map.comparison.panel.placeholder') }}</p>
               </div>
             </div>
               </div>
             </div>
             <div class="info-panel">
-            <h3>Additional Infomation</h3>
+            <h3>{{ $t('map.comparison.additionalInfo.title') }}</h3>
               <div class="info-bubble">
-                Want to understand what each indicator reveals about coral reef conditions?
+                {{ $t('map.comparison.additionalInfo.question') }}
               </div>
 
               <div class="info-bubble">
-                Please scroll down to see the Coral Reef Health Indicators Analysis.
+                {{ $t('map.comparison.additionalInfo.instruction') }}
               </div>
               
 
@@ -321,8 +333,8 @@
         <!-- All Indicators Section -->
 <div class="all-indicators-section">
   <div class="section-header">
-    <h2 class="section-title">Coral Reef Health Indicators Analysis</h2>
-    <p class="section-subtitle">Each indicator (e.g., live coral cover, disturbance, pollution) represents a proportion of the reef condition, and together they add up to 100%, showing how the reef area is distributed across these factors.</p>
+    <h2 class="section-title">{{ $t('map.indicators.title') }}</h2>
+    <p class="section-subtitle">{{ $t('map.indicators.subtitle') }}</p>
   </div>
 
   <div class="indicator-grid">
@@ -330,12 +342,12 @@
     <!-- LCC -->
     <div class="indicator-panel">
       <div class="panel-header">
-        <h3 class="panel-title">LCC (Live Coral Cover)</h3>
+        <h3 class="panel-title">{{ $t('map.indicators.lcc.title') }}</h3>
       </div>
       <div class="analysis-content">
-        <p><span class="good">&gt;50%:</span> Healthy condition, indicating large live coral coverage area and stable ecosystem.</p>
-        <p><span class="moderate">30–50%:</span> Moderate level, still has recovery potential but sensitive to external pressure.</p>
-        <p><span class="poor">&lt;30%:</span> Severely degraded, may be replaced by algae, sand or rubble, declining ecosystem services.</p>
+        <p><span class="good">&gt;50%:</span> {{ $t('map.indicators.lcc.good') }}</p>
+        <p><span class="moderate">30–50%:</span> {{ $t('map.indicators.lcc.moderate') }}</p>
+        <p><span class="poor">&lt;30%:</span> {{ $t('map.indicators.lcc.poor') }}</p>
       </div>
       <div class="indicator-images">
         <div class="image-card">
@@ -352,12 +364,12 @@
     <!-- AS -->
     <div class="indicator-panel">
       <div class="panel-header">
-        <h3 class="panel-title">AS (Available Substrate)</h3>
+        <h3 class="panel-title">{{ $t('map.indicators.as.title') }}</h3>
       </div>
       <div class="analysis-content">
-        <p><span class="good">&lt;10%:</span> Ideal state, most substrate covered by corals.</p>
-        <p><span class="moderate">10–25%:</span> Warning zone, indicating recent coral death or fragmentation.</p>
-        <p><span class="critical">&gt;40%:</span> Severely degraded area, indicating massive coral death, easily occupied by algae.</p>
+        <p><span class="good">&lt;10%:</span> {{ $t('map.indicators.as.good') }}</p>
+        <p><span class="moderate">10–25%:</span> {{ $t('map.indicators.as.moderate') }}</p>
+        <p><span class="critical">&gt;40%:</span> {{ $t('map.indicators.as.critical') }}</p>
       </div>
       <div class="indicator-images">
         <div class="image-card">
@@ -374,12 +386,12 @@
     <!-- SD -->
     <div class="indicator-panel">
       <div class="panel-header">
-        <h3 class="panel-title">SD (Sand/Soft Coral Coverage)</h3>
+        <h3 class="panel-title">{{ $t('map.indicators.sd.title') }}</h3>
       </div>
       <div class="analysis-content">
-        <p><span class="good">5–15%:</span> Appropriate amount, optimal state maintaining ecological balance.</p>
-        <p><span class="poor">&gt;20%:</span> Excessive sand may bury hard corals and hinder larvae settlement.</p>
-        <p><span class="poor">&lt;5%:</span> Too low, may indicate ecosystem imbalance, lacking necessary soft corals.</p>
+        <p><span class="good">5–15%:</span> {{ $t('map.indicators.sd.good') }}</p>
+        <p><span class="poor">&gt;20%:</span> {{ $t('map.indicators.sd.poorHigh') }}</p>
+        <p><span class="poor">&lt;5%:</span> {{ $t('map.indicators.sd.poorLow') }}</p>
       </div>
       <div class="indicator-images">
         <div class="image-card">
@@ -396,12 +408,12 @@
     <!-- DI -->
     <div class="indicator-panel">
       <div class="panel-header">
-        <h3 class="panel-title">DI (Disturbance Indicator)</h3>
+        <h3 class="panel-title">{{ $t('map.indicators.di.title') }}</h3>
       </div>
       <div class="analysis-content">
-        <p><span class="good">&lt;5%:</span> Ideal state, almost no obvious damage.</p>
-        <p><span class="moderate">5–10%:</span> Warning level, indicating recent typhoon, fishing or anchor damage.</p>
-        <p><span class="poor">&gt;10%:</span> Obvious damage, ecosystem in vulnerable or degraded state.</p>
+        <p><span class="good">&lt;5%:</span> {{ $t('map.indicators.di.good') }}</p>
+        <p><span class="moderate">5–10%:</span> {{ $t('map.indicators.di.moderate') }}</p>
+        <p><span class="poor">&gt;10%:</span> {{ $t('map.indicators.di.poor') }}</p>
       </div>
       <div class="indicator-images">
         <div class="image-card">
@@ -418,12 +430,12 @@
     <!-- PI -->
     <div class="indicator-panel">
       <div class="panel-header">
-        <h3 class="panel-title">PI (Pollution Indicator)</h3>
+        <h3 class="panel-title">{{ $t('map.indicators.pi.title') }}</h3>
       </div>
       <div class="analysis-content">
-        <p><span class="good">&lt;2%:</span> Ideal, minimal external pollution impact.</p>
-        <p><span class="moderate">2–5%:</span> Moderate level, indicating some pollution sources, needs attention.</p>
-        <p><span class="poor">&gt;5%:</span> High pollution, may cause coral bleaching, increased disease and mortality.</p>
+        <p><span class="good">&lt;2%:</span> {{ $t('map.indicators.pi.good') }}</p>
+        <p><span class="moderate">2–5%:</span> {{ $t('map.indicators.pi.moderate') }}</p>
+        <p><span class="poor">&gt;5%:</span> {{ $t('map.indicators.pi.poor') }}</p>
       </div>
       <div class="indicator-images">
         <div class="image-card">
@@ -452,9 +464,9 @@
     </div>
     <footer class="main-footer">
       <div class="footer-content">
-        © 2025 CoralKita
+        {{ $t('footer.copyright') }}
         <span class="footer-links">
-          <a href="mailto:coralkita.service@gmail.com">Contact Us</a>
+          <a href="mailto:coralkita.service@gmail.com">{{ $t('footer.contact') }}</a>
         </span>
       </div>
     </footer>
@@ -483,8 +495,13 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
 
+import LanguageSwitcher from './LanguageSwitcher.vue'
+
 export default {
   name: 'TrendsVisualization',
+  components: {
+    LanguageSwitcher
+  },
   data() {
     return {
       backgroundLoaded: false, // 背景图片加载状态
@@ -586,6 +603,7 @@ export default {
   ],
       showIndicatorDropdown: false,
       showTravelDropdown: false,
+      showEducationDropdown: false,
       tooltipContent: '',
       tooltipStyle: { display: 'none' },
       horizonChart: null,
@@ -1881,6 +1899,15 @@ export default {
         }
       });
     },
+    
+    goToTravelChecklist() {
+      console.log('Navigate to Travel Checklist page');
+      this.$router.push('/travel-checklist').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
+    },
 
     goToGovernment() {
       console.log('导航到Government页面');
@@ -1895,6 +1922,34 @@ export default {
     goToAITools() {
       console.log('Navigate to AI Tools page');
       this.$router.push('/ai-tools').catch(err => {
+        // Ignore navigation duplicated error
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
+    },
+
+    goToActionHub() {
+      console.log('Navigate to Action Hub page');
+      this.$router.push('/action-hub').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
+    },
+
+    goToPolicies() {
+      console.log('Navigate to Policies page');
+      this.$router.push('/policies').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
+    },
+
+    goToFAQ() {
+      console.log('Navigate to FAQ page');
+      this.$router.push('/faq').catch(err => {
         // Ignore navigation duplicated error
         if (err.name !== 'NavigationDuplicated') {
           console.error('Navigation error:', err);
@@ -3428,38 +3483,30 @@ export default {
 
     // 判断是否应该显示选择按钮
     shouldShowSelectButton(islandName) {
-      // 检查岛屿的LCC数据
-      const islandLCCData = this.allIslandsLCCData[islandName];
-      
-      // 如果是Poor指标（< 30%），显示按钮（跳转到Education）
-      if (islandLCCData && islandLCCData.lcc !== undefined) {
-        const lccValue = parseFloat(islandLCCData.lcc);
-        if (lccValue < 0.3) {
-          return true; // Poor状态，跳转到Education
-        }
-      }
-      
-      // 检查是否为推荐岛屿（排名前5）
-      const isRecommended = this.recommendedIslands.some(island => island.name === islandName);
-      if (isRecommended) {
-        return true; // 推荐岛屿，跳转到详情页面
-      }
-      
-      return false; // 其他情况不显示按钮
+      // 所有岛屿都显示按钮
+      return true;
     },
 
     // 获取选择按钮的HTML
     getSelectButtonHtml(islandName) {
       if (this.shouldShowSelectButton(islandName)) {
-        // 检查是否为红色岛屿（Poor状态，LCC < 30%）
-        const islandLCCData = this.allIslandsLCCData[islandName];
-        let buttonText = 'Select Island'; // 默认文本
+        // 检查是否为推荐岛屿（排名前5）
+        const isRecommended = this.recommendedIslands.some(island => island.name === islandName);
         
+        // 检查是否为Poor状态岛屿（LCC < 30%）
+        const islandLCCData = this.allIslandsLCCData[islandName];
+        let isPoor = false;
         if (islandLCCData && islandLCCData.lcc !== undefined) {
           const lccValue = parseFloat(islandLCCData.lcc);
-          if (lccValue < 0.3) {
-            buttonText = 'Travel Responsibly'; // 红色岛屿显示此文本
-          }
+          isPoor = lccValue < 0.3;
+        }
+        
+        // 根据岛屿类型设置按钮文本
+        let buttonText = 'Learn More'; // 默认文本（其他岛屿）
+        if (isRecommended) {
+          buttonText = 'Select Island'; // 推荐岛屿（排名前5）
+        } else if (isPoor) {
+          buttonText = 'Travel Responsibly'; // Poor状态岛屿
         }
         
         return `<button onclick="window.selectIslandFromPopup('${islandName}')" style="background: #3b82f6; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold;">${buttonText}</button>`;
@@ -3526,8 +3573,18 @@ export default {
           }
         });
       } else {
-        console.log(`${islandName} 不是推荐岛屿，只在地图上定位`);
-        this.selectIslandFromMap(islandName);
+        // 其他岛屿（既不是推荐岛屿，也不是Poor状态），跳转到Education界面
+        console.log(`${islandName} 是其他岛屿，跳转到Education界面`);
+        console.log('准备跳转到 /education');
+        
+        this.$router.push('/education').then(() => {
+          console.log('成功跳转到Education界面');
+        }).catch(err => {
+          console.error('跳转到Education界面失败:', err);
+          if (err.name !== 'NavigationDuplicated') {
+            console.error('Navigation error:', err);
+          }
+        });
       }
       
       console.log('=== 调试信息结束 ===');
@@ -4071,7 +4128,7 @@ export default {
   content: "";
   position: fixed;
   inset: 0;
-  background: url('@/assets-webp/bg_trend.webp') no-repeat center center;
+  background: url('@/assets/bg_trend.webp') no-repeat center center;
   background-size: cover;
   z-index: -1;
 }
@@ -4363,14 +4420,33 @@ export default {
   border-bottom-color: #63b3ed;
 }
 
-/* Island 下拉菜单样式 */
+/* Map & Recommendation 下拉菜单样式 */
 .nav-item-dropdown {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nav-item-dropdown .nav-item-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nav-item-dropdown::before {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background: transparent;
 }
 
 .dropdown-menu {
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + 4px);
   left: 50%;
   transform: translateX(-50%);
   background: rgba(255, 255, 255, 0.98);
@@ -4378,8 +4454,7 @@ export default {
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 16px;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1);
-  min-width: 120px;
-  max-width: 140px;
+  min-width: 160px;
   z-index: 1000;
   overflow: hidden;
   animation: dropdownSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -4705,6 +4780,14 @@ export default {
   color: #ffffffff;
   font-weight: 600;
   text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.66); 
+}
+
+.data-source {
+  margin: 8px 0 0 0;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-style: italic;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 
