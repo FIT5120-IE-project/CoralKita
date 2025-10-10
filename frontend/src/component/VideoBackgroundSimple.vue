@@ -6,18 +6,17 @@
       <div class="nav-left">
         <!-- Left side logo -->
         <img :src="imageUrls.appIcon" alt="logo" class="nav-logo" />
-        <h1 class="logo">CoralKita</h1>
+        <h1 class="logo">{{ $t('nav.logo') }}</h1>
       </div>
       <div class="nav-right">
         <div class="nav-items">
-          <div class="nav-item-wrapper">
-            <span class="nav-item map-rec-item" @click="goToMap">
-              <span class="nav-text-line">Map &</span>
-              <span class="nav-text-line">Recommendation</span>
-            </span>
-          </div>
           <div class="nav-item-dropdown" @mouseenter="showTravelDropdown = true" @mouseleave="showTravelDropdown = false">
-            <span class="nav-item">Island</span>
+            <div class="nav-item-wrapper">
+              <span class="nav-item map-rec-item" @click="goToMap">
+                <span class="nav-text-line">{{ $t('nav.mapRecommendation.line1') }}</span>
+                <span class="nav-text-line">{{ $t('nav.mapRecommendation.line2') }}</span>
+              </span>
+            </div>
             <div class="dropdown-menu" v-show="showTravelDropdown">
               <div 
                 v-for="island in travelIslands" 
@@ -29,8 +28,21 @@
               </div>
             </div>
           </div>
-          <span class="nav-item" @click="goToEducation">Education</span>
-          <span class="nav-item" @click="goToAITools">AI Classification</span>
+          <div class="nav-item-dropdown" @mouseenter="showEducationDropdown = true" @mouseleave="showEducationDropdown = false">
+            <span class="nav-item" @click="goToEducation">{{ $t('nav.education') }}</span>
+            <div class="dropdown-menu" v-show="showEducationDropdown">
+              <div class="dropdown-item" @click="goToEducation">
+                <span>{{ $t('education.dropdown.tourismHub') }}</span>
+              </div>
+              <div class="dropdown-item" @click="goToTravelChecklist">
+                <span>{{ $t('education.dropdown.tourismChecklist') }}</span>
+              </div>
+            </div>
+          </div>
+          <span class="nav-item" @click="goToAITools">{{ $t('nav.aiClassification') }}</span>
+          <span class="nav-item" @click="goToGovernment">{{ $t('nav.government') }}</span>
+          <span class="nav-item" @click="goToFAQ">{{ $t('nav.faq') }}</span>
+          <LanguageSwitcher />
         </div>
       </div>
     </div>
@@ -48,7 +60,7 @@
               <img :src="imageUrls.colorfulCoral" alt="Colorful Coral Reef" class="status-image" />
             </div>
             <div class="text-container">
-              <h3 class="status-title">Is this the coral reef you remember — bright, colorful, and alive?</h3>
+              <h3 class="status-title">{{ $t('home.coral.healthy') }}</h3>
             </div>
           </div>
       </div>
@@ -62,7 +74,7 @@
         <div id="middle-section" class="status-section middle-section">
           <div class="section-content">
             <div class="text-container">
-              <h3 class="status-title">Today, most reefs are fading, struggling under climate change and human pressure.</h3>
+              <h3 class="status-title">{{ $t('home.coral.fading') }}</h3>
             </div>
             <div class="image-container">
               <img :src="imageUrls.bleachingCoral" alt="Bleaching Coral" class="status-image" />
@@ -82,7 +94,7 @@
               <img :src="imageUrls.bleachedCoral" alt="Bleached Coral" class="status-image" />
             </div>
             <div class="text-container">
-              <h3 class="status-title">Without action, they may soon become lifeless white skeletons like this.</h3>
+              <h3 class="status-title">{{ $t('home.coral.bleached') }}</h3>
             </div>
           </div>
         </div>
@@ -92,30 +104,30 @@
       <div class="bottom-content">
         <!-- 主标题 -->
         <div class="intro-section">
-          <h2>Plan Smart. Travel Green. Protect Reefs.</h2>
-          <p>CoralKita guides your trip with real reef data — helping you choose the right island, at the right time, the right way, so you can enjoy Malaysia's reefs while protecting their beauty.</p>
+          <h2>{{ $t('home.intro.title') }}</h2>
+          <p>{{ $t('home.intro.description') }}</p>
         </div>
         
         <!-- 特点标签 -->
         <div class="features-section">
           <div class="feature-tag">
             <span class="feature-icon">📊</span>
-            <span class="feature-text">Data-Driven</span>
+            <span class="feature-text">{{ $t('home.features.dataDriven') }}</span>
           </div>
           <div class="feature-tag">
             <span class="feature-icon">🌱</span>
-            <span class="feature-text">Responsible</span>
+            <span class="feature-text">{{ $t('home.features.responsible') }}</span>
           </div>
           <div class="feature-tag">
             <span class="feature-icon">👥</span>
-            <span class="feature-text">User-friendly</span>
+            <span class="feature-text">{{ $t('home.features.userFriendly') }}</span>
           </div>
         </div>
         
         <!-- 探索按钮 -->
         <div class="explore-section">
           <button class="explore-btn" @click="goToMap">
-            Let's Explore
+            {{ $t('home.exploreButton') }}
           </button>
         </div>
        </div>
@@ -126,9 +138,9 @@
     <!-- Footer -->
     <footer class="main-footer">
       <div class="footer-content">
-        © 2025 CoralKita
+        {{ $t('home.footer.copyright') }}
         <span class="footer-links">
-          <a href="mailto:coralkita.service@gmail.com">Contact Us</a>
+          <a href="mailto:coralkita.service@gmail.com">{{ $t('home.footer.contact') }}</a>
         </span>
       </div>
     </footer>
@@ -140,18 +152,21 @@
 
 <script>
 import ChatWidget from './ChatWidget.vue'
+import LanguageSwitcher from './LanguageSwitcher.vue'
 import ossService from '@/utils/ossService.js'
 
 export default {
   name: 'VideoBackgroundSimple',
   components: {
-    ChatWidget
+    ChatWidget,
+    LanguageSwitcher
   },
   data() {
     return {
       currentLanguage: 'en',
       // Island dropdown related
       showTravelDropdown: false,
+      showEducationDropdown: false,
       travelIslands: ['Mertang', 'P Singa', 'Sipadan', 'Pulau Lima', 'Seri Buat'],
       // OSS图片URL
       imageUrls: {
@@ -256,17 +271,74 @@ export default {
         this.$nextTick(() => {
           window.scrollTo(0, 0);
         });
+      }).catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
       });
     },
 
     goToEducation() {
       console.log('Navigating to Education page');
-      this.$router.push('/education');
+      this.$router.push('/education').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
+    },
+    
+    goToTravelChecklist() {
+      console.log('Navigating to Travel Checklist page');
+      this.$router.push('/travel-checklist').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
     },
 
     goToAITools() {
       console.log('Navigating to AI Tools page');
-      this.$router.push('/ai-tools');
+      this.$router.push('/ai-tools').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
+    },
+
+    goToActionHub() {
+      console.log('Navigating to Action Hub page');
+      this.$router.push('/action-hub').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
+    },
+
+    goToPolicies() {
+      console.log('Navigating to Policies page');
+      this.$router.push('/policies').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
+    },
+
+    goToGovernment() {
+      console.log('Navigating to Government page');
+      this.$router.push('/government').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
+    },
+
+    goToFAQ() {
+      console.log('Navigating to FAQ page');
+      this.$router.push('/faq').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
     },
 
     scrollToSection(sectionId) {
@@ -504,14 +576,33 @@ export default {
   transform: scale(1.05);
 }
 
-/* Island 下拉菜单样式 */
+/* Map & Recommendation 下拉菜单样式 */
 .nav-item-dropdown {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nav-item-dropdown .nav-item-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nav-item-dropdown::before {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background: transparent;
 }
 
 .dropdown-menu {
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + 4px);
   left: 50%;
   transform: translateX(-50%);
   background: rgba(255, 255, 255, 0.98);
@@ -519,8 +610,7 @@ export default {
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 16px;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1);
-  min-width: 120px;
-  max-width: 140px;
+  min-width: 160px;
   z-index: 1000;
   overflow: hidden;
   animation: dropdownSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -840,21 +930,12 @@ export default {
 
 .feature-tag {
   background: rgba(255, 255, 255, 0.48);
-
   backdrop-filter: blur(5px);
   border-radius: 20px;
   padding: 15px 15px;
   display: flex;
   align-items: center;
   gap: 12px;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.feature-tag:hover {
-  background: linear-gradient(45deg, #427aba27, #87bbeb7d);
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .feature-icon {

@@ -8,6 +8,9 @@ import TravelChecklist from '@/component/TravelChecklist' // 导入旅游清单�
 import Government from '@/component/Government' // 导入政府门户组件
 import IslandDetail from '@/component/IslandDetail' // 导入岛屿详情组件
 import AITools from '@/component/AITools' // 导入AI工具组件
+import ActionHub from '@/component/ActionHub' // 导入Action Hub组件
+import Policies from '@/component/Policies' // 导入Policies组件
+import FAQ from '@/component/FAQ' // 导入FAQ组件
 Vue.use(Router) //全局注册Router组件，它会绑定到Vue实例里面。
 
 const router = new Router({ // 创建 router 实例，然后传 `routes` 配置
@@ -59,6 +62,21 @@ const router = new Router({ // 创建 router 实例，然后传 `routes` 配置
       path: '/ai-tools',  //AI工具页面路径
       name: 'AITools', // 路径名
       component: AITools //访问的组件,AI工具
+    },
+    {
+      path: '/action-hub',  //Action Hub页面路径
+      name: 'ActionHub', // 路径名
+      component: ActionHub //访问的组件,Action Hub
+    },
+    {
+      path: '/policies',  //Policies页面路径
+      name: 'Policies', // 路径名
+      component: Policies //访问的组件,Policies
+    },
+    {
+      path: '/faq',  //FAQ页面路径
+      name: 'FAQ', // 路径名
+      component: FAQ //访问的组件,FAQ
     },
     {
       path: '/travel/:islandName',  //岛屿详情页面路径

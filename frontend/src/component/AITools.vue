@@ -5,18 +5,17 @@
       <div class="nav-left">
         <!-- Left side logo -->
         <img :src="appIconUrl" alt="logo" class="nav-logo" @click="goToHome" />
-        <h1 class="logo" @click="goToHome">CoralKita</h1>
+        <h1 class="logo" @click="goToHome">{{ $t('nav.logo') }}</h1>
       </div>
       <div class="nav-right">
         <div class="nav-items">
-          <div class="nav-item-wrapper">
-            <span class="nav-item map-rec-item" @click="goToMap">
-              <span class="nav-text-line">Map &</span>
-              <span class="nav-text-line">Recommendation</span>
-            </span>
-          </div>
           <div class="nav-item-dropdown" @mouseenter="showTravelDropdown = true" @mouseleave="showTravelDropdown = false">
-            <span class="nav-item">Island</span>
+            <div class="nav-item-wrapper">
+              <span class="nav-item map-rec-item" @click="goToMap">
+                <span class="nav-text-line">{{ $t('nav.mapRecommendation.line1') }}</span>
+                <span class="nav-text-line">{{ $t('nav.mapRecommendation.line2') }}</span>
+              </span>
+            </div>
             <div class="dropdown-menu" v-show="showTravelDropdown">
               <div 
                 v-for="island in travelIslands" 
@@ -28,19 +27,32 @@
               </div>
             </div>
           </div>
-          <span class="nav-item" @click="goToEducation">Education</span>
-          <span class="nav-item active">AI Classification</span>
+          <div class="nav-item-dropdown" @mouseenter="showEducationDropdown = true" @mouseleave="showEducationDropdown = false">
+            <span class="nav-item" @click="goToEducation">{{ $t('nav.education') }}</span>
+            <div class="dropdown-menu" v-show="showEducationDropdown">
+              <div class="dropdown-item" @click="goToEducation">
+                <span>{{ $t('education.dropdown.tourismHub') }}</span>
+              </div>
+              <div class="dropdown-item" @click="goToTravelChecklist">
+                <span>{{ $t('education.dropdown.tourismChecklist') }}</span>
+              </div>
+            </div>
+          </div>
+          <span class="nav-item active">{{ $t('nav.aiClassification') }}</span>
+          <span class="nav-item" @click="goToGovernment">{{ $t('nav.government') }}</span>
+          <span class="nav-item" @click="goToFAQ">{{ $t('nav.faq') }}</span>
+          <LanguageSwitcher />
         </div>
       </div>
     </div>
 
     <!-- Header -->
     <div class="ai-classification-header">
-      <h1>AI Coral Classification</h1>
-      <p>Upload coral images using our advanced AI model</p>
+      <h1>{{ $t('aiTools.title') }}</h1>
+      <p>{{ $t('aiTools.subtitle') }}</p>
       <div class="disclaimer">
-        <p>⚠️ This feature is only for coral health status identification. Please do not upload irrelevant images.</p>
-        <p><strong>📋 AI results may not be accurate and are for reference only.</strong></p>
+        <p>{{ $t('aiTools.disclaimer.warning') }}</p>
+        <p><strong>{{ $t('aiTools.disclaimer.accuracy') }}</strong></p>
       </div>
     </div>
 
@@ -59,14 +71,12 @@
             <!-- 上传提示 -->
             <div v-if="!selectedImage" class="upload-prompt">
               <div class="upload-icon">📸</div>
-              <h3>Upload Coral Image</h3>
-              <p>Drag and drop your coral image here, or click to browse</p>
+              <h3>{{ $t('aiTools.upload.title') }}</h3>
+              <p>{{ $t('aiTools.upload.description') }}</p>
               <div class="upload-formats">
-                <span class="format-tag">JPG</span>
-                <span class="format-tag">PNG</span>
-                <span class="format-tag">JPEG</span>
+                <span class="format-tag" v-for="format in $t('aiTools.upload.formats')" :key="format">{{ format }}</span>
               </div>
-              <p class="file-size-limit">Maximum file size: 3MB</p>
+              <p class="file-size-limit">{{ $t('aiTools.upload.fileSizeLimit') }}</p>
             </div>
 
             <!-- 图片预览 -->
@@ -74,10 +84,10 @@
               <img :src="imagePreview" alt="Selected coral image" />
               <div class="image-overlay">
                 <button class="change-image-btn" @click.stop="triggerFileInput">
-                  <span>🔄</span> Change Image
+                  <span>🔄</span> {{ $t('aiTools.upload.changeImage') }}
                 </button>
                 <button class="remove-image-btn" @click.stop="removeImage">
-                  <span>❌</span> Remove
+                  <span>❌</span> {{ $t('aiTools.upload.remove') }}
                 </button>
               </div>
             </div>
@@ -100,7 +110,7 @@
               @click="classifyImage">
               <span v-if="isClassifying" class="loading-spinner"></span>
               <span v-else>🔍</span>
-              {{ isClassifying ? 'Classifying...' : 'Classify Coral' }}
+              {{ isClassifying ? $t('aiTools.upload.classifying') : $t('aiTools.upload.classify') }}
             </button>
           </div>
         </div>
@@ -109,18 +119,18 @@
       <!-- 结果区域 -->
       <div v-if="classificationResult" class="result-section">
         <div class="result-container">
-          <h3>Classification Result</h3>
+          <h3>{{ $t('aiTools.results.title') }}</h3>
           <div class="result-card">
             <div class="result-header">
               <div class="result-icon">🐠</div>
               <div class="result-info">
                 <h4>{{ classificationResult }}</h4>
-                <p>Coral species identified by AI</p>
+                <p>{{ $t('aiTools.results.species') }}</p>
               </div>
             </div>
             <div class="result-actions">
               <button class="new-classification-btn" @click="resetClassification">
-                <span>🔄</span> Classify Another Image
+                <span>🔄</span> {{ $t('aiTools.results.classifyAnother') }}
               </button>
             </div>
           </div>
@@ -132,8 +142,8 @@
         <div class="modal-dialog" @click.stop>
           <div class="modal-header">
             <div class="modal-icon">⚠️</div>
-            <h3>Classification Failed</h3>
-            <button class="modal-close" @click="closeErrorModal">×</button>
+            <h3>{{ $t('aiTools.error.title') }}</h3>
+            <button class="modal-close" @click="closeErrorModal">{{ $t('aiTools.error.close') }}</button>
           </div>
           <div class="modal-body">
             <p>{{ errorMessage }}</p>
@@ -147,22 +157,22 @@
       <!-- 使用说明 -->
       <div class="instructions-section">
         <div class="instructions-container">
-          <h3>How to Use</h3>
+          <h3>{{ $t('aiTools.howToUse.title') }}</h3>
           <div class="instructions-grid">
             <div class="instruction-item">
               <div class="instruction-icon">1️⃣</div>
-              <h4>Upload Image</h4>
-              <p>Select a clear image of coral from your device</p>
+              <h4>{{ $t('aiTools.howToUse.step1.title') }}</h4>
+              <p>{{ $t('aiTools.howToUse.step1.description') }}</p>
             </div>
             <div class="instruction-item">
               <div class="instruction-icon">2️⃣</div>
-              <h4>AI Analysis</h4>
-              <p>Our AI model analyzes the coral features and patterns</p>
+              <h4>{{ $t('aiTools.howToUse.step2.title') }}</h4>
+              <p>{{ $t('aiTools.howToUse.step2.description') }}</p>
             </div>
             <div class="instruction-item">
               <div class="instruction-icon">3️⃣</div>
-              <h4>Get Results</h4>
-              <p>Receive instant species identification and information</p>
+              <h4>{{ $t('aiTools.howToUse.step3.title') }}</h4>
+              <p>{{ $t('aiTools.howToUse.step3.description') }}</p>
             </div>
           </div>
         </div>
@@ -172,9 +182,9 @@
     <!-- Footer -->
     <footer class="main-footer">
       <div class="footer-content">
-        © 2025 CoralKita
+        {{ $t('footer.copyright') }}
         <span class="footer-links">
-          <a href="mailto:coralkita.service@gmail.com">Contact Us</a>
+          <a href="mailto:coralkita.service@gmail.com">{{ $t('footer.contact') }}</a>
         </span>
       </div>
     </footer>
@@ -185,11 +195,17 @@
 import { API_BASE_URL } from '../config/config.js'
 import ossService from '@/utils/ossService.js'
 
+import LanguageSwitcher from './LanguageSwitcher.vue'
+
 export default {
   name: 'AIClassification',
+  components: {
+    LanguageSwitcher
+  },
   data() {
     return {
       showTravelDropdown: false,
+      showEducationDropdown: false,
       currentLanguage: 'en',
       travelIslands: ['Mertang', 'P Singa', 'Sipadan', 'Pulau Lima', 'Seri Buat'],
       // 图片上传相关
@@ -209,20 +225,75 @@ export default {
   },
   methods: {
     goToHome() {
-      this.$router.push('/')
+      this.$router.push('/').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
     },
     
     goToMap() {
-      this.$router.push('/map')
+      this.$router.push('/map').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
     },
     
     goToEducation() {
-      this.$router.push('/education')
+      this.$router.push('/education').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
     },
     
+    goToTravelChecklist() {
+      this.$router.push('/travel-checklist').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
+    },
+    
+    goToActionHub() {
+      this.$router.push('/action-hub').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
+    },
+
+    goToPolicies() {
+      this.$router.push('/policies').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
+    },
+
+    goToGovernment() {
+      this.$router.push('/government').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
+    },
+
+    goToFAQ() {
+      this.$router.push('/faq').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
+    },
     
     goToIslandDetail(island) {
-      this.$router.push(`/travel/${island}`)
+      this.$router.push(`/travel/${island}`).catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
     },
 
     toggleLanguage() {
@@ -414,7 +485,7 @@ export default {
   left: 0;
   right: 0;
   z-index: 1000;
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
 }
 
 .nav-left {
@@ -498,11 +569,30 @@ export default {
 
 .nav-item-dropdown {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nav-item-dropdown .nav-item-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nav-item-dropdown::before {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background: transparent;
 }
 
 .dropdown-menu {
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + 4px);
   left: 50%;
   transform: translateX(-50%);
   background: rgba(255, 255, 255, 0.98);
@@ -510,8 +600,7 @@ export default {
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 16px;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1);
-  min-width: 120px;
-  max-width: 140px;
+  min-width: 160px;
   z-index: 1001;
   overflow: hidden;
   animation: dropdownSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);

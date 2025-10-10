@@ -311,8 +311,18 @@ Submit Answer
         </div>
         <div class="video-modal-content">
           <div class="video-player">
+            <div v-if="isYouTubeLink(currentPlayingVideo.video_src)" class="youtube-link-container">
+              <div class="youtube-redirect">
+                <div class="redirect-icon">🎬</div>
+                <h4>Opening YouTube Video</h4>
+                <p>This video will open in a new tab</p>
+                <button class="btn-open-youtube" @click="openYouTubeVideo(currentPlayingVideo.video_src)">
+                  Open in YouTube
+                </button>
+              </div>
+            </div>
             <video 
-              v-if="currentPlayingVideo.video_src"
+              v-else-if="currentPlayingVideo.video_src && !isYouTubeLink(currentPlayingVideo.video_src)"
               :src="currentPlayingVideo.video_src"
               controls
               width="100%"
@@ -502,36 +512,36 @@ export default {
       this.loadingVideo = true
       this.errorMessage = ''
       try {
-        // Use local video files and thumbnails
+        // Use YouTube links instead of local video files
         const localVideoData = [
           {
             id: 1,
             title: 'Why are coral reefs so important?',
-            video_src: require('@/assets/Why are coral reefs so important.mp4'),
+            video_src: 'https://youtu.be/eNqbSi_6KdA?si=pmOStLJfsyXi__Jl',
             thumbnail: require('@/assets/Why are coral reefs so important.jpg')
           },
           {
             id: 2,
             title: 'What Would Happen If All The Coral Reefs Died Off?',
-            video_src: require('@/assets/What Would Happen If All The Coral Reefs Died Off.mp4'),
+            video_src: 'https://youtu.be/_5DooxgwEiw?si=p9U4ANsPrIRu2wDn',
             thumbnail: require('@/assets/What Would Happen If All The Coral Reefs Died Off.jpg')
           },
           {
             id: 3,
             title: 'Coral Reefs Are Dying. Here\'s How We Can Save Them',
-            video_src: require('@/assets/Coral Reefs Are Dying. Here\'s How We Can Save Them.mp4'),
+            video_src: 'https://youtu.be/MUAsFZuFQvQ?si=86Ns9Qj6SMD65cfP',
             thumbnail: require('@/assets/Coral Reefs Are Dying. Here\'s How We Can Save Them.jpg')
           },
           {
             id: 4,
             title: 'Coral Bleaching Explained: The Story of Frank the Coral',
-            video_src: require('@/assets/Coral Bleaching Explained The Story of Frank the Coral.mp4'),
+            video_src: 'https://youtu.be/UyEw_Rl8mqM?si=w4m9p53ynq5XX2HY',
             thumbnail: require('@/assets/Coral Bleaching Explained The Story of Frank the Coral.jpg')
           },
           {
             id: 5,
             title: 'Coral Reefs 101 | National Geographic',
-            video_src: require('@/assets/Coral Reefs 101 National Geographic.mp4'),
+            video_src: 'https://youtu.be/eNqbSi_6KdA?si=pmOStLJfsyXi__Jl', // Using same link as video 1 since no specific link provided
             thumbnail: require('@/assets/Coral Reefs 101 National Geographic.jpg')
           }
         ]
@@ -588,6 +598,17 @@ export default {
     playVideo(video) {
       this.currentPlayingVideo = video
       this.showVideoModal = true
+    },
+
+    // Check if video source is a YouTube link
+    isYouTubeLink(videoSrc) {
+      return videoSrc && videoSrc.includes('youtu.be')
+    },
+
+    // Open YouTube video in new tab
+    openYouTubeVideo(videoSrc) {
+      window.open(videoSrc, '_blank', 'noopener,noreferrer')
+      this.closeVideoModal()
     },
 
     closeVideoModal() {
@@ -1202,7 +1223,7 @@ export default {
 <style scoped>
 .quiz-page {
   min-height: 100vh;
-  background-image: var(--bg-image, url('@/assets-webp/ed_interface.webp'));
+  background-image: var(--bg-image, url('@/assets/ed_interface.webp'));
   background-repeat: no-repeat;
   background-attachment: fixed;   /* 页面滚动时固定 */
   background-position: center;    /* 居中显示 */
@@ -2562,6 +2583,58 @@ export default {
 .local-video-player::-webkit-media-controls-mute-button,
 .local-video-player::-webkit-media-controls-fullscreen-button {
   filter: brightness(1.2);
+}
+
+/* YouTube redirect styles */
+.youtube-link-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 10px;
+}
+
+.youtube-redirect {
+  text-align: center;
+  color: white;
+  padding: 40px;
+}
+
+.redirect-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+}
+
+.youtube-redirect h4 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.youtube-redirect p {
+  font-size: 1rem;
+  margin-bottom: 30px;
+  opacity: 0.9;
+}
+
+.btn-open-youtube {
+  background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 25px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+}
+
+.btn-open-youtube:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 0, 0, 0.4);
+  background: linear-gradient(135deg, #ff1a1a 0%, #e60000 100%);
 }
 
 .video-placeholder {

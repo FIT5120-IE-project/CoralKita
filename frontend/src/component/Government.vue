@@ -13,20 +13,18 @@
     <!-- Top Navigation -->
     <div class="top-nav">
       <div class="nav-left">
-        <!-- Left side logo -->
         <img :src="appIconUrl" alt="logo" class="nav-logo" @click="goToHome" />
         <h1 class="logo" @click="goToHome">CoralKita</h1>
       </div>
       <div class="nav-right">
         <div class="nav-items">
-          <div class="nav-item-wrapper">
-            <span class="nav-item map-rec-item" @click="goToMap">
-              <span class="nav-text-line">Map &</span>
-              <span class="nav-text-line">Recommendation</span>
-            </span>
-          </div>
           <div class="nav-item-dropdown" @mouseenter="showTravelDropdown = true" @mouseleave="showTravelDropdown = false">
-            <span class="nav-item">Island</span>
+            <div class="nav-item-wrapper">
+              <span class="nav-item map-rec-item" @click="goToMap">
+                <span class="nav-text-line">{{ $t('nav.mapRecommendation.line1') }}</span>
+                <span class="nav-text-line">{{ $t('nav.mapRecommendation.line2') }}</span>
+              </span>
+            </div>
             <div class="dropdown-menu" v-show="showTravelDropdown">
               <div 
                 v-for="island in travelIslands" 
@@ -38,48 +36,160 @@
               </div>
             </div>
           </div>
-          <span class="nav-item" @click="goToEducation">Education</span>
-          <span class="nav-item" @click="goToAITools">AI Classification</span>
+          <div class="nav-item-dropdown" @mouseenter="showEducationDropdown = true" @mouseleave="showEducationDropdown = false">
+            <span class="nav-item" @click="goToEducation">{{ $t('nav.education') }}</span>
+            <div class="dropdown-menu" v-show="showEducationDropdown">
+              <div class="dropdown-item" @click="goToEducation">
+                <span>{{ $t('education.dropdown.tourismHub') }}</span>
+              </div>
+              <div class="dropdown-item" @click="goToTravelChecklist">
+                <span>{{ $t('education.dropdown.tourismChecklist') }}</span>
+              </div>
+            </div>
+          </div>
+          <span class="nav-item" @click="goToAITools">{{ $t('nav.aiClassification') }}</span>
+          <span class="nav-item active" @click="goToGovernment">{{ $t('nav.government') }}</span>
+          <span class="nav-item" @click="goToFAQ">{{ $t('nav.faq') }}</span>
+          <LanguageSwitcher />
         </div>
       </div>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
-
-      <!-- Government Portal Content -->
-      <div class="coming-soon-card">
-        <div class="icon-container">
-          <div class="government-icon">🏛️</div>
-        </div>
-        <h1>Government Portal</h1>
-        <h2>Coming Soon</h2>
-        <p>We're developing a comprehensive government portal to provide official resources, policies, and collaborative tools for coral reef conservation efforts.</p>
-        
-        <div class="features-preview">
-          <h3>What's Coming:</h3>
-          <ul>
-            <li>📋 Government policies and regulations</li>
-            <li>📊 Official coral reef status reports</li>
-            <li>🤝 Collaboration tools for researchers</li>
-            <li>📞 Contact information for relevant agencies</li>
-            <li>📄 Conservation project applications</li>
-            <li>🎯 Funding opportunities and grants</li>
-          </ul>
-        </div>
-
-        <button class="back-button" @click="goBack">
-          ← Back to Previous Page
-        </button>
+      
+      <!-- Page Header -->
+      <div class="page-header">
+        <h1>🏛️ {{ $t('government.title') }}</h1>
+        <p>{{ $t('government.subtitle') }}</p>
       </div>
+
+      <!-- Government & Policy Updates Section -->
+      <section class="policy-updates-section">
+        <div class="section-header">
+          <h2>📰 {{ $t('government.policyUpdates.title') }}</h2>
+          <p>{{ $t('government.policyUpdates.subtitle') }}</p>
+        </div>
+
+        <div class="updates-timeline">
+          <!-- Update 1 -->
+          <div class="timeline-card">
+            <div class="timeline-date">{{ $t('government.policyUpdates.updates.sunscreen.date') }}</div>
+            <h4>{{ $t('government.policyUpdates.updates.sunscreen.title') }}</h4>
+            <p>{{ $t('government.policyUpdates.updates.sunscreen.description') }}</p>
+            <a href="https://marinepark.dof.gov.my/en/" target="_blank" class="source-link">
+              <span class="source-icon">🔗</span>
+              {{ $t('government.policyUpdates.updates.sunscreen.source') }}
+            </a>
+          </div>
+
+          <!-- Update 2 -->
+          <div class="timeline-card">
+            <div class="timeline-date">{{ $t('government.policyUpdates.updates.fishing.date') }}</div>
+            <h4>{{ $t('government.policyUpdates.updates.fishing.title') }}</h4>
+            <p>{{ $t('government.policyUpdates.updates.fishing.description') }}</p>
+            <a href="https://marinepark.dof.gov.my/en/" target="_blank" class="source-link">
+              <span class="source-icon">🔗</span>
+              {{ $t('government.policyUpdates.updates.fishing.source') }}
+            </a>
+          </div>
+
+          <!-- Update 3 -->
+          <div class="timeline-card">
+            <div class="timeline-date">{{ $t('government.policyUpdates.updates.monitoring.date') }}</div>
+            <h4>{{ $t('government.policyUpdates.updates.monitoring.title') }}</h4>
+            <p>{{ $t('government.policyUpdates.updates.monitoring.description') }}</p>
+            <a href="https://www.reefcheck.org/results-of-the-2024-reef-check-malaysia-surveys-challenges-and-opportunities" target="_blank" class="source-link">
+              <span class="source-icon">🔗</span>
+              {{ $t('government.policyUpdates.updates.monitoring.source') }}
+            </a>
+          </div>
+
+          <!-- Update 4 -->
+          <div class="timeline-card">
+            <div class="timeline-date">{{ $t('government.policyUpdates.updates.restoration.date') }}</div>
+            <h4>{{ $t('government.policyUpdates.updates.restoration.title') }}</h4>
+            <p>{{ $t('government.policyUpdates.updates.restoration.description') }}</p>
+            <a href="https://www.sabahparks.org.my/resource-centre/news/volunteers-building-over-1000-coral-reef-frames-in-kudat" target="_blank" class="source-link">
+              <span class="source-icon">🔗</span>
+              {{ $t('government.policyUpdates.updates.restoration.source') }}
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Support Reef Conservation Section -->
+      <section class="conservation-section">
+        <div class="section-header">
+          <h2>💙 {{ $t('government.conservation.title') }}</h2>
+          <p>{{ $t('government.conservation.subtitle') }}</p>
+        </div>
+
+        <div class="donation-grid">
+          <!-- Reef Check Malaysia -->
+          <div class="donation-card">
+            <div class="card-header">
+              <h3>{{ $t('government.conservation.ngos.reefCheck.name') }}</h3>
+              <span class="badge verified">{{ $t('government.conservation.ngos.reefCheck.verified') }}</span>
+            </div>
+            <p class="card-description">
+              {{ $t('government.conservation.ngos.reefCheck.description') }}
+            </p>
+            <div class="ngo-info">
+              <p><strong>{{ $t('government.conservation.ngos.reefCheck.focusAreas') }}</strong> {{ $t('government.conservation.ngos.reefCheck.focusAreasText') }}</p>
+              <p><strong>{{ $t('government.conservation.ngos.reefCheck.coverage') }}</strong> {{ $t('government.conservation.ngos.reefCheck.coverageText') }}</p>
+            </div>
+            <a href="https://reefcheck.org.my/donate/" target="_blank" class="donate-btn">
+              {{ $t('government.conservation.ngos.reefCheck.button') }}
+            </a>
+          </div>
+
+          <!-- WWF Malaysia -->
+          <div class="donation-card">
+            <div class="card-header">
+              <h3>{{ $t('government.conservation.ngos.wwf.name') }}</h3>
+              <span class="badge verified">{{ $t('government.conservation.ngos.wwf.verified') }}</span>
+            </div>
+            <p class="card-description">
+              {{ $t('government.conservation.ngos.wwf.description') }}
+            </p>
+            <div class="ngo-info">
+              <p><strong>{{ $t('government.conservation.ngos.wwf.focusAreas') }}</strong> {{ $t('government.conservation.ngos.wwf.focusAreasText') }}</p>
+              <p><strong>{{ $t('government.conservation.ngos.wwf.coverage') }}</strong> {{ $t('government.conservation.ngos.wwf.coverageText') }}</p>
+            </div>
+            <a href="https://www.wwf.org.my/how_you_can_help/donate_now/conserve_our_coral_reefs/" target="_blank" class="donate-btn">
+              {{ $t('government.conservation.ngos.wwf.button') }}
+            </a>
+          </div>
+
+          <!-- TRACC -->
+          <div class="donation-card">
+            <div class="card-header">
+              <h3>{{ $t('government.conservation.ngos.tracc.name') }}</h3>
+              <span class="badge verified">{{ $t('government.conservation.ngos.tracc.verified') }}</span>
+            </div>
+            <p class="card-description">
+              {{ $t('government.conservation.ngos.tracc.description') }}
+            </p>
+            <div class="ngo-info">
+              <p><strong>{{ $t('government.conservation.ngos.tracc.focusAreas') }}</strong> {{ $t('government.conservation.ngos.tracc.focusAreasText') }}</p>
+              <p><strong>{{ $t('government.conservation.ngos.tracc.coverage') }}</strong> {{ $t('government.conservation.ngos.tracc.coverageText') }}</p>
+            </div>
+            <a href="https://tracc.org/donate" target="_blank" class="donate-btn">
+              {{ $t('government.conservation.ngos.tracc.button') }}
+            </a>
+          </div>
+        </div>
+      </section>
+
     </div>
     
     <!-- Footer -->
     <footer class="main-footer">
       <div class="footer-content">
-        © 2025 CoralKita
+        {{ $t('footer.copyright') }}
         <span class="footer-links">
-          <a href="mailto:coralkita.service@gmail.com">Contact Us</a>
+          <a href="mailto:coralkita.service@gmail.com">{{ $t('footer.contact') }}</a>
         </span>
       </div>
     </footer>
@@ -88,123 +198,107 @@
 
 <script>
 import ossService from '@/utils/ossService.js'
+import LanguageSwitcher from './LanguageSwitcher.vue'
 
 export default {
   name: 'Government',
+  components: {
+    LanguageSwitcher
+  },
   data() {
     return {
-      backgroundLoaded: false, // 背景图片加载状态
-      loadingProgress: 0, // 加载进度
-      loadingText: 'Loading government data...', // 加载文本
-      appIconUrl: null, // 应用图标URL
-      backgroundImageUrl: null, // 背景图片URL
-      // Travel dropdown related
+      backgroundLoaded: false,
+      loadingProgress: 0,
+      loadingText: 'Loading government data...',
+      appIconUrl: null,
+      backgroundImageUrl: null,
       showTravelDropdown: false,
+      showEducationDropdown: false,
       currentLanguage: 'en',
       travelIslands: ['Mertang', 'P Singa', 'Sipadan', 'Pulau Lima', 'Seri Buat']
     }
   },
   mounted() {
-    // 立即开始预加载背景图片
     this.preloadBackgroundImage();
-    
-    // 加载应用图标
     this.loadAppIcon();
-    
-    // 加载背景图片
     this.loadBackgroundImage();
-    
-    // Set global refresh detection timestamp for verification system
     localStorage.setItem('lastPageRefresh', Date.now().toString());
   },
   methods: {
-    /**
-     * 加载应用图标
-     */
     async loadAppIcon() {
       try {
-        this.appIconUrl = await ossService.getAppIconUrl()
+        this.appIconUrl = await ossService.getFileUrl('assets/icon.png')
       } catch (error) {
         console.warn('加载应用图标失败，使用默认图标:', error)
         this.appIconUrl = null
       }
     },
 
-    /**
-     * 加载背景图片
-     */
     async loadBackgroundImage() {
       try {
-        this.backgroundImageUrl = await ossService.getFileUrl('bg_login5.webp')
-        // 设置CSS变量
-        document.documentElement.style.setProperty('--bg-image', `url(${this.backgroundImageUrl})`)
+        this.backgroundImageUrl = await ossService.getFileUrl('assets/bg_mainpage.webp')
+        document.documentElement.style.setProperty('--gov-bg-image', `url('${this.backgroundImageUrl}')`)
       } catch (error) {
         console.warn('加载背景图片失败，使用默认图片:', error)
         this.backgroundImageUrl = null
       }
     },
 
-    /**
-     * 预加载背景图片
-     */
     preloadBackgroundImage() {
-      // 创建高优先级预加载链接元素
-      const preloadLink = document.createElement('link');
-      preloadLink.rel = 'preload';
-      preloadLink.as = 'image';
-      preloadLink.href = this.backgroundImageUrl;
-      preloadLink.fetchPriority = 'high'; // 高优先级
-      
-      // 添加到head中
-      document.head.appendChild(preloadLink);
-      
-      // 预加载图片到浏览器缓存
-      const img = new Image();
-      img.src = this.backgroundImageUrl;
+      const img = new Image()
       img.onload = () => {
-        console.log('Government background image preloaded to cache');
-        this.backgroundLoaded = true;
-      };
+        this.backgroundLoaded = true
+        this.loadingProgress = 100
+      }
       img.onerror = () => {
-        console.warn('Failed to preload Government background image');
-        this.backgroundLoaded = true; // 即使失败也隐藏占位符
-      };
+        this.backgroundLoaded = true
+        this.loadingProgress = 100
+      }
       
-      console.log('Government background image preload started');
+      ossService.getFileUrl('assets/bg_mainpage.webp').then(url => {
+        img.src = url
+      }).catch(() => {
+        this.backgroundLoaded = true
+        this.loadingProgress = 100
+      })
+
+      const progressInterval = setInterval(() => {
+        if (this.loadingProgress < 90) {
+          this.loadingProgress += Math.random() * 15
+        } else {
+          clearInterval(progressInterval)
+        }
+      }, 100)
     },
 
-    // Travel navigation methods
-    goToIslandDetail(islandName) {
-      console.log('导航到岛屿详情页面:', islandName);
-      this.showTravelDropdown = false;
-      
-      this.$nextTick(() => {
-        this.$router.push(`/travel/${encodeURIComponent(islandName)}`).catch(err => {
-          if (err.name !== 'NavigationDuplicated') {
-            console.error('Navigation error:', err);
-          }
-        });
-      });
-    },
-    
     goToHome() {
-      window.location.href = '/';
-    },
-
-    goToMap() {
-      this.$router.push('/map').catch(err => {
-        // Ignore navigation duplicated error
+      this.$router.push('/').catch(err => {
         if (err.name !== 'NavigationDuplicated') {
           console.error('Navigation error:', err);
         }
       });
     },
 
+    goToMap() {
+      this.$router.push('/map').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
+    },
 
     goToEducation() {
-      // 主页面导航，不设置标记，应该显示验证
+      localStorage.setItem('functionalNavigation', 'true')
       this.$router.push('/education').catch(err => {
-        // Ignore navigation duplicated error
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
+    },
+
+    goToTravelChecklist() {
+      localStorage.setItem('functionalNavigation', 'true')
+      this.$router.push('/travel-checklist').catch(err => {
         if (err.name !== 'NavigationDuplicated') {
           console.error('Navigation error:', err);
         }
@@ -212,8 +306,32 @@ export default {
     },
 
     goToAITools() {
-      console.log('Navigate to AI Tools page');
       this.$router.push('/ai-tools').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
+    },
+
+    goToGovernment() {
+      this.$router.push('/government').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
+    },
+
+    goToFAQ() {
+      this.$router.push('/faq').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err);
+        }
+      });
+    },
+
+    goToIslandDetail(islandName) {
+      localStorage.setItem('functionalNavigation', 'true')
+      this.$router.push(`/island/${islandName}`).catch(err => {
         if (err.name !== 'NavigationDuplicated') {
           console.error('Navigation error:', err);
         }
@@ -222,16 +340,6 @@ export default {
 
     toggleLanguage() {
       this.currentLanguage = this.currentLanguage === 'en' ? 'zh' : 'en'
-    },
-
-    goBack() {
-      // Go back to previous page
-      if (window.history.length > 1) {
-        this.$router.go(-1);
-      } else {
-        // Fallback to home page
-        this.goToHome();
-      }
     }
   }
 }
@@ -240,26 +348,17 @@ export default {
 <style scoped>
 .government-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   position: relative;
   overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
-  /* 优化背景图片加载 */
-  will-change: transform;      /* 提示浏览器优化 */
-  transform: translateZ(0);     /* 启用硬件加速 */
+  background: linear-gradient(135deg, rgba(10, 77, 104, 0.7) 0%, rgba(5, 191, 219, 0.7) 100%);
 }
 
-/* 海洋主题背景加载占位符样式 */
 .bg-placeholder {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #0f4c75 0%, #3282b8 25%, #0f4c75 50%, #1e3a8a 75%, #0f4c75 100%);
-  background-size: 400% 400%;
-  animation: oceanWave 8s ease-in-out infinite;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -268,65 +367,75 @@ export default {
   color: white;
   font-size: 18px;
   overflow: hidden;
+  background: linear-gradient(135deg, #0f4c75 0%, #3282b8 25%, #0f4c75 50%, #1e3a8a 75%, #0f4c75 100%);
+  background-size: 400% 400%;
+  animation: oceanWave 8s ease-in-out infinite;
 }
-
-.bg-placeholder::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="waves" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M0,50 Q25,30 50,50 T100,50 L100,100 L0,100 Z" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23waves)"/></svg>');
-  animation: waveMotion 6s ease-in-out infinite;
-}
-
-
 
 @keyframes oceanWave {
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
 }
 
-@keyframes waveMotion {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-10px) rotate(1deg); }
+.progress-container {
+  width: 300px;
+  text-align: center;
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-15px) rotate(5deg); }
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 15px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00d4ff 0%, #00a8cc 50%, #0077be 100%);
+  border-radius: 10px;
+  transition: width 0.8s ease-in-out;
+}
+
+.loading-text {
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  margin: 0;
+}
 
 .government-container::before {
   content: "";
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: var(--bg-image, url('@/assets/bg_login5.webp'));
-  background-repeat: no-repeat;
-  background-attachment: fixed;   /* 页面滚动时固定 */
-  background-position: center;    /* 居中显示 */
-  background-size: cover;         /* 覆盖整个容器，保持比例 */
-  opacity: 0.3;
-  z-index: 1;
+  width: 100%;
+  height: 100%;
+  background: url('@/assets/bg_mainpage.webp') no-repeat center center;
+  background-size: cover;
+  z-index: -1;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 /* Top Navigation */
 .top-nav {
-  background: linear-gradient(90deg, #1A1D25 0%, #01A2EB 100%);
-  backdrop-filter: blur(10px);
+  background: linear-gradient(90deg, rgba(26, 29, 37, 0.95) 0%, rgba(1, 162, 235, 0.95) 100%);
+  backdrop-filter: blur(15px);
   color: white;
   padding: 12px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: relative;
-  z-index: 10;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
 }
 
 .nav-left {
@@ -348,7 +457,6 @@ export default {
 .nav-left .logo:hover {
   background: rgba(255, 255, 255, 0.1);
   transform: scale(1.05);
-  color: #63b3ed;
 }
 
 .nav-logo {
@@ -356,7 +464,6 @@ export default {
   cursor: pointer;
 }
 
-/* Navigation Items */
 .nav-items {
   display: flex;
   gap: 32px;
@@ -401,38 +508,45 @@ export default {
   border-bottom-color: #63b3ed;
 }
 
-/* Island 下拉菜单样式 */
 .nav-item-dropdown {
   position: relative;
 }
 
+.nav-item-dropdown::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: transparent;
+  z-index: 999;
+}
+
 .dropdown-menu {
   position: absolute;
-  top: calc(100% + 8px); /* 在Island正下方，留8px间距 */
+  top: calc(100% + 8px);
   left: 50%;
-  transform: translateX(-50%); /* 居中对齐 */
+  transform: translateX(-50%);
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(25px);
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 16px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1);
-  min-width: 120px;
-  max-width: 140px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  min-width: 160px;
   z-index: 1000;
   overflow: hidden;
-  animation: dropdownSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: dropdownSlideIn 0.3s ease;
 }
-
-/* 移除小箭头，使用图二样式 */
 
 @keyframes dropdownSlideIn {
   from {
     opacity: 0;
-    transform: translateX(-50%) translateY(-8px) scale(0.95);
+    transform: translateX(-50%) translateY(-8px);
   }
   to {
     opacity: 1;
-    transform: translateX(-50%) translateY(0) scale(1);
+    transform: translateX(-50%) translateY(0);
   }
 }
 
@@ -454,242 +568,256 @@ export default {
   border-bottom: none;
 }
 
-/* Language Toggle */
-.language-toggle {
-  margin-left: 16px;
-}
-
-.lang-btn {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white;
-  padding: 6px 12px;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: 500;
-  font-size: 0.9rem;
-  min-width: 40px;
-}
-
-.lang-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.5);
-  transform: scale(1.05);
-}
-
 .dropdown-item:hover {
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(16, 185, 129, 0.08));
   color: #1e40af;
   transform: translateX(2px);
 }
 
-.dropdown-item:first-child:hover {
-  border-radius: 16px 16px 0 0;
-}
-
-.dropdown-item:last-child:hover {
-  border-radius: 0 0 16px 16px;
-}
-
-.dropdown-item:first-child:last-child:hover {
-  border-radius: 16px;
-}
-
 /* Main Content */
 .main-content {
   position: relative;
   z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: calc(100vh - 70px);
-  padding: 40px 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 100px 20px 80px;
 }
 
-
-
-.coming-soon-card {
+/* Page Header */
+.page-header {
+  text-align: center;
+  margin-bottom: 60px;
+  padding: 40px 20px;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   border-radius: 25px;
-  padding: 50px 40px;
-  text-align: center;
-  max-width: 650px;
-  width: 100%;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  animation: slideUp 0.6s ease-out;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
 }
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.icon-container {
-  margin-bottom: 30px;
-}
-
-.government-icon {
-  font-size: 4rem;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-.coming-soon-card h1 {
-  color: #1A1D25;
-  font-size: 2.5rem;
+.page-header h1 {
+  font-size: 3rem;
   font-weight: 700;
-  margin-bottom: 10px;
   background: linear-gradient(135deg, #01A2EB, #1A1D25);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  margin-bottom: 15px;
 }
 
-.coming-soon-card h2 {
-  color: #01A2EB;
-  font-size: 1.8rem;
+.page-header p {
+  font-size: 1.2rem;
+  color: #555;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Section Headers */
+.section-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.section-header h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1A1D25;
+  margin-bottom: 10px;
+}
+
+.section-header p {
+  font-size: 1.1rem;
+  color: #666;
+}
+
+/* Policy Updates Section - Timeline Style */
+.policy-updates-section {
+  margin-bottom: 80px;
+}
+
+.updates-timeline {
+  position: relative;
+  padding-left: 40px;
+}
+
+.updates-timeline::before {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #01A2EB, #1A1D25);
+}
+
+.timeline-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 30px;
+  margin-bottom: 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #01A2EB;
+  transition: all 0.3s ease;
+}
+
+.timeline-card::before {
+  content: '';
+  position: absolute;
+  left: -43px;
+  top: 30px;
+  width: 15px;
+  height: 15px;
+  background: #01A2EB;
+  border-radius: 50%;
+  border: 3px solid white;
+  box-shadow: 0 0 0 3px #01A2EB;
+}
+
+.timeline-card:hover {
+  transform: translateX(10px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.timeline-date {
+  display: inline-block;
+  background: #01A2EB;
+  color: white;
+  padding: 6px 15px;
+  border-radius: 20px;
+  font-size: 0.9rem;
   font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.timeline-card h4 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #1A1D25;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.timeline-card p {
+  color: #555;
+  line-height: 1.7;
+  margin-bottom: 15px;
+}
+
+.source-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #01A2EB;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 0;
+  transition: all 0.3s ease;
+}
+
+.source-link:hover {
+  color: #0077BE;
+  gap: 12px;
+}
+
+.source-icon {
+  font-size: 1.2rem;
+}
+
+/* Conservation Section */
+.conservation-section {
+  margin-bottom: 80px;
+}
+
+.donation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.donation-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border: 2px solid rgba(1, 162, 235, 0.2);
+  transition: all 0.3s ease;
+}
+
+.donation-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+  border-color: #01A2EB;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+  gap: 10px;
+}
+
+.card-header h3 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #1A1D25;
+  flex: 1;
+}
+
+.badge {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge.verified {
+  background: #28a745;
+  color: white;
+}
+
+.card-description {
+  color: #555;
+  line-height: 1.7;
+  margin-bottom: 15px;
+}
+
+.ngo-info {
+  background: rgba(1, 162, 235, 0.05);
+  padding: 15px;
+  border-radius: 10px;
   margin-bottom: 20px;
 }
 
-.coming-soon-card p {
+.ngo-info p {
   color: #555;
-  font-size: 1.1rem;
   line-height: 1.6;
-  margin-bottom: 30px;
+  margin-bottom: 8px;
 }
 
-.features-preview {
-  text-align: left;
-  margin: 30px 0;
-  padding: 25px;
-  background: rgba(1, 162, 235, 0.1);
-  border-radius: 15px;
-  border-left: 4px solid #01A2EB;
+.ngo-info p:last-child {
+  margin-bottom: 0;
 }
 
-.features-preview h3 {
-  color: #1A1D25;
-  font-size: 1.3rem;
-  font-weight: 600;
-  margin-bottom: 15px;
-  text-align: center;
-}
-
-.features-preview ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.features-preview li {
-  color: #555;
-  font-size: 1rem;
-  margin-bottom: 12px;
-  padding-left: 10px;
-  position: relative;
-}
-
-.back-button {
-  background: linear-gradient(135deg, #01A2EB, #1A1D25);
+.donate-btn {
+  display: inline-block;
+  background: linear-gradient(135deg, #01A2EB, #0077BE);
   color: white;
-  border: none;
-  padding: 14px 28px;
+  padding: 12px 25px;
   border-radius: 25px;
-  font-size: 1rem;
+  text-decoration: none;
   font-weight: 600;
-  cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(1, 162, 235, 0.3);
-  margin-top: 20px;
 }
 
-.back-button:hover {
+.donate-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(1, 162, 235, 0.4);
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .nav-items {
-    gap: 20px;
-  }
-  
-  .mode-toggle {
-    flex-direction: column;
-    width: 100%;
-    max-width: 300px;
-  }
-  
-  .toggle-btn {
-    text-align: center;
-  }
-  
-  .maze-header {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  
-  
-  .coming-soon-card {
-    padding: 40px 30px;
-    margin: 20px;
-  }
-  
-  .coming-soon-card h1 {
-    font-size: 2rem;
-  }
-  
-  .coming-soon-card h2 {
-    font-size: 1.5rem;
-  }
-  
-  .features-preview {
-    padding: 20px;
-  }
-}
-
-@media (max-width: 480px) {
-  .nav-items {
-    gap: 15px;
-  }
-  
-  .nav-item {
-    font-size: 0.9rem;
-    padding: 6px 12px;
-  }
-  
-  .coming-soon-card {
-    padding: 30px 20px;
-  }
-  
-  .government-icon {
-    font-size: 3rem;
-  }
-  
-  .coming-soon-card h1 {
-    font-size: 1.8rem;
-  }
+  box-shadow: 0 6px 20px rgba(1, 162, 235, 0.4);
 }
 
 /* Footer Styles */
@@ -703,8 +831,9 @@ export default {
   font-weight: 400;
   letter-spacing: 0.02em;
   margin-top: 40px;
-  box-shadow: 0 -2px 12px rgba(59,130,246,0.08);
+  box-shadow: 0 -2px 12px rgba(59, 130, 246, 0.08);
   z-index: 10;
+  position: relative;
 }
 
 .footer-content {
@@ -720,74 +849,66 @@ export default {
 }
 
 .footer-links a {
-  color: #a5d8ff;
+  color: #01A2EB;
   text-decoration: none;
-  margin: 0 6px;
-  transition: color 0.2s;
+  transition: color 0.3s ease;
 }
 
 .footer-links a:hover {
-  color: #fff;
-  text-decoration: underline;
+  color: #00D4FF;
 }
 
-/* 海洋主题进度条样式 */
-.progress-container {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1;
-  width: 300px;
-  text-align: center;
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .donation-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+
+  .updates-timeline {
+    padding-left: 30px;
+  }
+
+  .timeline-card::before {
+    left: -35px;
+  }
 }
 
-.progress-bar {
-  width: 100%;
-  height: 8px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-  overflow: hidden;
-  margin-bottom: 15px;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
-}
+@media (max-width: 768px) {
+  .page-header h1 {
+    font-size: 2rem;
+  }
 
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #00d4ff 0%, #00a8cc 50%, #0077be 100%);
-  border-radius: 10px;
-  transition: width 0.8s ease-in-out;
-  position: relative;
-  overflow: hidden;
-}
+  .section-header h2 {
+    font-size: 2rem;
+  }
 
-.progress-fill::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  animation: shimmer 2s infinite;
-}
+  .donation-grid {
+    grid-template-columns: 1fr;
+  }
 
-.loading-text {
-  color: white;
-  font-size: 16px;
-  font-weight: 500;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-  margin: 0;
-  animation: textGlow 2s ease-in-out infinite alternate;
-}
+  .updates-timeline {
+    padding-left: 20px;
+  }
 
-@keyframes shimmer {
-  0% { left: -100%; }
-  100% { left: 100%; }
-}
+  .updates-timeline::before {
+    left: 7px;
+  }
 
-@keyframes textGlow {
-  0% { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); }
-  100% { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5), 0 0 10px rgba(0, 212, 255, 0.3); }
+  .timeline-card {
+    margin-left: 10px;
+  }
+
+  .timeline-card::before {
+    left: -28px;
+  }
+
+  .nav-items {
+    gap: 15px;
+  }
+
+  .top-nav {
+    padding: 12px 20px;
+  }
 }
 </style>
+
