@@ -1,51 +1,51 @@
 /**
- * CDN配置文件
- * 管理CDN相关设置
+ * CDN configuration file
+ * Manage CDN related settings
  */
 
 export const CDN_CONFIG = {
-  // CDN基础URL
+  // CDN base URL
   baseUrl: 'http://static.coralkita.site',
   
-  // 是否启用CDN
+  // Whether to enable CDN
   enabled: true,
   
-  // 缓存配置
+  // Cache configuration
   cache: {
-    // 图片缓存时间（毫秒）
-    imageCacheTime: 365 * 24 * 60 * 60 * 1000, // 1年
+    // Image cache time (milliseconds)
+    imageCacheTime: 365 * 24 * 60 * 60 * 1000, // 1 year
     
-    // 最大缓存条目数
+    // Maximum cache entries
     maxCacheSize: 1000,
     
-    // 是否启用本地存储缓存
+    // Whether to enable local storage cache
     enableLocalStorage: true
   },
   
-  // 降级配置
+  // Fallback configuration
   fallback: {
-    // 当CDN失败时是否降级到OSS签名URL
+    // Whether to fallback to OSS signed URL when CDN fails
     enableFallback: true,
     
-    // 降级重试次数
+    // Fallback retry count
     retryCount: 3,
     
-    // 降级重试延迟（毫秒）
+    // Fallback retry delay (milliseconds)
     retryDelay: 1000,
     
     // SSL错误时是否自动降级
     enableSSLFallback: true,
     
-    // 检测到SSL错误时是否禁用CDN
+    // Whether to disable CDN when SSL error is detected
     disableCDNOnSSLError: true
   },
   
-  // 性能监控
+  // Performance monitoring
   monitoring: {
-    // 是否启用性能监控
+    // Whether to enable performance monitoring
     enabled: true,
     
-    // 慢请求阈值（毫秒）
+    // Slow request threshold (milliseconds)
     slowRequestThreshold: 2000
   }
 }
