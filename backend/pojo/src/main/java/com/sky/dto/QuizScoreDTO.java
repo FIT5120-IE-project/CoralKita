@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 测验得分DTO
+ * Quiz Score DTO
  */
 @Data
 @Builder
@@ -15,12 +15,12 @@ import lombok.NoArgsConstructor;
 public class QuizScoreDTO {
 
     /**
-     * 用户名称
+     * Username
      */
     private String userName;
 
     /**
-     * 测验得分
+     * Quiz Score
      */
     private Integer score;
 

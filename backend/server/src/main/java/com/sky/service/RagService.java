@@ -4,20 +4,20 @@ import com.sky.dto.RagQueryDTO;
 import com.sky.vo.RagAnswerVO;
 
 /**
- * RAG问答服务接口
+ * RAG Q&A Service Interface
  */
 public interface RagService {
     
     /**
-     * 处理RAG问答请求
-     * @param queryDTO 查询请求
-     * @return 问答结果
+     * Process RAG Q&A request
+     * @param queryDTO Query request
+     * @return Q&A result
      */
     RagAnswerVO query(RagQueryDTO queryDTO);
     
     /**
-     * 检查RAG系统状态
-     * @return 系统是否可用
+     * Check RAG system status
+     * @return Whether system is available
      */
     boolean isSystemReady();
 }

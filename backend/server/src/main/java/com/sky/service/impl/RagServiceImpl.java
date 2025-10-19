@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 
 /**
- * RAG问答服务实现类
+ * RAG Q&A Service Implementation
  */
 @Service
 @Slf4j
@@ -22,14 +22,14 @@ public class RagServiceImpl implements RagService {
 
     @Override
     public RagAnswerVO query(RagQueryDTO queryDTO) {
-        log.info("处理RAG问答请求: {}", queryDTO.getQuestion());
+        log.info("Processing RAG Q&A request: {}", queryDTO.getQuestion());
         
-        // 参数验证
+        // Parameter validation
         if (queryDTO.getQuestion() == null || queryDTO.getQuestion().trim().isEmpty()) {
-            throw new IllegalArgumentException("问题不能为空");
+            throw new IllegalArgumentException("Question cannot be empty");
         }
         
-        // 设置默认值
+        // Set default values
         if (queryDTO.getTopK() == null || queryDTO.getTopK() <= 0) {
             queryDTO.setTopK(5);
         }
@@ -38,22 +38,22 @@ public class RagServiceImpl implements RagService {
         }
         
         try {
-            // 调用RAG HTTP服务
+            // Call RAG HTTP service
             RagAnswerVO result = ragHttpService.queryRag(queryDTO);
             
-            // 记录查询日志
-            log.info("RAG问答完成，问题: {}, 回答长度: {}", 
+            // Log query
+            log.info("RAG Q&A completed, question: {}, answer length: {}", 
                 queryDTO.getQuestion(), 
                 result.getAnswer().length());
             
             return result;
             
         } catch (Exception e) {
-            log.error("RAG问答处理失败", e);
-            if (e.getMessage().contains("无法连接到RAG服务")) {
-                throw new RuntimeException("RAG HTTP服务连接失败，请确保RAG服务已启动", e);
+            log.error("RAG Q&A processing failed", e);
+            if (e.getMessage() != null && e.getMessage().contains("Cannot connect to RAG service")) {
+                throw new RuntimeException("RAG HTTP service connection failed, please ensure RAG service is started", e);
             } else {
-                throw new RuntimeException("RAG问答服务暂时不可用，请稍后重试", e);
+                throw new RuntimeException("RAG Q&A service temporarily unavailable, please try again later", e);
             }
         }
     }
@@ -61,18 +61,18 @@ public class RagServiceImpl implements RagService {
     @Override
     public boolean isSystemReady() {
         try {
-            // 检查RAG HTTP服务是否可用
+            // Check if RAG HTTP service is available
             boolean isHealthy = ragHttpService.checkHealth();
             if (isHealthy) {
-                log.info("RAG HTTP服务健康检查通过");
+                log.info("RAG HTTP service health check passed");
                 return true;
             } else {
-                log.warn("RAG HTTP服务健康检查失败");
+                log.warn("RAG HTTP service health check failed");
                 return false;
             }
             
         } catch (Exception e) {
-            log.error("RAG系统状态检查失败", e);
+            log.error("RAG system status check failed", e);
             return false;
         }
     }

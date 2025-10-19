@@ -3,27 +3,27 @@ package com.sky.service;
 import com.sky.entity.Checklist;
 
 /**
- * 旅行清单业务层接口
+ * Travel Checklist Service Interface
  */
 public interface ChecklistService {
 
     /**
-     * 根据用户ID获取或创建清单记录
-     * @param userId 用户ID
-     * @return 清单记录
+     * Get or create checklist record by user ID
+     * @param userId User ID
+     * @return Checklist record
      */
     Checklist getOrCreateChecklist(Integer userId);
 
     /**
-     * 更新用户清单记录
-     * @param checklist 清单记录
-     * @return 更新后的清单记录
+     * Update user checklist record
+     * @param checklist Checklist record
+     * @return Updated checklist record
      */
     Checklist updateChecklist(Checklist checklist);
     
     /**
-     * 检查并更新用户徽章
-     * @param checklist 清单数据
+     * Check and update user badge
+     * @param checklist Checklist data
      */
     void checkAndUpdateUserBadge(Checklist checklist);
 }

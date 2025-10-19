@@ -12,9 +12,9 @@ public interface UserService {
     UserRegisterVO register(UserRegisterDTO userRegisterDTO);
 
     /**
-     * 更新用户徽章
-     * @param userId 用户ID
-     * @param badge 徽章名称
+     * Update user badge
+     * @param userId User ID
+     * @param badge Badge name
      */
     void updateUserBadge(Integer userId, String badge);
 }

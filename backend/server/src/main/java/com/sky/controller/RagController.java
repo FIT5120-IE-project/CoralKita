@@ -11,65 +11,65 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * RAG问答控制器
+ * RAG Q&A Controller
  */
 @RestController
 @RequestMapping("/rag")
 @Slf4j
-@Api(tags = "RAG智能问答相关接口")
+@Api(tags = "RAG Intelligent Q&A Related APIs")
 public class RagController {
 
     @Autowired
     private RagService ragService;
 
     /**
-     * RAG智能问答
-     * @param queryDTO 查询请求
-     * @return 问答结果
+     * RAG intelligent Q&A
+     * @param queryDTO Query request
+     * @return Q&A result
      */
     @PostMapping("/query")
-    @ApiOperation("RAG智能问答")
+    @ApiOperation("RAG intelligent Q&A")
     public Result<RagAnswerVO> query(@RequestBody RagQueryDTO queryDTO) {
-        log.info("收到RAG问答请求: {}", queryDTO.getQuestion());
+        log.info("Received RAG Q&A request: {}", queryDTO.getQuestion());
         
         try {
             RagAnswerVO result = ragService.query(queryDTO);
             return Result.success(result);
         } catch (IllegalArgumentException e) {
-            log.warn("RAG问答请求参数错误: {}", e.getMessage());
-            return Result.error("请求参数错误: " + e.getMessage());
+            log.warn("RAG Q&A request parameter error: {}", e.getMessage());
+            return Result.error("Request parameter error: " + e.getMessage());
         } catch (Exception e) {
-            log.error("RAG问答处理失败", e);
-            return Result.error("RAG问答服务暂时不可用，请稍后重试");
+            log.error("RAG Q&A processing failed", e);
+            return Result.error("RAG Q&A service temporarily unavailable, please try again later");
         }
     }
 
     /**
-     * 检查RAG系统状态
-     * @return 系统状态
+     * Check RAG system status
+     * @return System status
      */
     @GetMapping("/status")
-    @ApiOperation("检查RAG系统状态")
+    @ApiOperation("Check RAG system status")
     public Result<Boolean> getStatus() {
-        log.info("检查RAG系统状态");
+        log.info("Checking RAG system status");
         
         boolean isReady = ragService.isSystemReady();
         if (isReady) {
             return Result.success(true);
         } else {
-            return Result.error("RAG系统未就绪，请检查Python环境和数据库");
+            return Result.error("RAG system not ready, please check Python environment and database");
         }
     }
 
     /**
-     * 快速问答接口（简化版）
-     * @param question 问题
-     * @return 回答
+     * Quick Q&A interface (simplified version)
+     * @param question Question
+     * @return Answer
      */
     @GetMapping("/quick-query")
-    @ApiOperation("快速问答")
+    @ApiOperation("Quick Q&A")
     public Result<String> quickQuery(@RequestParam String question) {
-        log.info("收到快速问答请求: {}", question);
+        log.info("Received quick Q&A request: {}", question);
         
         try {
             RagQueryDTO queryDTO = new RagQueryDTO();
@@ -80,8 +80,8 @@ public class RagController {
             RagAnswerVO result = ragService.query(queryDTO);
             return Result.success(result.getAnswer());
         } catch (Exception e) {
-            log.error("快速问答处理失败", e);
-            return Result.error("问答服务暂时不可用");
+            log.error("Quick Q&A processing failed", e);
+            return Result.error("Q&A service temporarily unavailable");
         }
     }
 }

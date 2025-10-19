@@ -6,29 +6,29 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 旅行清单实体类
+ * Travel Checklist Entity
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Checklist {
-    private Integer userId;  // 用户ID
-    private Integer q1;      // 问题1
-    private Integer q2;      // 问题2
-    private Integer q3;      // 问题3
-    private Integer q4;      // 问题4
-    private Integer q5;      // 问题5
-    private Integer q6;      // 问题6
-    private Integer q7;      // 问题7
-    private Integer q8;      // 问题8
-    private Integer q9;      // 问题9
-    private Integer q10;     // 问题10
-    private Integer q11;     // 问题11
-    private Integer q12;     // 问题12
-    private Integer q13;     // 问题13
-    private Integer q14;     // 问题14
-    private Integer q15;     // 问题15
-    private Integer q16;     // 问题16
-    private Integer q17;     // 问题17
+    private Integer userId;  // User ID
+    private Integer q1;      // Question 1
+    private Integer q2;      // Question 2
+    private Integer q3;      // Question 3
+    private Integer q4;      // Question 4
+    private Integer q5;      // Question 5
+    private Integer q6;      // Question 6
+    private Integer q7;      // Question 7
+    private Integer q8;      // Question 8
+    private Integer q9;      // Question 9
+    private Integer q10;     // Question 10
+    private Integer q11;     // Question 11
+    private Integer q12;     // Question 12
+    private Integer q13;     // Question 13
+    private Integer q14;     // Question 14
+    private Integer q15;     // Question 15
+    private Integer q16;     // Question 16
+    private Integer q17;     // Question 17
 }

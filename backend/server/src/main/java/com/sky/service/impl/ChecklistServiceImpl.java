@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * 旅行清单业务层实现类
+ * Travel Checklist Service Implementation
  */
 @Service
 @Slf4j
@@ -22,16 +22,16 @@ public class ChecklistServiceImpl implements ChecklistService {
     private UserService userService;
 
     /**
-     * 根据用户ID获取或创建清单记录
-     * @param userId 用户ID
-     * @return 清单记录
+     * Get or create checklist record by user ID
+     * @param userId User ID
+     * @return Checklist record
      */
     @Override
     public Checklist getOrCreateChecklist(Integer userId) {
-        // 根据用户ID查询现有记录
+        // Query existing record by user ID
         Checklist checklist = checklistMapper.getByUserId(userId);
         
-        // 如果记录不存在，创建新记录
+        // If record doesn't exist, create new record
         if (checklist == null) {
             checklist = Checklist.builder()
                     .userId(userId)
@@ -41,44 +41,44 @@ public class ChecklistServiceImpl implements ChecklistService {
                     .q16(0).q17(0)
                     .build();
             
-            // 插入新记录
+            // Insert new record
             checklistMapper.insert(checklist);
-            log.info("为用户 {} 创建了新的清单记录", userId);
+            log.info("Created new checklist record for user {}", userId);
         }
         
         return checklist;
     }
 
     /**
-     * 更新用户清单记录
-     * @param checklist 清单记录
-     * @return 更新后的清单记录
+     * Update user checklist record
+     * @param checklist Checklist record
+     * @return Updated checklist record
      */
     @Override
     public Checklist updateChecklist(Checklist checklist) {
-        // 检查用户记录是否存在，如果不存在则创建
+        // Check if user record exists, create if not
         Checklist existingChecklist = checklistMapper.getByUserId(checklist.getUserId());
         
         if (existingChecklist == null) {
-            // 如果记录不存在，先创建新记录
+            // If record doesn't exist, create new record first
             checklistMapper.insert(checklist);
-            log.info("为用户 {} 创建了新的清单记录", checklist.getUserId());
+            log.info("Created new checklist record for user {}", checklist.getUserId());
         } else {
-            // 如果记录存在，更新记录
+            // If record exists, update record
             checklistMapper.update(checklist);
-            log.info("更新了用户 {} 的清单记录", checklist.getUserId());
+            log.info("Updated checklist record for user {}", checklist.getUserId());
         }
         
         return checklist;
     }
     
     /**
-     * 检查并更新用户徽章
-     * @param checklist 清单数据
+     * Check and update user badge
+     * @param checklist Checklist data
      */
     @Override
     public void checkAndUpdateUserBadge(Checklist checklist) {
-        // 检查所有q值是否都是1
+        // Check if all q values are 1
         if (checklist.getQ1() == 1 && checklist.getQ2() == 1 && checklist.getQ3() == 1 &&
             checklist.getQ4() == 1 && checklist.getQ5() == 1 && checklist.getQ6() == 1 &&
             checklist.getQ7() == 1 && checklist.getQ8() == 1 && checklist.getQ9() == 1 &&
@@ -86,9 +86,9 @@ public class ChecklistServiceImpl implements ChecklistService {
             checklist.getQ13() == 1 && checklist.getQ14() == 1 && checklist.getQ15() == 1 &&
             checklist.getQ16() == 1 && checklist.getQ17() == 1) {
             
-            // 所有任务都完成了，授予"Coral Guardian"徽章
+            // All tasks completed, award "Coral Guardian" badge
             userService.updateUserBadge(checklist.getUserId(), "Coral Guardian");
-            log.info("用户 {} 完成了所有清单任务，授予Coral Guardian徽章", checklist.getUserId());
+            log.info("User {} completed all checklist tasks, awarded Coral Guardian badge", checklist.getUserId());
         }
     }
 }

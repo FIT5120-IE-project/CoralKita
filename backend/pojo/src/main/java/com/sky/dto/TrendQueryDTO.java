@@ -3,13 +3,13 @@ package com.sky.dto;
 import lombok.Data;
 
 /**
- * 趋势数据查询DTO
+ * Trend Data Query DTO
  */
 @Data
 public class TrendQueryDTO {
     
     /**
-     * 岛屿名称
+     * Island Name
      */
     private String island;
 }

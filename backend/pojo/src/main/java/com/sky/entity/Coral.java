@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * 珊瑚数据实体类
+ * Coral Data Entity
  */
 @Data
 @Builder
@@ -19,257 +19,257 @@ public class Coral implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 生态区域
+     * Eco Region
      */
     private String ecoRegion;
 
     /**
-     * 岛屿名称
+     * Island Name
      */
     private String island;
 
     /**
-     * 岛屿经度
+     * Island Longitude
      */
     private Double islandLng;
 
     /**
-     * 岛屿纬度
+     * Island Latitude
      */
     private Double islandLat;
 
     /**
-     * 站点名称
+     * Site Name
      */
     private String siteName;
 
     /**
-     * 站点类型
+     * Site Type
      */
     private String siteType;
 
     /**
-     * 经度
+     * Longitude
      */
     private Double lng;
 
     /**
-     * 纬度
+     * Latitude
      */
     private Double lat;
 
     /**
-     * 日期
+     * Date
      */
     private String date;
 
     /**
-     * 深度
+     * Depth
      */
     private Double depth;
 
     /**
-     * 硬珊瑚覆盖度
+     * Hard Coral Coverage
      */
     private Double hc;
 
     /**
-     * 软珊瑚覆盖度
+     * Soft Coral Coverage
      */
     private Double sc;
 
     /**
-     * 岩石覆盖度
+     * Rock Coverage
      */
     private Double rkc;
 
     /**
-     * 无脊椎动物覆盖度
+     * Non-Invertebrate Animal Coverage
      */
     private Double nia;
 
     /**
-     * 海绵覆盖度
+     * Sponge Coverage
      */
     private Double sp;
 
     /**
-     * 珊瑚覆盖度
+     * Reef Coverage
      */
     private Double rc;
 
     /**
-     * 珊瑚礁覆盖度
+     * Reef Base Coverage
      */
     private Double rb;
 
     /**
-     * 沙地覆盖度
+     * Sand Coverage
      */
     private Double sd;
 
     /**
-     * 淤泥覆盖度
+     * Silt Coverage
      */
     private Double si;
 
     /**
-     * 其他覆盖度
+     * Other Coverage
      */
     private Double ot;
 
     /**
-     * 鱼类生物量
+     * Fish Biomass
      */
     private Double bf;
 
     /**
-     * 海藻覆盖度
+     * Seaweed Coverage
      */
     private Double sl;
 
     /**
-     * 海草覆盖度
+     * Seagrass Coverage
      */
     private Double sn;
 
     /**
-     * 珊瑚礁鱼类数量
+     * Reef Fish Count
      */
     private Integer bc;
 
     /**
-     * 硬珊瑚鱼类数量
+     * Hard Coral Fish Count
      */
     private Integer hw;
 
     /**
-     * 底栖鱼类数量
+     * Benthic Fish Count
      */
     private Integer bp;
 
     /**
-     * 浮游生物密度
+     * Plankton Density
      */
     private Double pf;
 
     /**
-     * 微生物密度
+     * Microbe Density
      */
     private Double me;
 
     /**
-     * 生长率
+     * Growth Rate
      */
     private Double gr;
 
     /**
-     * 珊瑚礁健康状态
+     * Reef Health Status
      */
     private Integer bcs;
 
     /**
-     * 多样性指数
+     * Diversity Index
      */
     private Double du;
 
     /**
-     * 保护状态
+     * Protection Status
      */
     private Integer pu;
 
     /**
-     * 珊瑚状态
+     * Coral Status
      */
     private Integer cu;
 
     /**
-     * 软珊瑚状态
+     * Soft Coral Status
      */
     private Integer scu;
 
     /**
-     * 珊瑚礁类型
+     * Reef Type
      */
     private Integer cot;
 
     /**
-     * 威胁等级
+     * Threat Level
      */
     private Integer tr;
 
     /**
-     * 位置状态
+     * Location Status
      */
     private Integer lo;
 
     /**
-     * 地理条件
+     * Geographic Conditions
      */
     private Integer gc;
 
     /**
-     * 珊瑚疾病A
+     * Coral Disease A
      */
     private Integer cdba;
 
     /**
-     * 珊瑚疾病D
+     * Coral Disease D
      */
     private Integer cdd;
 
     /**
-     * 珊瑚疾病O
+     * Coral Disease O
      */
     private Integer cdo;
 
     /**
-     * 鱼类数量
+     * Total Fish Number
      */
     private Double tfn;
 
     /**
-     * 温度梯度
+     * Temperature Gradient
      */
     private Double tg;
 
     /**
-     * 生物多样性指数
+     * Biodiversity Index
      */
     private Integer bnp;
 
     /**
-     * 生物数量
+     * Biological Count
      */
     private Integer bnc;
 
     /**
-     * 底栖生物
+     * Benthic Organisms
      */
     private Integer bb;
 
     /**
-     * 水生物
+     * Water Organisms
      */
     private Integer wb;
 
     /**
-     * 珊瑚礁健康
+     * Reef Health
      */
     private Integer sh;
 
     /**
-     * 旅游影响
+     * Tourism Impact
      */
     private Integer tu;
 
     /**
-     * 珊瑚礁恢复
+     * Reef Recovery
      */
     private Integer sr;
 
     /**
-     * 其他指标
+     * Other Indicators
      */
     private Integer other;
 }

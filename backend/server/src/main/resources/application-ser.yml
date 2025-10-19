@@ -1,11 +1,11 @@
 sky:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    host: 8.148.202.1
-    port: 3306
-    database: coralkita_db
-    username: coralkita_db
-    password: n3rhPBiwmrMhTRrs
+    host: XXXX
+    port: XXXX
+    database: XXXX
+    username: XXXX
+    password: XXXX
 
 
 # 阿里云OSS配置

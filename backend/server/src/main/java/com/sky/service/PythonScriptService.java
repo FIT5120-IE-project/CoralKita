@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Python脚本调用服务
+ * Python Script Calling Service
  */
 @Service
 @Slf4j
@@ -26,20 +26,20 @@ public class PythonScriptService {
     private String ragScriptPath;
 
     /**
-     * 调用Python RAG脚本进行问答
-     * @param queryDTO 查询请求
-     * @return RAG回答结果
+     * Call Python RAG script for Q&A
+     * @param queryDTO Query request
+     * @return RAG answer result
      */
     public RagAnswerVO queryRag(RagQueryDTO queryDTO) {
         long startTime = System.currentTimeMillis();
         
         try {
-            log.info("开始调用Python RAG脚本，问题: {}", queryDTO.getQuestion());
+            log.info("Starting to call Python RAG script, question: {}", queryDTO.getQuestion());
             
-            // 构建Python命令
+            // Build Python command
             ProcessBuilder processBuilder;
             if (pythonExecutable.contains("uv run")) {
-                // 处理uv run命令
+                // Handle uv run command
                 processBuilder = new ProcessBuilder(
                     "uv", "run", "python",
                     ragScriptPath,
@@ -48,7 +48,7 @@ public class PythonScriptService {
                     String.valueOf(queryDTO.getIncludeSources())
                 );
             } else {
-                // 处理普通python命令
+                // Handle regular python command
                 processBuilder = new ProcessBuilder(
                     pythonExecutable, 
                     ragScriptPath,
@@ -58,31 +58,31 @@ public class PythonScriptService {
                 );
             }
             
-            // 设置工作目录为当前项目的RAG目录
+            // Set working directory to current project's RAG directory
             File ragDir = new File("rag").getAbsoluteFile();
             processBuilder.directory(ragDir);
             processBuilder.redirectErrorStream(true);
             
-            // 设置环境变量确保UTF-8编码
+            // Set environment variables to ensure UTF-8 encoding
             processBuilder.environment().put("PYTHONIOENCODING", "utf-8");
             processBuilder.environment().put("PYTHONUTF8", "1");
             
-            // 显式传递GEMINI_API_KEY环境变量
+            // Explicitly pass GEMINI_API_KEY environment variable
             String geminiApiKey = System.getenv("GEMINI_API_KEY");
             if (geminiApiKey != null && !geminiApiKey.trim().isEmpty()) {
                 processBuilder.environment().put("GEMINI_API_KEY", geminiApiKey);
-                log.info("已设置GEMINI_API_KEY环境变量到Python进程");
+                log.info("GEMINI_API_KEY environment variable set to Python process");
             } else {
-                log.warn("系统环境变量GEMINI_API_KEY未设置");
+                log.warn("System environment variable GEMINI_API_KEY not set");
             }
             
-            log.info("执行命令: {}", String.join(" ", processBuilder.command()));
-            log.info("工作目录: {}", ragDir.getAbsolutePath());
+            log.info("Executing command: {}", String.join(" ", processBuilder.command()));
+            log.info("Working directory: {}", ragDir.getAbsolutePath());
             
-            // 启动进程
+            // Start process
             Process process = processBuilder.start();
             
-            // 读取输出
+            // Read output
             StringBuilder output = new StringBuilder();
             try (BufferedReader reader = new BufferedReader(
                     new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
@@ -92,42 +92,42 @@ public class PythonScriptService {
                 }
             }
             
-            // 等待进程完成，最多等待30秒
+            // Wait for process to complete, maximum 30 seconds
             boolean finished = process.waitFor(30, TimeUnit.SECONDS);
             if (!finished) {
                 process.destroyForcibly();
-                throw new RuntimeException("Python脚本执行超时");
+                throw new RuntimeException("Python script execution timeout");
             }
             
             int exitCode = process.exitValue();
             if (exitCode != 0) {
                 String errorMsg = output.toString();
                 if (errorMsg.contains("Python was not found")) {
-                    throw new RuntimeException("Python环境未配置，请安装Python并添加到系统PATH环境变量中");
+                    throw new RuntimeException("Python environment not configured, please install Python and add to system PATH");
                 } else {
-                    throw new RuntimeException("Python脚本执行失败，退出码: " + exitCode + ", 输出: " + errorMsg);
+                    throw new RuntimeException("Python script execution failed, exit code: " + exitCode + ", output: " + errorMsg);
                 }
             }
             
-            // 解析输出结果
+            // Parse output result
             RagAnswerVO result = parsePythonOutput(output.toString(), queryDTO.getQuestion());
             result.setProcessingTime(System.currentTimeMillis() - startTime);
             
-            log.info("Python RAG脚本执行成功，耗时: {}ms", result.getProcessingTime());
+            log.info("Python RAG script execution successful, time: {}ms", result.getProcessingTime());
             return result;
             
         } catch (Exception e) {
-            log.error("调用Python RAG脚本失败", e);
-            throw new RuntimeException("RAG服务调用失败: " + e.getMessage(), e);
+            log.error("Failed to call Python RAG script", e);
+            throw new RuntimeException("RAG service call failed: " + e.getMessage(), e);
         }
     }
     
     /**
-     * 解析Python脚本输出
+     * Parse Python script output
      */
     private RagAnswerVO parsePythonOutput(String output, String question) {
         try {
-            // 简单的JSON解析（实际项目中建议使用Jackson等JSON库）
+            // Simple JSON parsing (recommended to use Jackson or similar JSON library in actual project)
             String[] lines = output.split("\n");
             StringBuilder answer = new StringBuilder();
             List<RagAnswerVO.SourceInfo> sources = new ArrayList<>();
@@ -155,7 +155,7 @@ public class PythonScriptService {
                 if (inAnswer && !line.isEmpty()) {
                     answer.append(line).append("\n");
                 } else if (inSources && line.contains("|")) {
-                    // 解析来源信息: sourceFile|year|score|content
+                    // Parse source information: sourceFile|year|score|content
                     String[] parts = line.split("\\|", 4);
                     if (parts.length >= 4) {
                         RagAnswerVO.SourceInfo source = RagAnswerVO.SourceInfo.builder()
@@ -176,11 +176,11 @@ public class PythonScriptService {
                 .build();
                 
         } catch (Exception e) {
-            log.error("解析Python输出失败", e);
-            // 返回简单的错误响应
+            log.error("Failed to parse Python output", e);
+            // Return simple error response
             return RagAnswerVO.builder()
                 .question(question)
-                .answer("抱歉，解析回答时出现错误。原始输出: " + output)
+                .answer("Sorry, error occurred while parsing answer. Raw output: " + output)
                 .sources(new ArrayList<>())
                 .build();
         }

@@ -33,25 +33,25 @@ public class OssService {
     }
 
     /**
-     * 生成签名 URL
-     * @param objectKey 文件的 OSS 名称
-     * @param expireSeconds 签名的有效期，单位秒
-     * @return 签名 URL
+     * Generate signed URL
+     * @param objectKey OSS object key
+     * @param expireSeconds Expiration time in seconds
+     * @return Signed URL
      */
     public String generateSignedUrl(String objectKey, int expireSeconds) {
         Date expiration = new Date(System.currentTimeMillis() + expireSeconds * 1000L);
         GeneratePresignedUrlRequest request = new GeneratePresignedUrlRequest(bucketName, objectKey, HttpMethod.GET);
         request.setExpiration(expiration);
         
-        // 获取签名 URL
+        // Get signed URL
         URL signedUrl = ossClient.generatePresignedUrl(request);
         return signedUrl.toString();
     }
 
     /**
-     * 测试读取OSS文件
-     * @param objectKey 文件路径
-     * @return 文件是否存在
+     * Test if OSS file exists
+     * @param objectKey File path
+     * @return Whether file exists
      */
     public boolean testFileExists(String objectKey) {
         try {
@@ -63,27 +63,27 @@ public class OssService {
     }
 
     /**
-     * 获取文件信息
-     * @param objectKey 文件路径
-     * @return 文件信息
+     * Get file information
+     * @param objectKey File path
+     * @return File information
      */
     public String getFileInfo(String objectKey) {
         try {
             if (ossClient.doesObjectExist(bucketName, objectKey)) {
                 long fileSize = ossClient.getObjectMetadata(bucketName, objectKey).getContentLength();
-                return String.format("文件存在，大小: %d bytes", fileSize);
+                return String.format("File exists, size: %d bytes", fileSize);
             } else {
-                return "文件不存在";
+                return "File does not exist";
             }
         } catch (Exception e) {
-            return "获取文件信息失败: " + e.getMessage();
+            return "Failed to get file info: " + e.getMessage();
         }
     }
 
     /**
-     * 将OSS文件流式输出到HTTP响应
-     * @param objectKey 文件路径
-     * @param response HTTP响应对象
+     * Stream OSS file to HTTP response
+     * @param objectKey File path
+     * @param response HTTP response object
      */
     public void streamFileToResponse(String objectKey, HttpServletResponse response) throws Exception {
         OSSObject ossObject = ossClient.getObject(bucketName, objectKey);
@@ -105,35 +105,35 @@ public class OssService {
     }
 
     /**
-     * 上传单个文件到OSS
-     * @param file 要上传的文件
-     * @param objectKey OSS中的对象键
-     * @return 上传后的URL
+     * Upload single file to OSS
+     * @param file File to upload
+     * @param objectKey OSS object key
+     * @return Uploaded file URL
      */
     public String uploadFile(File file, String objectKey) {
         try {
             PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, objectKey, file);
             ossClient.putObject(putObjectRequest);
             
-            // 返回文件的访问URL
+            // Return file access URL
             return "https://" + bucketName + "." + endpoint.replace("https://", "") + "/" + objectKey;
         } catch (Exception e) {
-            throw new RuntimeException("上传文件失败: " + e.getMessage(), e);
+            throw new RuntimeException("Failed to upload file: " + e.getMessage(), e);
         }
     }
 
     /**
-     * 批量上传文件夹中的所有图片文件
-     * @param folderPath 文件夹路径
-     * @param answer 答案/分类
-     * @return 上传结果列表
+     * Batch upload all image files in folder
+     * @param folderPath Folder path
+     * @param answer Answer/Classification
+     * @return List of uploaded URLs
      */
     public List<String> uploadFolderImages(String folderPath, String answer) {
         List<String> uploadedUrls = new ArrayList<>();
         File folder = new File(folderPath);
         
         if (!folder.exists() || !folder.isDirectory()) {
-            throw new RuntimeException("文件夹不存在: " + folderPath);
+            throw new RuntimeException("Folder does not exist: " + folderPath);
         }
         
         File[] files = folder.listFiles((dir, name) -> {
@@ -144,17 +144,17 @@ public class OssService {
         });
         
         if (files == null || files.length == 0) {
-            throw new RuntimeException("文件夹中没有找到图片文件");
+            throw new RuntimeException("No image files found in folder");
         }
         
         for (File file : files) {
             try {
-                // 生成OSS对象键：image/health/文件名
+                // Generate OSS object key: image/health/filename
                 String objectKey = "image/" + answer + "/" + file.getName();
                 String url = uploadFile(file, objectKey);
                 uploadedUrls.add(url);
             } catch (Exception e) {
-                throw new RuntimeException("上传文件 " + file.getName() + " 失败: " + e.getMessage(), e);
+                throw new RuntimeException("Failed to upload file " + file.getName() + ": " + e.getMessage(), e);
             }
         }
         
@@ -162,18 +162,18 @@ public class OssService {
     }
 
     /**
-     * 获取视频文件的签名URL
-     * @param videoFileName 视频文件名（不包含路径）
-     * @param expireSeconds 过期时间（秒），默认1小时
-     * @return 视频的签名URL
+     * Get signed URL for video file
+     * @param videoFileName Video file name (without path)
+     * @param expireSeconds Expiration time in seconds, default 1 hour
+     * @return Signed URL for video
      */
     public String getVideoSignedUrl(String videoFileName, int expireSeconds) {
-        // 构建完整的对象键：vedio/文件名
+        // Build complete object key: vedio/filename
         String objectKey = "vedio/" + videoFileName;
         
-        // 检查文件是否存在
+        // Check if file exists
         if (!ossClient.doesObjectExist(bucketName, objectKey)) {
-            throw new RuntimeException("视频文件不存在: " + videoFileName);
+            throw new RuntimeException("Video file does not exist: " + videoFileName);
         }
         
         return generateSignedUrl(objectKey, expireSeconds);

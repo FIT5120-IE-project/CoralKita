@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 /**
- * 趋势数据返回VO
+ * Trend Data Response VO
  */
 @Data
 @Builder
@@ -17,37 +17,37 @@ import java.time.LocalDate;
 public class TrendVO {
     
     /**
-     * 日期
+     * Date
      */
     private LocalDate date;
     
     /**
-     * LCC值
+     * LCC Value
      */
     private Double LCC;
     
     /**
-     * OT值
+     * OT Value
      */
     private Double OT;
     
     /**
-     * AS值
+     * AS Value
      */
     private Double AS;
     
     /**
-     * SD值
+     * SD Value
      */
     private Double SD;
     
     /**
-     * DI值
+     * DI Value
      */
     private Double DI;
     
     /**
-     * PI值
+     * PI Value
      */
     private Double PI;
 }

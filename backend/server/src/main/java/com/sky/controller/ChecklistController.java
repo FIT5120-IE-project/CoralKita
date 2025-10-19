@@ -10,11 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * 旅行清单管理
+ * Travel Checklist Management Controller
  */
 @RestController
 @RequestMapping("/checklist")
-@Api(tags = "旅行清单相关接口")
+@Api(tags = "Travel Checklist Related APIs")
 @Slf4j
 public class ChecklistController {
 
@@ -22,32 +22,32 @@ public class ChecklistController {
     private ChecklistService checklistService;
 
     /**
-     * 根据用户ID获取或创建清单记录
-     * @param userId 用户ID
-     * @return 清单记录
+     * Get or create checklist record by user ID
+     * @param userId User ID
+     * @return Checklist record
      */
     @GetMapping("/{userId}")
-    @ApiOperation("根据用户ID获取或创建清单记录")
+    @ApiOperation("Get or create checklist record by user ID")
     public Result<Checklist> getOrCreateChecklist(@PathVariable Integer userId) {
-        log.info("获取用户 {} 的清单记录", userId);
+        log.info("Getting checklist record for user {}", userId);
         
         Checklist checklist = checklistService.getOrCreateChecklist(userId);
         return Result.success(checklist);
     }
 
     /**
-     * 提交用户清单记录
-     * @param checklist 清单记录
-     * @return 更新后的清单记录
+     * Submit user checklist record
+     * @param checklist Checklist record
+     * @return Updated checklist record
      */
     @PostMapping("/submit")
-    @ApiOperation("提交用户清单记录")
+    @ApiOperation("Submit user checklist record")
     public Result<Checklist> submitChecklist(@RequestBody Checklist checklist) {
-        log.info("提交用户 {} 的清单记录", checklist.getUserId());
+        log.info("Submitting checklist record for user {}", checklist.getUserId());
         
         Checklist updatedChecklist = checklistService.updateChecklist(checklist);
         
-        // 检查并更新用户徽章
+        // Check and update user badge
         checklistService.checkAndUpdateUserBadge(updatedChecklist);
         
         return Result.success(updatedChecklist);

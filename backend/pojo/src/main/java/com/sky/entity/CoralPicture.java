@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 珊瑚图片实体类
+ * Coral Picture Entity
  */
 @Data
 @Builder
@@ -14,6 +14,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CoralPicture {
     private Long id;
-    private String picture;  // 图片URL
-    private String answer;   // 答案/分类
+    private String picture;  // Picture URL
+    private String answer;   // Answer/Classification
 }

@@ -9,58 +9,58 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 趋势数据服务接口
+ * Trend Data Service Interface
  */
 public interface TrendService {
     /**
-     * 根据岛屿名称查询趋势数据
-     * @param island 岛屿名称
-     * @return 趋势数据列表
+     * Query trend data by island name
+     * @param island Island name
+     * @return List of trend data
      */
     List<TrendVO> getTrendDataByIsland(String island);
 
     /**
-     * 比较多个岛屿的指定指标数据
-     * @param islands 岛屿名称列表
-     * @return 比较结果列表
+     * Compare specified indicator data of multiple islands
+     * @param islands List of island names
+     * @return List of comparison results
      */
     List<TrendCompareVO> compareTrendData(List<String> islands);
 
     /**
-     * 获取所有岛屿列表
-     * @return 岛屿列表
+     * Get all island list
+     * @return Island list
      */
     List<String> getAllIslands();
 
     /**
-     * 根据岛屿名称查询珊瑚数据
-     * @param island 岛屿名称
-     * @return 珊瑚数据列表
+     * Query coral data by island name
+     * @param island Island name
+     * @return List of coral data
      */
     List<Coral> getCoralDataByIsland(String island);
 
     /**
-     * 批量获取所有岛屿的趋势数据
-     * @return 所有岛屿的趋势数据Map，key为岛屿名称，value为趋势数据列表
+     * Batch get trend data for all islands
+     * @return Map of all islands' trend data, where key is island name and value is list of trend data
      */
     Map<String, List<TrendVO>> getAllIslandsTrendData();
 
     /**
-     * 批量获取所有岛屿的珊瑚数据（bleach数据）
-     * @return 所有岛屿的珊瑚数据Map，key为岛屿名称，value为珊瑚数据列表
+     * Batch get coral data for all islands (bleach data)
+     * @return Map of all islands' coral data, where key is island name and value is list of coral data
      */
     Map<String, List<Coral>> getAllIslandsCoralData();
 
     /**
-     * 批量获取多个岛屿的坐标信息
-     * @param islands 岛屿名称列表
-     * @return 岛屿坐标信息Map，key为岛屿名称，value为坐标信息
+     * Batch get coordinates of multiple islands
+     * @param islands List of island names
+     * @return Map of island coordinates, where key is island name and value is coordinate information
      */
     Map<String, Object> getIslandsCoordinates(List<String> islands);
 
     /**
-     * 查询每个岛屿最新年份的趋势分析元数据
-     * @return 趋势分析元数据列表
+     * Query trend analysis metadata for latest year of each island
+     * @return List of trend analysis metadata
      */
     List<TrendAnalysisMetadata> getLatestYearAllIslandsMetadata();
 }

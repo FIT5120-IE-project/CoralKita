@@ -10,24 +10,24 @@ import java.util.List;
 public interface QuizMapper {
 
     /**
-     * 根据来源标题随机查询5条测验题目
-     * @param sourceTitle 来源标题
-     * @return 测验题目列表
+     * Randomly query 5 quiz questions by source title
+     * @param sourceTitle Source title
+     * @return List of quiz questions
      */
     @Select("SELECT * FROM quiz_questions WHERE source_title = #{sourceTitle} ORDER BY RAND() LIMIT 5")
     List<QuizQuestion> getRandomQuestionsBySourceTitle(String sourceTitle);
 
     /**
-     * 查询所有可用的来源标题
-     * @return 来源标题列表
+     * Query all available source titles
+     * @return List of source titles
      */
     @Select("SELECT DISTINCT source_title FROM quiz_questions WHERE source_title IS NOT NULL")
     List<String> getAllSourceTitles();
 
     /**
-     * 从所有来源中随机查询指定数量的测验题目
-     * @param limit 查询数量
-     * @return 测验题目列表
+     * Randomly query specified number of quiz questions from all sources
+     * @param limit Query limit
+     * @return List of quiz questions
      */
     @Select("SELECT * FROM quiz_questions ORDER BY RAND() LIMIT #{limit}")
     List<QuizQuestion> getRandomQuestionsFromAllSources(int limit);

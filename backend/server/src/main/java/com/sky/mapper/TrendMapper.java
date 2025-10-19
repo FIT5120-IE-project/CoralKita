@@ -12,17 +12,17 @@ import java.util.List;
 public interface TrendMapper {
 
     /**
-     * 根据岛屿名称查询所有趋势数据
-     * @param island 岛屿名称
-     * @return 趋势数据列表
+     * Query all trend data by island name
+     * @param island Island name
+     * @return List of trend data
      */
     @Select("select * from trend where island = #{island} order by date desc")
     List<Trend> getByIsland(String island);
 
     /**
-     * 根据多个岛屿名称查询趋势数据
-     * @param islands 岛屿名称列表
-     * @return 趋势数据列表
+     * Query trend data by multiple island names
+     * @param islands List of island names
+     * @return List of trend data
      */
     @Select("<script>" +
             "select * from trend where island in " +
@@ -34,24 +34,24 @@ public interface TrendMapper {
     List<Trend> getByIslands(List<String> islands);
 
     /**
-     * 获取所有岛屿列表
-     * @return 岛屿列表
+     * Get all island list
+     * @return Island list
      */
     @Select("select distinct island from trend order by island")
     List<String> getAllIslands();
 
     /**
-     * 根据岛屿名称查询珊瑚数据，按日期排序
-     * @param island 岛屿名称
-     * @return 珊瑚数据列表
+     * Query coral data by island name, sorted by date
+     * @param island Island name
+     * @return List of coral data
      */
     @Select("select * from coral where island = #{island} order by date desc")
     List<Coral> getCoralByIslandOrderByDate(String island);
 
     /**
-     * 批量获取多个岛屿的坐标信息（每个岛屿取最新的一条记录）
-     * @param islands 岛屿名称列表
-     * @return 珊瑚数据列表，包含每个岛屿的最新坐标
+     * Batch get coordinates of multiple islands (get latest record for each island)
+     * @param islands List of island names
+     * @return List of coral data, containing latest coordinates for each island
      */
     @Select("<script>" +
             "SELECT c1.* FROM coral c1 " +
@@ -70,8 +70,8 @@ public interface TrendMapper {
     List<Coral> getIslandsCoordinatesBatch(List<String> islands);
 
     /**
-     * 查询每个岛屿最新年份的趋势分析元数据
-     * @return 趋势分析元数据列表
+     * Query trend analysis metadata for latest year of each island
+     * @return List of trend analysis metadata
      */
     @Select("SELECT t1.* FROM trend_analysis_metadata t1 " +
             "INNER JOIN (" +
@@ -83,8 +83,8 @@ public interface TrendMapper {
     List<TrendAnalysisMetadata> getLatestYearAllIslandsMetadata();
 
     /**
-     * 批量获取所有岛屿的珊瑚数据
-     * @return 珊瑚数据列表
+     * Batch get coral data for all islands
+     * @return List of coral data
      */
     @Select("select * from coral order by island, date desc")
     List<Coral> getAllIslandsCoralData();

@@ -10,39 +10,39 @@ import org.apache.ibatis.annotations.Update;
 public interface UserMapper {
 
     /**
-     * 根据用户名查询用户
-     * @param name
-     * @return
+     * Query user by username
+     * @param name Username
+     * @return User object
      */
     @Select("select * from user where name = #{name}")
     User getByUsername(String name);
 
     /**
-     * 根据用户ID查询用户
-     * @param id
-     * @return
+     * Query user by user ID
+     * @param id User ID
+     * @return User object
      */
     @Select("select * from user where id = #{id}")
     User getById(Integer id);
 
     /**
-     * 新增用户
-     * @param user
+     * Insert new user
+     * @param user User object
      */
     @Insert("insert into user(name, password, email, points, level, exp) values(#{name}, #{password}, #{email}, #{points}, #{level}, #{exp})")
     void insert(User user);
 
     /**
-     * 更新用户得分和等级
-     * @param user
+     * Update user score and level
+     * @param user User object
      */
     @Update("update user set points = #{points}, level = #{level}, exp = #{exp} where id = #{id}")
     void updateUserScore(User user);
 
     /**
-     * 更新用户徽章
-     * @param userId 用户ID
-     * @param badge 徽章名称
+     * Update user badge
+     * @param userId User ID
+     * @param badge Badge name
      */
     @Update("update user set badges = #{badge} where id = #{userId}")
     void updateUserBadge(Integer userId, String badge);
