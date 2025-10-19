@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>后端连接测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #4facfe;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #3d8bfe;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 后端连接诊断工具</h1>
+    
+    <div class="test-section">
+        <h2>📋 测试说明</h2>
+        <p>这个工具将测试以下API端点：</p>
+        <ul>
+            <li><strong>OSS视频URL</strong>: 测试视频文件签名URL生成</li>
+            <li><strong>趋势数据</strong>: 测试岛屿趋势数据获取</li>
+            <li><strong>用户登录</strong>: 测试用户认证功能</li>
+            <li><strong>Quiz数据</strong>: 测试问答系统</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>🚀 快速测试</h2>
+        <button class="test-button" onclick="testAllAPIs()">测试所有API</button>
+        <button class="test-button" onclick="clearResults()">清除结果</button>
+        <div id="results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔧 单独测试</h2>
+        <button class="test-button" onclick="testOSSVideo()">测试OSS视频</button>
+        <button class="test-button" onclick="testTrendData()">测试趋势数据</button>
+        <button class="test-button" onclick="testUserLogin()">测试用户登录</button>
+        <button class="test-button" onclick="testQuizData()">测试Quiz数据</button>
+    </div>
+
+    <script>
+        const BACKEND_BASE_URL = 'https://defiant-marcelline-baihanrui-b9820c9e.koyeb.app';
+        
+        function addResult(message, type = 'info') {
+            const resultsDiv = document.getElementById('results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `result ${type}`;
+            resultDiv.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+            resultsDiv.appendChild(resultDiv);
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+
+        async function testAPI(url, method = 'GET', body = null) {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+                
+                if (body) {
+                    options.body = JSON.stringify(body);
+                }
+
+                const response = await fetch(url, options);
+                const data = await response.json();
+                
+                return {
+                    success: response.ok,
+                    status: response.status,
+                    data: data
+                };
+            } catch (error) {
+                return {
+                    success: false,
+                    error: error.message
+                };
+            }
+        }
+
+        async function testOSSVideo() {
+            addResult('🎬 测试OSS视频URL...', 'info');
+            
+            const result = await testAPI(`${BACKEND_BASE_URL}/oss/video/url?videoFileName=themecac38de5a31ddc2259ae.mp4&expireSeconds=7200`);
+            
+            if (result.success && result.data.code === 1) {
+                addResult(`✅ OSS视频URL获取成功: ${result.data.data.substring(0, 100)}...`, 'success');
+            } else {
+                addResult(`❌ OSS视频URL获取失败: ${result.error || result.data?.msg || '未知错误'}`, 'error');
+            }
+        }
+
+        async function testTrendData() {
+            addResult('📊 测试趋势数据...', 'info');
+            
+            const result = await testAPI(`${BACKEND_BASE_URL}/trend/islands`);
+            
+            if (result.success && result.data.code === 1) {
+                addResult(`✅ 趋势数据获取成功: 找到 ${result.data.data?.length || 0} 个岛屿`, 'success');
+            } else {
+                addResult(`❌ 趋势数据获取失败: ${result.error || result.data?.msg || '未知错误'}`, 'error');
+            }
+        }
+
+        async function testUserLogin() {
+            addResult('👤 测试用户登录...', 'info');
+            
+            const result = await testAPI(`${BACKEND_BASE_URL}/user/login`, 'POST', {
+                username: 'test',
+                password: 'test123'
+            });
+            
+            if (result.success && result.data.code === 1) {
+                addResult(`✅ 用户登录测试成功: ${result.data.data?.username || '未知用户'}`, 'success');
+            } else {
+                addResult(`❌ 用户登录测试失败: ${result.error || result.data?.msg || '未知错误'}`, 'error');
+            }
+        }
+
+        async function testQuizData() {
+            addResult('🧠 测试Quiz数据...', 'info');
+            
+            const result = await testAPI(`${BACKEND_BASE_URL}/quiz/random`);
+            
+            if (result.success && result.data.code === 1) {
+                addResult(`✅ Quiz数据获取成功: 找到 ${result.data.data?.length || 0} 道题目`, 'success');
+            } else {
+                addResult(`❌ Quiz数据获取失败: ${result.error || result.data?.msg || '未知错误'}`, 'error');
+            }
+        }
+
+        async function testAllAPIs() {
+            addResult('🚀 开始全面测试...', 'info');
+            clearResults();
+            
+            await testOSSVideo();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            await testTrendData();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            await testUserLogin();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            await testQuizData();
+            
+            addResult('🏁 测试完成！', 'info');
+        }
+
+        // 页面加载时自动测试
+        window.onload = function() {
+            addResult('🔍 后端连接诊断工具已加载', 'info');
+            addResult(`📡 后端地址: ${BACKEND_BASE_URL}`, 'info');
+        };
+    </script>
+</body>
+</html>
