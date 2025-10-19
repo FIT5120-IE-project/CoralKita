@@ -3,13 +3,14 @@ export default {
   nav: {
     logo: 'CoralKita',
     mapRecommendation: {
-      line1: 'Map &',
-      line2: 'Recommendation'
+      line1: 'Island Map',
+      line2: ''
     },
+    topIsland: 'Top Islands',
     island: 'Island',
     education: 'Education',
-    aiClassification: 'AI Classification',
-    government: 'Government',
+    aiClassification: 'AI Tools',
+        government: 'Actions',
     actionHub: 'Action Hub',
     policies: 'Policies',
     faq: 'FAQ',
@@ -33,6 +34,8 @@ export default {
       userFriendly: 'User-friendly'
     },
     exploreButton: 'Let\'s Explore',
+    exploreText: 'Let\'s Explore',
+    scrollHint: 'Click to scroll down, double-click for quick jump',
     footer: {
       copyright: '© 2025 CoralKita',
       contact: 'Contact Us'
@@ -50,7 +53,7 @@ export default {
   
   // Map page
   map: {
-    title: 'Interactive Heat Map',
+    title: 'Interactive Map',
     dataSource: '*Based on 2024 data',
     gameMode: '🎮 Coral Adventure Game',
     mapMode: '🗺️ Interactive Map',
@@ -105,7 +108,6 @@ export default {
     },
     indicators: {
       title: 'Coral Reef Health Indicators Analysis',
-      subtitle: 'Each indicator (e.g., live coral cover, disturbance, pollution) represents a proportion of the reef condition, and together they add up to 100%, showing how the reef area is distributed across these factors.',
       lcc: {
         title: 'LCC (Live Coral Cover)',
         good: 'Healthy condition, indicating large live coral coverage area and stable ecosystem.',
@@ -135,6 +137,10 @@ export default {
         good: 'Ideal, minimal external pollution impact.',
         moderate: 'Moderate level, indicating some pollution sources, needs attention.',
         poor: 'High pollution, may cause coral bleaching, increased disease and mortality.'
+      },
+      overview: {
+        title: 'Indicators Overview',
+        description: 'Each indicator (e.g., live coral cover, disturbance, pollution) represents a proportion of the reef condition, and together they add up to 100%, showing how the reef area is distributed across these factors.'
       }
     },
     loading: {
@@ -145,6 +151,25 @@ export default {
       almostReady: 'Almost ready...',
       success: 'Map data loaded successfully!',
       backup: 'Using backup data...'
+    },
+    popup: {
+      state: 'State:',
+      lcc: 'LCC:',
+      noData: 'No Data',
+      currentlySelected: 'Currently Selected',
+      coordinates: 'Coordinates',
+      learnMore: 'Learn More',
+      travelResponsibly: 'Travel Responsibly',
+      learnBeforeTravel: 'Learn before Travel',
+      selectIsland: 'Select Island',
+      noDetailedPage: 'No detailed page available'
+    },
+    legend: {
+      liveCoralCover: 'Live Coral Cover',
+      averageLCC: 'Average LCC (%)',
+      good: 'Good',
+      fair: 'Fair',
+      poor: 'Poor'
     },
     comingSoon: {
       title: 'Interactive Map',
@@ -172,7 +197,7 @@ export default {
     title: 'Education & Responsible Tourism Hub',
     subtitle: 'Learn about coral reefs and become a responsible traveler',
     gameButton: '🎮 Wanna Try a Game?',
-    tipsGuidesButton: '📋 Tips and Guides',
+    tipsGuidesButton: '📋 Start Preparing with Us',
     dropdown: {
       tourismHub: 'Tourism Hub',
       tourismChecklist: 'Travel Checklist'
@@ -237,39 +262,12 @@ export default {
     }
   },
   
-  // AI Tools page
-  aiTools: {
-    title: 'AI Coral Classification',
-    subtitle: 'Upload coral images using our advanced AI model',
-    disclaimer: {
-      warning: '⚠️ This feature is only for coral health status identification. Please do not upload irrelevant images.',
-      accuracy: '📋 AI results may not be accurate and are for reference only.'
-    },
-    upload: {
-      title: 'Upload Coral Image',
-      description: 'Drag and drop your coral image here, or click to browse',
-      formats: ['JPG', 'PNG', 'JPEG'],
-      fileSizeLimit: 'Maximum file size: 3MB',
-      changeImage: '🔄 Change Image',
-      remove: '❌ Remove',
-      classify: 'Classify Coral',
-      classifying: 'Classifying...'
-    },
-    results: {
-      title: 'Classification Result',
-      species: 'Coral species identified by AI',
-      classifyAnother: '🔄 Classify Another Image'
-    },
-    error: {
-      title: 'Classification Failed',
-      close: '×'
-    }
-  },
   
   // Footer
   footer: {
     copyright: '© 2025 CoralKita',
-    contact: 'Contact Us'
+    website: 'www.coralkita.site',
+      email: 'coralkita.service@gmail.com'
   },
 
   // Island Detail page
@@ -423,8 +421,8 @@ export default {
       accommodation: 'No accommodation available on the island. Visitors typically stay in Mersing or nearby coastal towns and take day trips to the island.'
     },
     actionButtons: {
-      reefPolicies: 'Learn about Reef Policies',
-      reefConservation: 'Learn about Reef Conservation'
+      reefPolicies: 'Explore Policies & Take Action',
+      reefConservation: 'Learn & Grow With CoralKita'
     }
   },
 
@@ -514,7 +512,10 @@ export default {
     results: {
       title: 'Classification Result',
       species: 'Coral Species',
-      classifyAnother: 'Classify Another'
+      classifyAnother: 'Classify Another',
+      probabilities: 'Class Probabilities',
+      healthy: 'Healthy Coral',
+      bleached: 'Bleached Coral'
     },
     error: {
       title: 'Classification Error',
@@ -534,6 +535,62 @@ export default {
         title: 'Get Results',
         description: 'Receive instant species identification and information'
       }
+    },
+    // AI Tools Hub
+    hub: {
+      title: 'AI Tools Hub',
+      subtitle: 'Choose the AI tool that suits your needs'
+    },
+    tools: {
+      imageClassification: {
+        title: 'AI Image Classification',
+        description: 'Upload coral images and AI intelligently identifies coral health status',
+        features: {
+          intelligent: 'Intelligent Image Recognition',
+          fast: 'Fast Classification Results',
+          formats: 'Multiple Formats Supported'
+        }
+      },
+      qaAssistant: {
+        title: 'Intelligent Q&A Assistant',
+        description: 'Intelligent Q&A system based on Malaysia coral reef documents',
+        features: {
+          knowledge: 'Knowledge Base Q&A',
+          pdf: 'PDF Document Analysis',
+          retrieval: 'Smart Retrieval'
+        }
+      },
+      dataAnalysis: {
+        title: 'Data Analysis & Visualization',
+        description: 'Analyze coral ecosystem data and generate visualization charts',
+        features: {
+          csv: 'CSV Data Analysis',
+          visualization: 'Smart Visualization',
+          trend: 'Trend Analysis'
+        }
+      },
+      travelAssistant: {
+        title: 'Travel Planning Assistant',
+        description: 'AI-powered travel planner with real-time weather and coral health data',
+        features: {
+          weather: 'Real-time Weather Data',
+          coral: 'Coral Health Reports',
+          route: 'Smart Route Planning'
+        }
+      },
+      comprehensiveAssistant: {
+        title: 'Comprehensive AI Assistant',
+        description: 'All-in-one AI assistant combining Q&A, data analysis, and travel planning',
+        features: {
+          knowledge: 'Knowledge Base Q&A',
+          dataAnalysis: 'Data Analysis & Visualization',
+          travelPlanning: 'Travel Planning'
+        }
+      }
+    },
+    common: {
+      getStarted: 'Get Started',
+      backToTools: 'Back to AI Tools'
     }
   },
   
@@ -556,7 +613,7 @@ export default {
       title: 'Data and Sources',
       q1: {
         question: 'Q: Where does the data come from?',
-        answer: 'A: The data is sourced primarily from annual coral reef survey reports and raw metadata from Reef Check Malaysia. Link: <a href="https://reefcheck.org.my/interactive-map/" target="_blank" style="color: #4facfe; text-decoration: underline;">https://reefcheck.org.my/interactive-map/</a>'
+        answer: 'A: CoralKita\'s data visualizations are based on publicly available datasets and verified reports. Specifically, our primary data sources include the Global Coral Reef Bleaching Dataset from Kaggle (<a href="https://www.kaggle.com/datasets/mehrdat/coral-reef-global-bleaching" target="_blank" style="color: #4facfe; text-decoration: underline;">https://www.kaggle.com/datasets/mehrdat/coral-reef-global-bleaching</a>) and raw data obtained from Reef Check Malaysia (<a href="https://reefcheck.org.my/" target="_blank" style="color: #4facfe; text-decoration: underline;">https://reefcheck.org.my/</a>). For our AI Detection of Coral Reef Photos, the training images come from the Healthy and Bleached Corals Image Classification dataset available on Kaggle (<a href="https://www.kaggle.com/datasets/vencerlanz09/healthy-and-bleached-corals-image-classification" target="_blank" style="color: #4facfe; text-decoration: underline;">https://www.kaggle.com/datasets/vencerlanz09/healthy-and-bleached-corals-image-classification</a>).'
       },
       q2: {
         question: 'Q: How often is the data updated?',
@@ -565,6 +622,10 @@ export default {
       q3: {
         question: 'Q: Is this website affiliated with any government bodies?',
         answer: 'A: No, CoralKita is an independent website. All information obtained is cited to ensure transparency.'
+      },
+      q4: {
+        question: 'Q: What are the sources for the travel checklist recommendations?',
+        answer: 'A: Our travel checklist recommendations are based on established best practices for eco-conscious snorkeling and diving. The sources include: Best Practices for Snorkeling and Diving guidelines (<a href="https://static.coral.org/uploads/2021/10/Best-Practices-Snorkeling-and-Diving_English.pdf" target="_blank" style="color: #4facfe; text-decoration: underline;">https://static.coral.org/uploads/2021/10/Best-Practices-Snorkeling-and-Diving_English.pdf</a>), eco-conscious snorkeling guidelines (<a href="https://www.snorkeling-report.com/eco-conscious-snorkeling/" target="_blank" style="color: #4facfe; text-decoration: underline;">https://www.snorkeling-report.com/eco-conscious-snorkeling/</a>), and responsible diving practices (<a href="https://www.uw360.asia/15-tips-for-diving-responsibly-with-marine-life-2/" target="_blank" style="color: #4facfe; text-decoration: underline;">https://www.uw360.asia/15-tips-for-diving-responsibly-with-marine-life-2/</a>).'
       }
     },
     disclaimer: {
@@ -585,6 +646,7 @@ export default {
     title: 'Responsible Travel Checklist',
     subtitle: 'Complete key steps for sustainable tourism',
     back: 'Back',
+    loading: 'Loading checklist...',
     conservationAction: 'CoralKita Conservation Action',
     questionnaire: {
       beforeWeStart: 'Before We Start...',
@@ -729,7 +791,11 @@ export default {
         }
       }
     },
-    resetButton: 'Reset & Start Over'
+    resetButton: 'Reset & Start Over',
+    overallProgress: {
+      title: 'Overall Progress',
+      itemsCompleted: 'items completed'
+    }
   },
 
   // Government & Policy Information Hub
@@ -771,7 +837,7 @@ export default {
     
     conservation: {
       title: 'Support Reef Conservation',
-      subtitle: 'Verified NGOs and official donation programs with secure links',
+      subtitle: 'Here, you can explore volunteer opportunities and check NGO-verified donation details.',
       
       ngos: {
         reefCheck: {
@@ -782,7 +848,7 @@ export default {
           focusAreasText: 'Reef monitoring, coral restoration, marine education',
           coverage: 'Coverage:',
           coverageText: 'Nationwide reef sites including Redang, Tioman, Perhentian, and more',
-          button: 'Learn More & Donate via Official Site →'
+          button: 'Donate via Official Site >'
         },
         wwf: {
           name: 'WWF Malaysia',
@@ -792,7 +858,7 @@ export default {
           focusAreasText: 'Marine conservation, sustainable fisheries, climate change mitigation',
           coverage: 'Coverage:',
           coverageText: 'Malaysia\'s coastal and marine protected areas',
-          button: 'Learn More & Donate via Official Site →'
+          button: 'Donate via Official Site >'
         },
         tracc: {
           name: 'TRACC (Tropical Research and Conservation Centre)',
@@ -802,10 +868,11 @@ export default {
           focusAreasText: 'Coral reef restoration, marine research, community training',
           coverage: 'Coverage:',
           coverageText: 'Semporna and surrounding waters in Sabah',
-          button: 'Learn More & Donate via Official Site →'
+          button: 'Donate via Official Site >'
         }
       }
     }
-  }
+  },
+
 }
 

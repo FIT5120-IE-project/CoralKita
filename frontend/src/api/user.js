@@ -1,13 +1,13 @@
 import axios from 'axios'
 import { API_BASE_URL } from '@/config/config'
 
-// 创建axios实例 - 用于非用户认证相关的API调用
+// Create axios instance - for non-user authentication related API calls
 const api = axios.create({
-  baseURL: API_BASE_URL, // 从配置文件获取后端服务地址
+  baseURL: API_BASE_URL, // Get backend service address from config file
   timeout: 10000
 })
 
-// 请求拦截器 - 简化版，无需token认证
+// Request interceptor - simplified version, no token authentication required
 api.interceptors.request.use(
   config => {
     return config
@@ -17,7 +17,7 @@ api.interceptors.request.use(
   }
 )
 
-// 响应拦截器 - 简化版，移除认证错误处理
+// Response interceptor - simplified version, removed authentication error handling
 api.interceptors.response.use(
   response => {
     return response.data

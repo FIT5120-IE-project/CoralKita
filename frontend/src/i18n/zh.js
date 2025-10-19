@@ -1,22 +1,23 @@
 export default {
-  // 导航栏
+  // Navigation bar
   nav: {
     logo: 'CoralKita',
     mapRecommendation: {
-      line1: '地图与',
-      line2: '推荐'
+      line1: '岛屿地图',
+      line2: ''
     },
+    topIsland: '热门岛屿',
     island: '岛屿',
     education: '教育',
-    aiClassification: 'AI分类',
-    government: '政府',
+    aiClassification: 'AI工具',
+        government: '行动',
     actionHub: '行动中心',
     policies: '政策',
     faq: '常见问题',
     changeLanguage: '语言'
   },
   
-  // 首页
+  // Homepage
   home: {
     coral: {
       healthy: '这是您记忆中的珊瑚礁吗——明亮、多彩、充满生机？',
@@ -33,13 +34,15 @@ export default {
       userFriendly: '用户友好'
     },
     exploreButton: '开始探索',
+    exploreText: '开始探索',
+    scrollHint: '点击向下滚动，双击快速跳转',
     footer: {
       copyright: '© 2025 CoralKita',
       contact: '联系我们'
     }
   },
   
-  // 岛屿名称
+  // Island names
   islands: {
     mertang: 'Mertang',
     pSinga: 'P Singa',
@@ -48,9 +51,9 @@ export default {
     seriBuat: 'Seri Buat'
   },
   
-  // 地图页面
+  // Map page
   map: {
-    title: '交互式热力地图',
+    title: '交互式地图',
     dataSource: '*基于2024年数据',
     gameMode: '🎮 珊瑚冒险游戏',
     mapMode: '🗺️ 交互式地图',
@@ -105,7 +108,6 @@ export default {
     },
     indicators: {
       title: '珊瑚礁健康指标分析',
-      subtitle: '每个指标（如活珊瑚覆盖率、干扰、污染）代表珊瑚礁状况的一个比例，它们加起来等于100%，显示珊瑚礁区域如何分布在这些因素中。',
       lcc: {
         title: 'LCC（活珊瑚覆盖率）',
         good: '健康状态，表明活珊瑚覆盖面积大，生态系统稳定。',
@@ -135,6 +137,10 @@ export default {
         good: '理想，外部污染影响最小。',
         moderate: '中等水平，表明存在一些污染源，需要关注。',
         poor: '高污染，可能导致珊瑚白化、疾病增加和死亡率上升。'
+      },
+      overview: {
+        title: '指标概览',
+        description: '每个指标（如活珊瑚覆盖率、干扰、污染）代表珊瑚礁状况的一个比例，它们加起来等于100%，显示珊瑚礁区域如何分布在这些因素中。'
       }
     },
     loading: {
@@ -145,6 +151,25 @@ export default {
       almostReady: '即将完成...',
       success: '地图数据加载成功！',
       backup: '使用备用数据...'
+    },
+    popup: {
+      state: '州属：',
+      lcc: '活珊瑚覆盖率：',
+      noData: '无数据',
+      currentlySelected: '当前选中',
+      coordinates: '坐标',
+      learnMore: '了解更多',
+      travelResponsibly: '负责任旅行',
+      learnBeforeTravel: '出行前学习',
+      selectIsland: '选择岛屿',
+      noDetailedPage: '暂无详细页面'
+    },
+    legend: {
+      liveCoralCover: '活珊瑚覆盖率',
+      averageLCC: '平均LCC (%)',
+      good: '良好',
+      fair: '一般',
+      poor: '较差'
     },
     comingSoon: {
       title: '交互式地图',
@@ -167,7 +192,7 @@ export default {
     }
   },
   
-  // 教育页面
+  // Education page
   education: {
     title: '教育与负责任的旅游中心',
     subtitle: '了解珊瑚礁，成为负责任的旅行者',
@@ -258,7 +283,10 @@ export default {
     results: {
       title: '分类结果',
       species: 'AI识别的珊瑚物种',
-      classifyAnother: '🔄 分类另一张图片'
+      classifyAnother: '🔄 分类另一张图片',
+      probabilities: '各类别概率',
+      healthy: '健康珊瑚',
+      bleached: '白化珊瑚'
     },
     error: {
       title: '分类失败',
@@ -266,13 +294,14 @@ export default {
     }
   },
   
-  // 页脚
+  // Footer
   footer: {
     copyright: '© 2025 CoralKita',
-    contact: '联系我们'
+    website: 'www.coralkita.site',
+      email: 'coralkita.service@gmail.com'
   },
 
-  // 岛屿详情页面
+  // Island detail page
   islandDetail: {
     description: '描述',
     travelInfo: '旅行信息',
@@ -423,12 +452,12 @@ export default {
       accommodation: '岛上没有住宿。游客通常住在丰盛港或附近的海滨城镇，并参加一日游到该岛。'
     },
     actionButtons: {
-      reefPolicies: '了解珊瑚礁政策',
-      reefConservation: '学习珊瑚礁保护'
+      reefPolicies: '探索政策并采取行动',
+      reefConservation: '与CoralKita一起学习成长'
     }
   },
 
-  // 测验页面
+  // Quiz page
   quiz: {
     title: '珊瑚礁知识测验',
     startButton: '开始测验',
@@ -451,7 +480,7 @@ export default {
   },
   
   
-  // 清单页面
+  // Checklist page
   checklist: {
     title: '旅行清单',
     subtitle: '为您的珊瑚礁探险做好准备',
@@ -465,7 +494,7 @@ export default {
     addItem: '添加项目'
   },
   
-  // 通用
+  // Common
   common: {
     loading: '加载中...',
     error: '错误',
@@ -484,7 +513,7 @@ export default {
     backToHome: '返回首页'
   },
   
-  // 聊天小部件
+  // Chat widget
   chat: {
     title: '珊瑚助手',
     placeholder: '询问我任何关于珊瑚礁的问题...',
@@ -537,7 +566,7 @@ export default {
     }
   },
   
-  // 常见问题页面
+  // FAQ page
   faq: {
     title: '常见问题',
     subtitle: '查找关于 CoralKita 的常见问题解答',
@@ -556,7 +585,7 @@ export default {
       title: '数据与来源',
       q1: {
         question: 'Q: 数据来自哪里？',
-        answer: 'A: 数据主要来源于年度珊瑚礁调查报告和Reef Check Malaysia的原始元数据。链接：<a href="https://reefcheck.org.my/interactive-map/" target="_blank" style="color: #4facfe; text-decoration: underline;">https://reefcheck.org.my/interactive-map/</a>'
+        answer: 'A: CoralKita的数据可视化基于公开可用的数据集和验证报告。具体来说，我们的主要数据源包括来自Kaggle的全球珊瑚礁白化数据集（<a href="https://www.kaggle.com/datasets/mehrdat/coral-reef-global-bleaching" target="_blank" style="color: #4facfe; text-decoration: underline;">https://www.kaggle.com/datasets/mehrdat/coral-reef-global-bleaching</a>）和从Reef Check Malaysia获得的原始数据（<a href="https://reefcheck.org.my/" target="_blank" style="color: #4facfe; text-decoration: underline;">https://reefcheck.org.my/</a>）。对于我们的珊瑚礁照片AI检测，训练图像来自Kaggle上可用的健康和漂白珊瑚图像分类数据集（<a href="https://www.kaggle.com/datasets/vencerlanz09/healthy-and-bleached-corals-image-classification" target="_blank" style="color: #4facfe; text-decoration: underline;">https://www.kaggle.com/datasets/vencerlanz09/healthy-and-bleached-corals-image-classification</a>）。'
       },
       q2: {
         question: 'Q: 数据多久更新一次？',
@@ -565,6 +594,10 @@ export default {
       q3: {
         question: 'Q: 该网站是否隶属于任何政府机构？',
         answer: 'A: 不，CoralKita 是一个独立网站。所有获得的信息都会注明出处以确保透明度。'
+      },
+      q4: {
+        question: 'Q: 旅行清单建议的数据来源是什么？',
+        answer: 'A: 我们的旅行清单建议基于既定的生态意识浮潜和潜水最佳实践。来源包括：浮潜和潜水最佳实践指南（<a href="https://static.coral.org/uploads/2021/10/Best-Practices-Snorkeling-and-Diving_English.pdf" target="_blank" style="color: #4facfe; text-decoration: underline;">https://static.coral.org/uploads/2021/10/Best-Practices-Snorkeling-and-Diving_English.pdf</a>）、生态意识浮潜指南（<a href="https://www.snorkeling-report.com/eco-conscious-snorkeling/" target="_blank" style="color: #4facfe; text-decoration: underline;">https://www.snorkeling-report.com/eco-conscious-snorkeling/</a>）和负责任潜水实践（<a href="https://www.uw360.asia/15-tips-for-diving-responsibly-with-marine-life-2/" target="_blank" style="color: #4facfe; text-decoration: underline;">https://www.uw360.asia/15-tips-for-diving-responsibly-with-marine-life-2/</a>）。'
       }
     },
     disclaimer: {
@@ -580,11 +613,12 @@ export default {
     }
   },
   
-  // 旅行清单
+  // Travel checklist
   travelChecklist: {
     title: '负责任的旅行清单',
     subtitle: '完成可持续旅游的关键步骤',
     back: '返回',
+    loading: '加载清单中...',
     conservationAction: 'CoralKita 保护行动',
     questionnaire: {
       beforeWeStart: '开始之前...',
@@ -729,7 +763,11 @@ export default {
         }
       }
     },
-    resetButton: '重置并重新开始'
+    resetButton: '重置并重新开始',
+    overallProgress: {
+      title: '总体进度',
+      itemsCompleted: '项已完成'
+    }
   },
 
   // Government & Policy Information Hub
@@ -782,7 +820,7 @@ export default {
           focusAreasText: '珊瑚礁监测、珊瑚恢复、海洋教育',
           coverage: '覆盖范围：',
           coverageText: '全国珊瑚礁站点，包括热浪岛、刁曼岛、停泊岛等',
-          button: '了解更多并通过官方网站捐赠 →'
+          button: '通过官方网站捐赠 →'
         },
         wwf: {
           name: '世界自然基金会马来西亚分会',
@@ -792,7 +830,7 @@ export default {
           focusAreasText: '海洋保护、可持续渔业、气候变化缓解',
           coverage: '覆盖范围：',
           coverageText: '马来西亚沿海和海洋保护区',
-          button: '了解更多并通过官方网站捐赠 →'
+          button: '通过官方网站捐赠 →'
         },
         tracc: {
           name: '热带研究与保护中心 (TRACC)',
@@ -802,9 +840,109 @@ export default {
           focusAreasText: '珊瑚礁恢复、海洋研究、社区培训',
           coverage: '覆盖范围：',
           coverageText: '沙巴仙本那及周边水域',
-          button: '了解更多并通过官方网站捐赠 →'
+          button: '通过官方网站捐赠 →'
         }
       }
+    }
+  },
+
+  // AI工具页面
+  aiTools: {
+    title: 'AI珊瑚分类',
+    subtitle: '上传珊瑚图片，获得即时物种识别',
+    disclaimer: {
+      warning: '此工具仅用于教育目的',
+      accuracy: '结果可能有所不同，不应替代专业识别'
+    },
+    upload: {
+      title: '上传您的珊瑚图片',
+      description: '选择一张清晰、光线良好的珊瑚图片以获得最佳结果',
+      formats: ['JPG', 'PNG', 'JPEG', 'WEBP'],
+      fileSizeLimit: '最大文件大小:10MB',
+      changeImage: '更换图片',
+      remove: '移除图片',
+      classifying: '正在分析...',
+      classify: '分类珊瑚'
+    },
+    results: {
+      title: '分析结果',
+      species: '物种识别结果',
+      classifyAnother: '分析另一张图片'
+    },
+    error: {
+      title: '分析错误',
+      close: '关闭'
+    },
+    howToUse: {
+      title: '使用说明',
+      step1: {
+        title: '步骤1：选择图片',
+        description: '上传一张清晰的珊瑚图片'
+      },
+      step2: {
+        title: '步骤2：AI分析',
+        description: '我们的AI模型会分析图片内容'
+      },
+      step3: {
+        title: '步骤3：查看结果',
+        description: '获得详细的物种识别结果'
+      }
+    },
+    // AI工具中心
+    hub: {
+      title: 'AI工具中心',
+      subtitle: '选择适合您需求的AI工具'
+    },
+    tools: {
+      imageClassification: {
+        title: 'AI图像分类',
+        description: '上传珊瑚图像，AI智能识别珊瑚健康状况',
+        features: {
+          intelligent: '智能图像识别',
+          fast: '快速分类结果',
+          formats: '支持多种格式'
+        }
+      },
+      qaAssistant: {
+        title: '智能问答助手',
+        description: '基于马来西亚珊瑚礁文档的智能问答系统',
+        features: {
+          knowledge: '知识库问答',
+          pdf: 'PDF文档分析',
+          retrieval: '智能检索'
+        }
+      },
+      dataAnalysis: {
+        title: '数据分析与可视化',
+        description: '分析珊瑚生态系统数据并生成可视化图表',
+        features: {
+          csv: 'CSV数据分析',
+          visualization: '智能可视化',
+          trend: '趋势分析'
+        }
+      },
+      travelAssistant: {
+        title: '旅行规划助手',
+        description: '基于实时天气和珊瑚健康数据的AI旅行规划助手',
+        features: {
+          weather: '实时天气数据',
+          coral: '珊瑚健康报告',
+          route: '智能路线规划'
+        }
+      },
+      comprehensiveAssistant: {
+        title: '综合AI助手',
+        description: '集问答、数据分析和旅行规划于一体的全能AI助手',
+        features: {
+          knowledge: '知识库问答',
+          dataAnalysis: '数据分析与可视化',
+          travelPlanning: '旅行规划'
+        }
+      }
+    },
+    common: {
+      getStarted: '开始使用',
+      backToTools: '返回AI工具'
     }
   }
 }

@@ -14,27 +14,27 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, '../dist'),
     filename: '[name].js',
-    publicPath: '/', // 开发/生产都可按需修改
-    clean: false,    // 交给 dev/prod 配置处理也可以
+    publicPath: '/', // Can be modified as needed for dev/prod
+    clean: false,    // Can also be handled by dev/prod config
   },
 
   resolve: {
     extensions: ['.js', '.vue', '.json'],
     alias: {
       '@': resolve('src'),
-      'vue$': 'vue/dist/vue.esm.js', // 需要模板编译器时使用
+      'vue$': 'vue/dist/vue.esm.js', // Use when template compiler is needed
     },
   },
 
   module: {
     rules: [
-      // 处理 .vue 单文件组件
+      // Handle .vue single file components
       {
         test: /\.vue$/,
         loader: 'vue-loader',
       },
 
-      // 处理 ES6+ JS
+      // Handle ES6+ JS
       {
         test: /\.js$/,
         include: [resolve('src')],
@@ -43,7 +43,7 @@ module.exports = {
         },
       },
 
-      // 处理普通 CSS
+      // Handle regular CSS
       {
         test: /\.css$/,
         use: ['style-loader', 'css-loader'],
@@ -59,7 +59,7 @@ module.exports = {
         ],
       },
 
-      // 处理图片/字体等资源（webpack5 内置 asset modules）
+      // Handle images/fonts and other assets (webpack5 built-in asset modules)
       {
         test: /\.(png|jpe?g|gif|svg|webp|ico)(\?.*)?$/i,
         type: 'asset/resource',

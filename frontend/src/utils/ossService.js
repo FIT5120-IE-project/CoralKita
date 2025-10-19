@@ -2,53 +2,53 @@ import { API_BASE_URL } from '@/config/config.js'
 import { CDN_CONFIG } from '@/config/cdn.js'
 
 /**
- * OSS服务工具类
- * 支持CDN直接访问和OSS签名URL两种模式
+ * OSS service utility class
+ * Supports both CDN direct access and OSS signed URL modes
  */
 class OssService {
   constructor() {
     this.baseURL = API_BASE_URL
-    this.cache = new Map() // 缓存签名URL，避免重复请求
-    this.cdnBaseUrl = CDN_CONFIG.baseUrl // CDN基础URL
-    this.useCDN = CDN_CONFIG.enabled // 是否使用CDN
+    this.cache = new Map() // Cache signed URLs to avoid duplicate requests
+    this.cdnBaseUrl = CDN_CONFIG.baseUrl // CDN base URL
+    this.useCDN = CDN_CONFIG.enabled // Whether to use CDN
     this.config = CDN_CONFIG
   }
 
   /**
-   * 获取文件URL（优先使用CDN）
-   * @param {string} objectKey - 文件在OSS中的路径
-   * @param {number} expireSeconds - 过期时间（秒），默认3600秒
-   * @returns {Promise<string>} 文件URL
+   * Get file URL (prefer CDN)
+   * @param {string} objectKey - File path in OSS
+   * @param {number} expireSeconds - Expiration time (seconds), default 3600 seconds
+   * @returns {Promise<string>} File URL
    */
   async getFileUrl(objectKey, expireSeconds = 3600) {
     const startTime = Date.now()
     
     try {
-      // 检查本地缓存
+      // Check local cache
       const cachedUrl = this.getCachedUrl(objectKey)
       if (cachedUrl) {
         return cachedUrl
       }
       
-      // 强制使用CDN，不进行任何检查
+      // Force use CDN, no checks performed
       const cdnUrl = this.getCDNUrl(objectKey)
       
-      // 缓存CDN URL
+      // Cache CDN URL
       this.setCachedUrl(objectKey, cdnUrl)
       
-      // 性能监控
+      // Performance monitoring
       if (this.config.monitoring.enabled) {
         const loadTime = Date.now() - startTime
         if (loadTime > this.config.monitoring.slowRequestThreshold) {
-          console.warn(`CDN请求较慢: ${objectKey}, 耗时: ${loadTime}ms`)
+          console.warn(`CDN request slow: ${objectKey}, time: ${loadTime}ms`)
         }
       }
       
-      console.log(`使用CDN URL: ${cdnUrl}`)
+      console.log(`Using CDN URL: ${cdnUrl}`)
       return cdnUrl
     } catch (error) {
-      console.error('获取CDN URL失败:', error)
-      // 即使出错也返回CDN URL，不降级到OSS
+      console.error('Failed to get CDN URL:', error)
+      // Even if error occurs, return CDN URL, do not downgrade to OSS
       const cdnUrl = this.getCDNUrl(objectKey)
       console.log(`强制使用CDN URL: ${cdnUrl}`)
       return cdnUrl
@@ -71,7 +71,7 @@ class OssService {
    * @returns {Promise<string>} 签名URL
    */
   async getSignedUrl(objectKey, expireSeconds = 3600) {
-    // 不再请求后端OSS签名URL，直接返回CDN URL
+    // No longer request backend OSS signed URL, directly return CDN URL
     console.log(`getSignedUrl被调用，但强制返回CDN URL: ${objectKey}`)
     return this.getCDNUrl(objectKey)
   }
@@ -125,7 +125,7 @@ class OssService {
   }
 
   /**
-   * 获取AI工具页面背景图片的URL
+   * 获取AI工具页面背景图片的URL (JPG格式)
    * @returns {Promise<string>} AI工具页面背景图片URL
    */
   async getAIToolsBackgroundUrl() {
@@ -137,7 +137,7 @@ class OssService {
    * @returns {Promise<string>} 岛屿详情页面背景图片URL
    */
   async getIslandDetailBackgroundUrl() {
-    return this.getFileUrl('assets/island_bg3.png')
+    return this.getFileUrl('assets/island.webp')
   }
 
   /**
@@ -180,18 +180,18 @@ class OssService {
   async getPSingaImages() {
     try {
       const imagePromises = [
-        // 轮播图片
+        // Carousel images
         this.getIslandCarouselImageUrl('P Singa', 1),
         this.getIslandCarouselImageUrl('P Singa', 2),
         this.getIslandCarouselImageUrl('P Singa', 3),
         this.getIslandCarouselImageUrl('P Singa', 4),
         this.getIslandCarouselImageUrl('P Singa', 5),
-        // 酒店图片
+        // Hotel images
         this.getFileUrl('assets/P Singa/Datai Langkawi.jpg'),
         this.getFileUrl('assets/P Singa/The Danna Langkawi.jpg'),
         this.getFileUrl('assets/P Singa/The Frangipani Langkawi Resort & Spa.jpg'),
         this.getFileUrl('assets/P Singa/Ambong ambong.png'),
-        // 活动图片
+        // Activity images
         this.getFileUrl('assets/P Singa/tour 1.png'),
         this.getFileUrl('assets/P Singa/tour 2.png')
       ]
@@ -270,11 +270,11 @@ class OssService {
       const cached = localStorage.getItem(cacheKey)
       if (cached) {
         const { url, timestamp } = JSON.parse(cached)
-        // 检查是否过期
+        // Check if expired
         if (Date.now() - timestamp < this.config.cache.imageCacheTime) {
           return url
         }
-        // 过期则删除
+        // Delete if expired
         localStorage.removeItem(cacheKey)
       }
     } catch (error) {
@@ -352,16 +352,16 @@ class OssService {
    */
   async checkSSLError(url) {
     try {
-      // 创建一个测试图片元素来检测SSL错误
+      // Create a test image element to detect SSL errors
       return new Promise((resolve) => {
         const img = new Image()
         const timeout = setTimeout(() => {
-          resolve(false) // 超时不算SSL错误
+          resolve(false) // Timeout does not count as SSL error
         }, 3000)
         
         img.onload = () => {
           clearTimeout(timeout)
-          resolve(false) // 加载成功，没有SSL错误
+          resolve(false) // Load successful, no SSL error
         }
         
         img.onerror = (error) => {
@@ -378,7 +378,7 @@ class OssService {
   }
 }
 
-// 创建单例实例
+// Create singleton instance
 const ossService = new OssService()
 
 export default ossService

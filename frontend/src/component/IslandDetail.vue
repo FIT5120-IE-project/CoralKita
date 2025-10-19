@@ -1,6 +1,6 @@
 <template>
-  <div class="island-detail-container" :key="islandName" :style="{ backgroundImage: backgroundImageUrl ? `url(${backgroundImageUrl})` : 'url(@/assets-webp/island_bg3.webp)' }">
-    <!-- 背景图片加载占位符 -->
+  <div class="island-detail-container" :key="islandName" :style="{ backgroundImage: backgroundImageUrl ? `url(${backgroundImageUrl})` : 'url(@/assets/island.webp)' }">
+    <!-- Background image loading placeholder -->
     <div class="bg-placeholder" v-if="!backgroundLoaded">
       <div class="progress-container">
         <div class="progress-bar">
@@ -19,13 +19,9 @@
       </div>
       <div class="nav-right">
         <div class="nav-items">
+          <span class="nav-item" @click="goToMap">{{ $t('nav.mapRecommendation.line1') }}</span>
           <div class="nav-item-dropdown" @mouseenter="showTravelDropdown = true" @mouseleave="showTravelDropdown = false">
-            <div class="nav-item-wrapper">
-              <span class="nav-item map-rec-item active" @click="goToMap">
-                <span class="nav-text-line">{{ $t('nav.mapRecommendation.line1') }}</span>
-                <span class="nav-text-line">{{ $t('nav.mapRecommendation.line2') }}</span>
-              </span>
-            </div>
+            <span class="nav-item active">{{ $t('nav.topIsland') }}</span>
             <div class="dropdown-menu" v-show="showTravelDropdown">
               <div 
                 v-for="island in travelIslands" 
@@ -669,12 +665,12 @@
           <div class="action-buttons-section">
             <button class="action-btn reef-policy-btn" @click="goToGovernment">
               <span class="btn-icon">🏛️</span>
-              <span class="btn-text">Learn about Reef Policies</span>
+              <span class="btn-text">{{ $t('islandDetail.actionButtons.reefPolicies') }}</span>
               <span class="btn-arrow">→</span>
             </button>
             <button class="action-btn education-btn" @click="goToEducation">
               <span class="btn-icon">📚</span>
-              <span class="btn-text">Learn about Reef Conservation</span>
+              <span class="btn-text">{{ $t('islandDetail.actionButtons.reefConservation') }}</span>
               <span class="btn-arrow">→</span>
             </button>
           </div>
@@ -797,12 +793,12 @@
           <div class="action-buttons-section">
             <button class="action-btn reef-policy-btn" @click="goToGovernment">
               <span class="btn-icon">🏛️</span>
-              <span class="btn-text">Learn about Reef Policies</span>
+              <span class="btn-text">{{ $t('islandDetail.actionButtons.reefPolicies') }}</span>
               <span class="btn-arrow">→</span>
             </button>
             <button class="action-btn education-btn" @click="goToEducation">
               <span class="btn-icon">📚</span>
-              <span class="btn-text">Learn about Reef Conservation</span>
+              <span class="btn-text">{{ $t('islandDetail.actionButtons.reefConservation') }}</span>
               <span class="btn-arrow">→</span>
             </button>
           </div>
@@ -824,7 +820,16 @@
       <div class="footer-content">
         {{ $t('footer.copyright') }}
         <span class="footer-links">
-          <a href="mailto:coralkita.service@gmail.com">{{ $t('footer.contact') }}</a>
+          <div class="contact-info">
+            <div class="contact-item">
+              <span class="contact-icon">🌐</span>
+              <span class="contact-text">{{ $t('footer.website') }}</span>
+            </div>
+            <div class="contact-item">
+              <span class="contact-icon">✉️</span>
+              <span class="contact-text">{{ $t('footer.email') }}</span>
+            </div>
+          </div>
         </span>
       </div>
     </div>
@@ -841,22 +846,28 @@ export default {
   components: {
     LanguageSwitcher
   },
+  props: {
+    islandName: {
+      type: String,
+      default: ''
+    }
+  },
   data() {
     return {
-      backgroundLoaded: false, // 背景图片加载状态
-      loadingProgress: 0, // 加载进度
-      loadingText: 'Loading island information...', // 加载文本
+      backgroundLoaded: false, // Background image loading status
+      loadingProgress: 0, // Loading progress
+      loadingText: 'Loading island information...', // Loading text
       islandName: '',
       // Travel dropdown related
       showTravelDropdown: false,
       showEducationDropdown: false,
       currentLanguage: 'en',
       travelIslands: ['Mertang', 'P Singa', 'Sipadan', 'Pulau Lima', 'Seri Buat'],
-      // OSS图片URL
+      // OSS image URLs
       appIconUrl: null,
       backgroundImageUrl: null,
       ossImageUrls: {},
-      // P Singa页面专用OSS图片
+      // P Singa page specific OSS images
       pSingaImages: {
         carousel: [],
         hotels: {},
@@ -934,47 +945,47 @@ export default {
         { url: 'https://www.facebook.com/photo/?fbid=10159323662991150&set=br.AbrY6KWU7FbUIDE4VvDMsPod-RiT5AgSY0JrbpvuxTH2Q-4uRM7QStBuy2_pG-ha4Ki0mi8uMfTbEe_hnvdiYTBfFaQ8e4SgKkgeU-CqIsdzbYE7tZtCR7dSJLghBQl8xWZ7EeZvvP37aT1V7emLzXIG', text: 'facebook.com' },
         { url: 'https://www.yusufmadi.com/theuntouchedisland-pulauseribuat', text: 'yusufmadi.com' }
       ],
-      currentSlide: 2 // 默认居中第三张
+      currentSlide: 2 // Default center third image
     }
   },
   created() {
-    // Get island name from route parameter
-    this.islandName = this.$route.params.islandName || 'Unknown Island';
+    // Get island name from props or route parameter as fallback
+    this.islandName = this.islandName || this.$route.params.islandName || 'Unknown Island';
   },
   watch: {
-    // 监听路由参数变化
+    // Listen to route parameter changes
     '$route'(to, from) {
       if (to.params.islandName !== from.params.islandName) {
-        console.log('岛屿切换:', from.params.islandName, '->', to.params.islandName);
+        console.log('Island switch:', from.params.islandName, '->', to.params.islandName);
         this.updateIslandName(to.params.islandName);
       }
     }
   },
   methods: {
     /**
-     * 预加载背景图片
+     * Preload background image
      */
     preloadBackgroundImage() {
-      // 创建高优先级预加载链接元素
+      // Create high priority preload link element
       const preloadLink = document.createElement('link');
       preloadLink.rel = 'preload';
       preloadLink.as = 'image';
-      preloadLink.href = 'http://static.coralkita.site/assets-webp/island_bg3.webp';
-      preloadLink.fetchPriority = 'high'; // 高优先级
+      preloadLink.href = 'http://static.coralkita.site/assets/island.webp';
+      preloadLink.fetchPriority = 'high'; // High priority
       
-      // 添加到head中
+      // Add to head
       document.head.appendChild(preloadLink);
       
-      // 预加载图片到浏览器缓存
+      // Preload images to browser cache
       const img = new Image();
-      img.src = 'http://static.coralkita.site/assets-webp/island_bg3.webp';
+      img.src = 'http://static.coralkita.site/assets/island.webp';
       img.onload = () => {
         console.log('IslandDetail background image preloaded to cache');
         this.backgroundLoaded = true;
       };
       img.onerror = () => {
         console.warn('Failed to preload IslandDetail background image');
-        this.backgroundLoaded = true; // 即使失败也隐藏占位符
+        this.backgroundLoaded = true; // Hide placeholder even if failed
       };
       
       console.log('IslandDetail background image preload started');
@@ -982,43 +993,43 @@ export default {
 
     // Update island name and force component update
     async updateIslandName(newIslandName) {
-      console.log('更新岛屿名称:', this.islandName, '->', newIslandName);
+      console.log('Update island name:', this.islandName, '->', newIslandName);
       this.islandName = newIslandName || 'Unknown Island';
       
-      // 重新加载新岛屿的OSS图片
+      // Reload OSS images for new island
       await this.loadIslandCarouselImages();
       
-      // 如果是P Singa页面，加载专用图片
+      // If P Singa page, load specific images
       if (this.islandName === 'P Singa') {
         await this.loadPSingaImages();
       }
       
-      // 强制更新组件以确保所有内容都刷新
+      // Force update component to ensure all content refreshes
       this.$forceUpdate();
     },
     
     // Travel navigation methods
     goToIslandDetail(islandName) {
-      console.log('导航到岛屿详情页面:', islandName);
+      console.log('Navigate to island detail page:', islandName);
       this.showTravelDropdown = false;
       
-      // 如果是当前岛屿，不需要切换
+      // If current island, no need to switch
       if (islandName === this.islandName) {
-        console.log('已经在当前岛屿页面，无需切换');
+        console.log('Already on current island page, no need to switch');
         return;
       }
       
       this.$nextTick(() => {
         const targetPath = `/travel/${encodeURIComponent(islandName)}`;
-        console.log('准备导航到:', targetPath);
+        console.log('Preparing to navigate to:', targetPath);
         
         this.$router.push(targetPath).then(() => {
-          console.log('导航成功');
+          console.log('Navigation successful');
         }).catch(err => {
           if (err.name !== 'NavigationDuplicated') {
             console.error('Navigation error:', err);
           } else {
-            console.log('导航重复，但这是正常的');
+            console.log('Navigation duplicated, but this is normal');
           }
         });
       });
@@ -1138,10 +1149,10 @@ export default {
       });
     },
 
-    // 加载OSS图片URL
+    // Load OSS image URLs
     async loadOssImages() {
       try {
-        // 并行加载基础图片
+        // Load basic images in parallel
         const [appIconUrl, backgroundImageUrl] = await Promise.all([
           ossService.getAppIconUrl(),
           ossService.getIslandDetailBackgroundUrl()
@@ -1150,23 +1161,23 @@ export default {
         this.appIconUrl = appIconUrl
         this.backgroundImageUrl = backgroundImageUrl
 
-        // 加载当前岛屿的轮播图片
+        // Load current island carousel images
         await this.loadIslandCarouselImages()
         
-        // 如果是P Singa页面，加载专用图片
+        // If P Singa page, load specific images
         if (this.islandName === 'P Singa') {
           await this.loadPSingaImages()
         }
         
-        console.log('岛屿详情页面OSS图片加载完成')
+        console.log('Island detail page OSS images loaded successfully')
       } catch (error) {
         console.error('加载OSS图片失败:', error)
-        // 如果OSS加载失败，使用本地图片作为fallback
+        // If OSS loading fails, use local images as fallback
         this.loadFallbackImages()
       }
     },
 
-    // 加载岛屿轮播图片
+    // Load island carousel images
     async loadIslandCarouselImages() {
       if (!this.islandName) return
 
@@ -1180,7 +1191,7 @@ export default {
         
         const carouselUrls = await Promise.all(carouselPromises)
         
-        // 更新轮播图片数组
+        // Update carousel images array
         if (this.islandName === 'P Singa') {
           this.carouselImages = carouselUrls
         } else if (this.islandName === 'Mertang') {
@@ -1197,13 +1208,13 @@ export default {
       }
     },
 
-    // 加载备用本地图片
+    // Load fallback local images
     loadFallbackImages() {
       this.appIconUrl = 'http://static.coralkita.site/assets/icon.png'
-      this.backgroundImageUrl = 'http://static.coralkita.site/assets-webp/island_bg3.webp'
+      this.backgroundImageUrl = 'http://static.coralkita.site/assets/island.webp'
     },
 
-    // 加载P Singa页面专用图片
+    // Load P Singa page specific images
     async loadPSingaImages() {
       if (this.islandName !== 'P Singa') return
 
@@ -1211,18 +1222,18 @@ export default {
         const pSingaImages = await ossService.getPSingaImages()
         this.pSingaImages = pSingaImages
         
-        // 更新轮播图片
+        // Update carousel images
         this.carouselImages = pSingaImages.carousel
         
         console.log('P Singa页面OSS图片加载完成')
       } catch (error) {
         console.error('加载P Singa页面图片失败:', error)
-        // 如果OSS加载失败，使用本地图片作为fallback
+        // If OSS loading fails, use local images as fallback
         this.loadPSingaFallbackImages()
       }
     },
 
-    // 加载P Singa页面备用图片
+    // Load P Singa page fallback images
     loadPSingaFallbackImages() {
       this.pSingaImages = {
         carousel: [
@@ -1247,11 +1258,11 @@ export default {
   },
   
   async mounted() {
-    // 立即开始预加载背景图片
+    // Immediately start preloading background image
     this.preloadBackgroundImage();
     
     this.initCarousel();
-    // 加载OSS图片
+    // Load OSS images
     await this.loadOssImages();
   },
   
@@ -1277,23 +1288,23 @@ export default {
   inset: 0;
   background:
     linear-gradient(rgba(33, 54, 78, 0.15), rgba(33, 54, 78, 0.15)),
-    url('@/assets/island_bg3.png') center/cover no-repeat;
+    url('@/assets/island.webp') center/cover no-repeat;
   pointer-events: none;
   z-index: 0;  
 }
 
-/* 确保真实内容盖在背景之上 */
+/* Ensure real content covers above background */
 .island-detail-container > * {
   position: relative;
   z-index: 1;
 }
 
-/* 占位层：默认隐藏（需要时再显示） */
+/* Placeholder layer: hidden by default (show when needed) */
 .bg-placeholder {
   display: none;
 }
 
-/* 海洋主题背景加载占位符样式 */
+/* Ocean theme background loading placeholder styles */
 .bg-placeholder {
   position: fixed;
   top: 0;
@@ -1471,7 +1482,7 @@ export default {
   animation: dropdownSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 移除小箭头，使用图二样式 */
+/* Remove small arrow, use figure 2 style */
 
 @keyframes dropdownSlideIn {
   from {
@@ -2060,7 +2071,7 @@ export default {
 /* Selected/Hover effects */
 #pick-left:checked ~ .duel-wrap .left {
   flex: 1.35;
-  filter: none; /* 点击后保持清晰 */
+  filter: none; /* Keep clear after click */
 }
 
 #pick-left:checked ~ .duel-wrap .right {
@@ -2070,7 +2081,7 @@ export default {
 
 #pick-right:checked ~ .duel-wrap .right {
   flex: 1.35;
-  filter: none; /* 点击后保持清晰 */
+  filter: none; /* Keep clear after click */
 }
 
 #pick-right:checked ~ .duel-wrap .left {
@@ -2078,7 +2089,7 @@ export default {
   filter: blur(var(--blur)) saturate(0.5) brightness(0.85);
 }
 
-/* 默认两边都是模糊的 */
+/* Default both sides are blurred */
 .duel-wrap .panel {
   filter: blur(var(--blur)) saturate(0.5) brightness(0.85);
   transition: all 0.6s ease;
@@ -2090,7 +2101,7 @@ export default {
   flex: 1.35;
 }
 
-/* 非 hover 的 panel 保持模糊 */
+/* Non-hover panels remain blurred */
 .duel-wrap .panel:not(:hover) {
   filter: blur(var(--blur)) saturate(0.5) brightness(0.85);
 }
@@ -2468,6 +2479,33 @@ export default {
   text-decoration: underline;
 }
 
+/* Contact info styles */
+.contact-info {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+  font-size: 14px;
+}
+
+.contact-icon {
+  font-size: 16px;
+  opacity: 0.8;
+}
+
+.contact-text {
+  user-select: all;
+  cursor: text;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .nav-items {
@@ -2834,7 +2872,7 @@ export default {
   }
 }
 
-/* 海洋主题进度条样式 */
+/* Ocean theme progress bar styles */
 .progress-container {
   position: absolute;
   top: 50%;

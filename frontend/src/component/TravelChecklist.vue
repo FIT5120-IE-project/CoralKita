@@ -1,6 +1,6 @@
 <template>
   <div class="travel-checklist-page">
-    <!-- 背景图片加载占位符 -->
+    <!-- Background image loading placeholder -->
     <div class="bg-placeholder" v-if="!backgroundLoaded">
       <div class="progress-container">
         <div class="progress-bar">
@@ -10,24 +10,43 @@
       </div>
     </div>
     
-    <!-- Header with Navigation -->
-    <div class="checklist-header">
-      <div class="header-left">
-        <button class="btn-back" @click="goBack">
-          <span class="back-icon">←</span>
-          {{ $t('travelChecklist.back') }}
-        </button>
+    <!-- Top Navigation -->
+    <div class="top-nav">
+      <div class="nav-left">
+        <img :src="appIconUrl" alt="logo" class="nav-logo" @click="goToHome" />
+        <h1 class="logo" @click="goToHome">{{ $t('nav.logo') }}</h1>
       </div>
-      <div class="header-center">
-        <h1>{{ $t('travelChecklist.title') }}</h1>
-        <p>{{ $t('travelChecklist.subtitle') }}</p>
-      </div>
-      <div class="header-right">
-        <div class="app-stats">
-          <span class="stat-item">
-            <i class="stat-icon">🌊</i>
-            {{ $t('travelChecklist.conservationAction') }}
-          </span>
+      <div class="nav-right">
+        <div class="nav-items">
+          <span class="nav-item" @click="goToMap">{{ $t('nav.mapRecommendation.line1') }}</span>
+          <div class="nav-item-dropdown" @mouseenter="showTravelDropdown = true" @mouseleave="showTravelDropdown = false">
+            <span class="nav-item">{{ $t('nav.topIsland') }}</span>
+            <div class="dropdown-menu" v-show="showTravelDropdown">
+              <div 
+                v-for="island in travelIslands" 
+                :key="island"
+                class="dropdown-item"
+                @click="goToIslandDetail(island)"
+              >
+                <span>{{ island }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="nav-item-dropdown" @mouseenter="showEducationDropdown = true" @mouseleave="showEducationDropdown = false">
+            <span class="nav-item" @click="goToEducation">{{ $t('nav.education') }}</span>
+            <div class="dropdown-menu" v-show="showEducationDropdown">
+              <div class="dropdown-item" @click="goToEducation">
+                <span>{{ $t('education.dropdown.tourismHub') }}</span>
+              </div>
+              <div class="dropdown-item active" @click="goToTravelChecklist">
+                <span>{{ $t('education.dropdown.tourismChecklist') }}</span>
+              </div>
+            </div>
+          </div>
+          <span class="nav-item" @click="goToAITools">{{ $t('nav.aiClassification') }}</span>
+          <span class="nav-item" @click="goToGovernment">{{ $t('nav.government') }}</span>
+          <span class="nav-item" @click="goToFAQ">{{ $t('nav.faq') }}</span>
+          <LanguageSwitcher />
         </div>
       </div>
     </div>
@@ -107,7 +126,7 @@
               <h3>{{ category.title }}</h3>
               <p>{{ category.subtitle }}</p>
               <div class="card-progress">
-                {{ getCompletedCount(index) }}/{{ category.items.length }} completed
+                {{ getCompletedCount(index) }}/{{ category.items.length }} {{ $t('travelChecklist.overallProgress.itemsCompleted') }}
               </div>
             </div>
           </div>
@@ -143,7 +162,18 @@
             </div>
           </div>
         </div>
-      </div>
+          <!-- Overall Progress Bar -->
+          <div class="overall-progress-bar">
+            <div class="progress-bar-container">
+              <div class="progress-bar-fill" :style="{ width: overallProgress + '%' }">
+                <span v-if="overallProgress > 5" class="progress-text">{{ overallProgress }}%</span>
+              </div>
+            </div>
+            <div class="progress-stats">
+              <span>{{ completedItems }} / {{ totalItems }} {{ $t('travelChecklist.overallProgress.itemsCompleted') }}</span>
+            </div>
+          </div>
+        </div>
 
         <!-- Reset Button -->
         <div class="reset-section">
@@ -159,7 +189,16 @@
       <div class="footer-content">
         {{ $t('footer.copyright') }}
         <span class="footer-links">
-          <a href="mailto:coralkita.service@gmail.com">{{ $t('footer.contact') }}</a>
+          <div class="contact-info">
+            <div class="contact-item">
+              <span class="contact-icon">🌐</span>
+              <span class="contact-text">{{ $t('footer.website') }}</span>
+            </div>
+            <div class="contact-item">
+              <span class="contact-icon">✉️</span>
+              <span class="contact-text">{{ $t('footer.email') }}</span>
+            </div>
+          </div>
         </span>
       </div>
     </footer>
@@ -169,15 +208,23 @@
 <script>
 import { mapGetters } from 'vuex'
 import ossService from '@/utils/ossService.js'
+import LanguageSwitcher from './LanguageSwitcher.vue'
 
 export default {
   name: 'TravelChecklist',
+  components: {
+    LanguageSwitcher
+  },
   data() {
     return {
       backgroundLoaded: false,
       loadingProgress: 0,
-      loadingText: 'Loading checklist...',
+      loadingText: this.$t('travelChecklist.loading'),
       backgroundImageUrl: null,
+      appIconUrl: null,
+      showTravelDropdown: false,
+      showEducationDropdown: false,
+      travelIslands: ['Mertang', 'P Singa', 'Sipadan', 'Pulau Lima', 'Seri Buat'],
       
       // Questionnaire state
       questionnaireCompleted: false,
@@ -224,6 +271,9 @@ export default {
       ],
       
       selectedCategory: 0,
+      
+      // Store generated checklist categories with completion state
+      generatedCategories: [],
       
       // Checklist data structure
       checklistData: {
@@ -316,10 +366,41 @@ export default {
     }
   },
   
+  watch: {
+    '$i18n.locale'() {
+      // When language changes, regenerate categories if questionnaire is completed
+      if (this.questionnaireCompleted) {
+        this.generateChecklistCategories()
+      }
+    }
+  },
+  
   computed: {
     checklistCategories() {
-      if (!this.questionnaireCompleted) return []
-      
+      // Return the stored generated categories
+      return this.generatedCategories
+    },
+    
+    totalItems() {
+      return this.checklistCategories.reduce((total, category) => {
+        return total + category.items.length
+      }, 0)
+    },
+    
+    completedItems() {
+      return this.checklistCategories.reduce((total, category) => {
+        return total + category.items.filter(item => item.completed).length
+      }, 0)
+    },
+    
+    overallProgress() {
+      if (this.totalItems === 0) return 0
+      return Math.round((this.completedItems / this.totalItems) * 100)
+    }
+  },
+  
+  methods: {
+    generateChecklistCategories() {
       const categories = []
       
       // Category 1: Based on experience
@@ -371,11 +452,9 @@ export default {
         }))
       })
       
-      return categories
-    }
-  },
-  
-  methods: {
+      this.generatedCategories = categories
+    },
+    
     selectAnswer(questionIndex, value) {
       this.$set(this.answers, questionIndex, value)
     },
@@ -393,6 +472,7 @@ export default {
     },
     
     completeQuestionnaire() {
+      this.generateChecklistCategories()
       this.questionnaireCompleted = true
     },
     
@@ -401,6 +481,7 @@ export default {
       this.currentQuestion = 0
       this.answers = [null, null, null, null]
       this.selectedCategory = 0
+      this.generatedCategories = []
     },
     
     getCompletedCount(categoryIndex) {
@@ -412,14 +493,71 @@ export default {
       // Optional: Add any progress tracking logic here
     },
     
-    goBack() {
-      // Set functional navigation flag
+    goToHome() {
+      window.location.href = '/'
+    },
+    
+    goToMap() {
+      this.$router.push('/map').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err)
+        }
+      })
+    },
+    
+    goToEducation() {
       localStorage.setItem('functionalNavigation', 'true')
       this.$router.push('/education').catch(err => {
         if (err.name !== 'NavigationDuplicated') {
           console.error('Navigation error:', err)
         }
       })
+    },
+    
+    goToTravelChecklist() {
+      // Already on this page
+    },
+    
+    goToAITools() {
+      this.$router.push('/ai-tools').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err)
+        }
+      })
+    },
+    
+    goToGovernment() {
+      this.$router.push('/government').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err)
+        }
+      })
+    },
+    
+    goToFAQ() {
+      this.$router.push('/faq').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err)
+        }
+      })
+    },
+    
+    goToIslandDetail(islandName) {
+      localStorage.setItem('functionalNavigation', 'true')
+      this.$router.push(`/travel/${encodeURIComponent(islandName)}`).catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err)
+        }
+      })
+    },
+    
+    async loadAppIcon() {
+      try {
+        this.appIconUrl = await ossService.getFileUrl('assets/icon.png')
+      } catch (error) {
+        console.warn('Failed to load app icon:', error)
+        this.appIconUrl = null
+      }
     },
     
     async loadBackgroundImage() {
@@ -448,6 +586,7 @@ export default {
   
   mounted() {
     console.log('TravelChecklist page loaded')
+    this.loadAppIcon()
     this.preloadBackgroundImage()
     this.loadBackgroundImage()
     
@@ -516,10 +655,12 @@ export default {
 }
 
 /* Header */
-.checklist-header {
+/* Top Navigation */
+.top-nav {
   background: linear-gradient(90deg, rgba(26, 29, 37, 0.95) 0%, rgba(1, 162, 235, 0.95) 100%);
   backdrop-filter: blur(15px);
-  padding: 20px 40px;
+  color: white;
+  padding: 12px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -528,80 +669,163 @@ export default {
   left: 0;
   right: 0;
   z-index: 1000;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
 }
 
-.header-left {
-  flex: 1;
-}
-
-.btn-back {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white;
-  padding: 10px 20px;
-  border-radius: 25px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.3s ease;
-}
-
-.btn-back:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateX(-3px);
-}
-
-.back-icon {
-  font-size: 1.2rem;
-}
-
-.header-center {
-  flex: 2;
-  text-align: center;
-}
-
-.header-center h1 {
-  color: white;
-  font-size: 2rem;
-  margin: 0 0 5px 0;
-  font-weight: 700;
-}
-
-.header-center p {
-  color: rgba(255, 255, 255, 0.8);
-  margin: 0;
-  font-size: 1rem;
-}
-
-.header-right {
-  flex: 1;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.app-stats {
+.nav-left {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.stat-item {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 8px 15px;
-  border-radius: 20px;
-  color: white;
-  font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.nav-logo {
+  height: 46px;
+  cursor: pointer;
 }
 
-.stat-icon {
-  font-size: 1.2rem;
+.nav-left .logo {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.nav-left .logo:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05);
+  color: #63b3ed;
+}
+
+.nav-items {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+
+.nav-item-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.map-rec-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+}
+
+.nav-text-line {
+  display: block;
+}
+
+.nav-item {
+  padding: 8px 16px;
+  color: rgba(255, 255, 255, 0.7);
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.nav-item:hover {
+  color: white;
+  border-bottom-color: rgba(255, 255, 255, 0.5);
+}
+
+.nav-item.active {
+  color: white;
+  border-bottom-color: #63b3ed;
+}
+
+.nav-item-dropdown {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nav-item-dropdown .nav-item-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nav-item-dropdown::before {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background: transparent;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  min-width: 160px;
+  z-index: 1000;
+  overflow: hidden;
+  animation: dropdownSlideIn 0.3s ease;
+}
+
+@keyframes dropdownSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: 14px 20px;
+  color: #1f2937;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-item:hover {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(16, 185, 129, 0.08));
+  color: #1e40af;
+  transform: translateX(2px);
+}
+
+.dropdown-item:first-child:hover {
+  border-radius: 16px 16px 0 0;
+}
+
+.dropdown-item:last-child:hover {
+  border-radius: 0 0 16px 16px;
+}
+
+.dropdown-item:first-child:last-child:hover {
+  border-radius: 16px;
 }
 
 /* Main Container */
@@ -795,12 +1019,13 @@ export default {
 
 .summary-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.7);
 }
 
 .summary-card.active {
-  border-color: #3282b8;
-  background: rgba(50, 130, 184, 0.1);
+  border-color: #ffffff;
+  background: rgba(255, 255, 255, 0.7);
 }
 
 .card-icon {
@@ -943,7 +1168,72 @@ export default {
 
 .checklist-item.completed .item-content p {
   color: #666;
-  text-decoration: line-through;
+}
+
+/* Overall Progress Bar */
+.overall-progress-bar {
+  margin-top: 30px;
+  padding-top: 25px;
+  border-top: 1px solid rgba(50, 130, 184, 0.15);
+}
+
+.progress-bar-container {
+  width: 100%;
+  max-width: 600px;
+  height: 30px;
+  background: rgba(50, 130, 184, 0.1);
+  border-radius: 15px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3282b8 0%, #01a2eb 50%, #20c997 100%);
+  border-radius: 15px;
+  transition: width 0.6s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 2px 10px rgba(50, 130, 184, 0.4);
+}
+
+.progress-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.progress-text {
+  color: white;
+  font-weight: 700;
+  font-size: 0.95rem;
+  z-index: 1;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.progress-stats {
+  color: #666;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-top: 10px;
 }
 
 /* Reset Section */
@@ -953,9 +1243,9 @@ export default {
 }
 
 .btn-reset {
-  background: rgba(220, 53, 69, 0.1);
+  background: rgba(220, 53, 69, 0.7);
   border: 2px solid #dc3545;
-  color: #dc3545;
+  color: white;
   padding: 12px 30px;
   border-radius: 25px;
   font-size: 1rem;
@@ -1001,22 +1291,42 @@ export default {
   text-decoration: underline;
 }
 
+/* Contact info styles */
+.contact-info {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+  font-size: 14px;
+}
+
+.contact-icon {
+  font-size: 16px;
+  opacity: 0.8;
+}
+
+.contact-text {
+  user-select: all;
+  cursor: text;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
-  .checklist-header {
-    flex-direction: column;
-    gap: 15px;
-    padding: 15px 20px;
+  .nav-items {
+    gap: 16px;
   }
 
-  .header-left,
-  .header-right {
-    width: 100%;
-    justify-content: center;
-  }
-  
-  .header-center h1 {
-    font-size: 1.5rem;
+  .nav-item {
+    font-size: 0.9rem;
+    padding: 6px 12px;
   }
   
   .questionnaire-card {

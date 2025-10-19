@@ -1,24 +1,24 @@
-// 环境配置
+// Environment configuration
 const config = {
-  // 开发环境
+  // Development environment
   development: {
     baseURL: 'http://localhost:8080',
     frontendPort: 3001
   },
-  // 生产环境
+  // Production environment
   production: {
-    baseURL: 'https://iter2.coralkita.site', // 生产环境地址，使用HTTPS，移除末尾斜杠
+    baseURL: 'https://www.coralkita.site', // Production environment address, using HTTPS, removed trailing slash
     frontendPort: 443
   }
 };
 
-// 根据当前环境获取配置
+// Get configuration based on current environment
 const env = process.env.NODE_ENV || 'development';
 const currentConfig = config[env];
 
-// 导出配置
+// Export configuration
 export const API_BASE_URL = currentConfig.baseURL;
 export const FRONTEND_PORT = currentConfig.frontendPort;
 
-// 也可以导出整个配置对象
+// Can also export the entire configuration object
 export default currentConfig;

@@ -8,13 +8,9 @@
       </div>
       <div class="nav-right">
         <div class="nav-items">
+          <span class="nav-item" @click="goToMap">{{ $t('nav.mapRecommendation.line1') }}</span>
           <div class="nav-item-dropdown" @mouseenter="showMapDropdown = true" @mouseleave="showMapDropdown = false">
-            <div class="nav-item-wrapper">
-              <span class="nav-item map-rec-item" @click="goToMap">
-                <span class="nav-text-line">{{ $t('nav.mapRecommendation.line1') }}</span>
-                <span class="nav-text-line">{{ $t('nav.mapRecommendation.line2') }}</span>
-              </span>
-            </div>
+            <span class="nav-item">{{ $t('nav.topIsland') }}</span>
             <div class="dropdown-menu" v-show="showMapDropdown">
               <div 
                 v-for="island in islands" 
