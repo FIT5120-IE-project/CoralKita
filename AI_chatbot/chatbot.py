@@ -1837,7 +1837,7 @@ load_dotenv(override=True)
 API_KEY = os.getenv("DEEPSEEK_API_KEY", os.getenv("OPENAI_API_KEY", ""))
 BASE_URL = os.getenv("BASE_URL", "https://api.deepseek.com")
 MODEL = os.getenv("MODEL", "deepseek-chat")
-GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY", "AIzaSyB40G5q8ctirIsNk7fEajTJK0c3tOwiFyg")
+GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY", "XXXX")
 DASHSCOPE_API_KEY = os.getenv("DASHSCOPE_API_KEY", "")
 
 # Initialize embedding model (global initialization, like rag.py)
@@ -1871,7 +1871,7 @@ async def query_weather(city: str) -> str:
     Returns:
         Information including temperature, humidity, wind speed, weather conditions, and diving suitability recommendations
     """
-    WEATHER_API_KEY = "0bccd486058dd3167a30ad9889b52ae8"
+    WEATHER_API_KEY = "XXXX"
     url = "https://api.openweathermap.org/data/2.5/weather"
     
     params = {
