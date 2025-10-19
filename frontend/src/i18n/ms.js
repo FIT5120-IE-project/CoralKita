@@ -3,13 +3,14 @@ export default {
   nav: {
     logo: 'CoralKita',
     mapRecommendation: {
-      line1: 'Peta &',
+      line1: 'Peta',
       line2: 'Cadangan'
     },
+    topIsland: 'Pulau Teratas',
     island: 'Pulau',
     education: 'Pendidikan',
-    aiClassification: 'Klasifikasi AI',
-    government: 'Kerajaan',
+    aiClassification: 'Alat AI',
+    government: 'Tindakan',
     actionHub: 'Pusat Tindakan',
     policies: 'Dasar',
     faq: 'Soalan Lazim',
@@ -50,7 +51,7 @@ export default {
   
   // Halaman peta
   map: {
-    title: 'Peta Haba Interaktif',
+    title: 'Peta Interaktif',
     dataSource: '*Berdasarkan data 2024',
     gameMode: '🎮 Permainan Pengembaraan Karang',
     mapMode: '🗺️ Peta Interaktif',
@@ -135,6 +136,10 @@ export default {
         good: 'Ideal, kesan pencemaran luaran minimum.',
         moderate: 'Tahap sederhana, menunjukkan beberapa sumber pencemaran, perlu perhatian.',
         poor: 'Pencemaran tinggi, mungkin menyebabkan pemutihan karang, peningkatan penyakit dan kematian.'
+      },
+      overview: {
+        title: 'Gambaran Keseluruhan Penunjuk',
+        description: 'Setiap penunjuk (contohnya, liputan karang hidup, gangguan, pencemaran) mewakili bahagian keadaan terumbu, dan bersama-sama mereka berjumlah 100%, menunjukkan bagaimana kawasan terumbu diedarkan merentas faktor-faktor ini.'
       }
     },
     loading: {
@@ -145,6 +150,25 @@ export default {
       almostReady: 'Hampir selesai...',
       success: 'Data peta berjaya dimuatkan!',
       backup: 'Menggunakan data sandaran...'
+    },
+    popup: {
+      state: 'Negeri:',
+      lcc: 'LCC:',
+      noData: 'Tiada Data',
+      currentlySelected: 'Sedang Dipilih',
+      coordinates: 'Koordinat',
+      learnMore: 'Ketahui Lebih Lanjut',
+      travelResponsibly: 'Melancong Secara Bertanggungjawab',
+      learnBeforeTravel: 'Belajar Sebelum Melancong',
+      selectIsland: 'Pilih Pulau',
+      noDetailedPage: 'Tiada halaman terperinci tersedia'
+    },
+    legend: {
+      liveCoralCover: 'Liputan Karang Hidup',
+      averageLCC: 'Purata LCC (%)',
+      good: 'Baik',
+      fair: 'Sederhana',
+      poor: 'Lemah'
     },
     comingSoon: {
       title: 'Peta Interaktif',
@@ -258,7 +282,10 @@ export default {
     results: {
       title: 'Hasil Klasifikasi',
       species: 'Spesies karang dikenal pasti oleh AI',
-      classifyAnother: '🔄 Klasifikasi Imej Lain'
+      classifyAnother: '🔄 Klasifikasi Imej Lain',
+      probabilities: 'Kebarangkalian Kelas',
+      healthy: 'Karang Sihat',
+      bleached: 'Karang Pemutihan'
     },
     error: {
       title: 'Klasifikasi Gagal',
@@ -269,7 +296,8 @@ export default {
   // Pengaki
   footer: {
     copyright: '© 2025 CoralKita',
-    contact: 'Hubungi Kami'
+    website: 'www.coralkita.site',
+      email: 'coralkita.service@gmail.com'
   },
 
   // Halaman butiran pulau
@@ -423,8 +451,8 @@ export default {
       accommodation: 'Tiada penginapan tersedia di pulau. Pelawat biasanya tinggal di Mersing atau bandar pantai berhampiran dan mengambil perjalanan sehari ke pulau.'
     },
     actionButtons: {
-      reefPolicies: 'Pelajari Dasar Terumbu Karang',
-      reefConservation: 'Pelajari Pemuliharaan Terumbu'
+      reefPolicies: 'Terokai Dasar & Ambil Tindakan',
+      reefConservation: 'Belajar & Berkembang Dengan CoralKita'
     }
   },
 
@@ -556,7 +584,7 @@ export default {
       title: 'Data dan Sumber',
       q1: {
         question: 'S: Dari mana data ini diperoleh?',
-        answer: 'J: Data diperoleh terutamanya daripada laporan tinjauan terumbu karang tahunan dan metadata mentah dari Reef Check Malaysia. Pautan: <a href="https://reefcheck.org.my/interactive-map/" target="_blank" style="color: #4facfe; text-decoration: underline;">https://reefcheck.org.my/interactive-map/</a>'
+        answer: 'J: Visualisasi data CoralKita berdasarkan set data yang tersedia secara awam dan laporan yang disahkan. Secara khusus, sumber data utama kami termasuk Dataset Pemutihan Terumbu Karang Global dari Kaggle (<a href="https://www.kaggle.com/datasets/mehrdat/coral-reef-global-bleaching" target="_blank" style="color: #4facfe; text-decoration: underline;">https://www.kaggle.com/datasets/mehrdat/coral-reef-global-bleaching</a>) dan data mentah yang diperoleh dari Reef Check Malaysia (<a href="https://reefcheck.org.my/" target="_blank" style="color: #4facfe; text-decoration: underline;">https://reefcheck.org.my/</a>). Untuk Pengesanan AI Foto Terumbu Karang kami, imej latihan berasal dari set data Klasifikasi Imej Karang Sihat dan Terputih yang tersedia di Kaggle (<a href="https://www.kaggle.com/datasets/vencerlanz09/healthy-and-bleached-corals-image-classification" target="_blank" style="color: #4facfe; text-decoration: underline;">https://www.kaggle.com/datasets/vencerlanz09/healthy-and-bleached-corals-image-classification</a>).'
       },
       q2: {
         question: 'S: Berapa kerap data dikemaskini?',
@@ -565,6 +593,10 @@ export default {
       q3: {
         question: 'S: Adakah laman web ini berafiliasi dengan mana-mana badan kerajaan?',
         answer: 'J: Tidak, CoralKita adalah laman web bebas. Semua maklumat yang diperoleh disebut untuk memastikan ketelusan.'
+      },
+      q4: {
+        question: 'S: Apakah sumber data untuk cadangan senarai semak perjalanan?',
+        answer: 'J: Cadangan senarai semak perjalanan kami berdasarkan amalan terbaik yang telah ditetapkan untuk snorkeling dan menyelam yang sedar ekologi. Sumber termasuk: Garis panduan Amalan Terbaik untuk Snorkeling dan Menyelam (<a href="https://static.coral.org/uploads/2021/10/Best-Practices-Snorkeling-and-Diving_English.pdf" target="_blank" style="color: #4facfe; text-decoration: underline;">https://static.coral.org/uploads/2021/10/Best-Practices-Snorkeling-and-Diving_English.pdf</a>), garis panduan snorkeling sedar ekologi (<a href="https://www.snorkeling-report.com/eco-conscious-snorkeling/" target="_blank" style="color: #4facfe; text-decoration: underline;">https://www.snorkeling-report.com/eco-conscious-snorkeling/</a>), dan amalan menyelam yang bertanggungjawab (<a href="https://www.uw360.asia/15-tips-for-diving-responsibly-with-marine-life-2/" target="_blank" style="color: #4facfe; text-decoration: underline;">https://www.uw360.asia/15-tips-for-diving-responsibly-with-marine-life-2/</a>).'
       }
     },
     disclaimer: {
@@ -585,6 +617,7 @@ export default {
     title: 'Senarai Perjalanan Bertanggungjawab',
     subtitle: 'Lengkapkan langkah-langkah utama untuk pelancongan lestari',
     back: 'Kembali',
+    loading: 'Memuatkan senarai semak...',
     conservationAction: 'Tindakan Pemuliharaan CoralKita',
     questionnaire: {
       beforeWeStart: 'Sebelum Kita Mulai...',
@@ -782,7 +815,7 @@ export default {
           focusAreasText: 'Pemantauan terumbu, pemulihan karang, pendidikan marin',
           coverage: 'Liputan:',
           coverageText: 'Tapak terumbu di seluruh negara termasuk Redang, Tioman, Perhentian, dan lain-lain',
-          button: 'Ketahui Lebih Lanjut & Derma melalui Laman Rasmi →'
+          button: 'Derma melalui Laman Rasmi →'
         },
         wwf: {
           name: 'WWF Malaysia',
@@ -792,7 +825,7 @@ export default {
           focusAreasText: 'Pemuliharaan marin, perikanan mampan, mitigasi perubahan iklim',
           coverage: 'Liputan:',
           coverageText: 'Kawasan perlindungan marin dan pantai Malaysia',
-          button: 'Ketahui Lebih Lanjut & Derma melalui Laman Rasmi →'
+          button: 'Derma melalui Laman Rasmi →'
         },
         tracc: {
           name: 'TRACC (Pusat Penyelidikan dan Pemuliharaan Tropika)',
@@ -802,9 +835,109 @@ export default {
           focusAreasText: 'Pemulihan terumbu karang, penyelidikan marin, latihan komuniti',
           coverage: 'Liputan:',
           coverageText: 'Semporna dan perairan sekitarnya di Sabah',
-          button: 'Ketahui Lebih Lanjut & Derma melalui Laman Rasmi →'
+          button: 'Derma melalui Laman Rasmi →'
         }
       }
+    }
+  },
+
+  // Halaman Alat AI
+  aiTools: {
+    title: 'Klasifikasi Karang AI',
+    subtitle: 'Muat naik imej karang dan dapatkan pengenalan spesies serta-merta',
+    disclaimer: {
+      warning: 'Alat ini hanya untuk tujuan pendidikan',
+      accuracy: 'Hasil mungkin berbeza dan tidak boleh menggantikan pengenalan profesional'
+    },
+    upload: {
+      title: 'Muat Naik Imej Karang Anda',
+      description: 'Pilih imej karang yang jelas dan terang untuk hasil terbaik',
+      formats: ['JPG', 'PNG', 'JPEG', 'WEBP'],
+      fileSizeLimit: 'Saiz fail maksimum: 10MB',
+      changeImage: 'Tukar Imej',
+      remove: 'Buang Imej',
+      classifying: 'Menganalisis...',
+      classify: 'Klasifikasi Karang'
+    },
+    results: {
+      title: 'Hasil Analisis',
+      species: 'Hasil Pengenalan Spesies',
+      classifyAnother: 'Analisis Imej Lain'
+    },
+    error: {
+      title: 'Ralat Analisis',
+      close: 'Tutup'
+    },
+    howToUse: {
+      title: 'Cara Penggunaan',
+      step1: {
+        title: 'Langkah 1: Pilih Imej',
+        description: 'Muat naik imej karang yang jelas'
+      },
+      step2: {
+        title: 'Langkah 2: Analisis AI',
+        description: 'Model AI kami akan menganalisis kandungan imej'
+      },
+      step3: {
+        title: 'Langkah 3: Lihat Hasil',
+        description: 'Dapatkan hasil pengenalan spesies yang terperinci'
+      }
+    },
+    // Hab Alat AI
+    hub: {
+      title: 'Hab Alat AI',
+      subtitle: 'Pilih alat AI yang sesuai dengan keperluan anda'
+    },
+    tools: {
+      imageClassification: {
+        title: 'Klasifikasi Imej AI',
+        description: 'Muat naik imej karang dan AI mengenal pasti status kesihatan karang dengan bijak',
+        features: {
+          intelligent: 'Pengenalan Imej Pintar',
+          fast: 'Hasil Klasifikasi Pantas',
+          formats: 'Pelbagai Format Disokong'
+        }
+      },
+      qaAssistant: {
+        title: 'Pembantu Soal Jawab Pintar',
+        description: 'Sistem soal jawab pintar berdasarkan dokumen terumbu karang Malaysia',
+        features: {
+          knowledge: 'Soal Jawab Pangkalan Pengetahuan',
+          pdf: 'Analisis Dokumen PDF',
+          retrieval: 'Pencarian Pintar'
+        }
+      },
+      dataAnalysis: {
+        title: 'Analisis Data & Visualisasi',
+        description: 'Analisis data ekosistem karang dan jana carta visualisasi',
+        features: {
+          csv: 'Analisis Data CSV',
+          visualization: 'Visualisasi Pintar',
+          trend: 'Analisis Trend'
+        }
+      },
+      travelAssistant: {
+        title: 'Pembantu Perancangan Perjalanan',
+        description: 'Pembantu perancangan perjalanan AI dengan data cuaca masa nyata dan data kesihatan karang',
+        features: {
+          weather: 'Data Cuaca Masa Nyata',
+          coral: 'Laporan Kesihatan Karang',
+          route: 'Perancangan Laluan Pintar'
+        }
+      },
+      comprehensiveAssistant: {
+        title: 'Pembantu AI Komprehensif',
+        description: 'Pembantu AI semua-dalam-satu yang menggabungkan soal jawab, analisis data, dan perancangan perjalanan',
+        features: {
+          knowledge: 'Soal Jawab Pangkalan Pengetahuan',
+          dataAnalysis: 'Analisis Data & Visualisasi',
+          travelPlanning: 'Perancangan Perjalanan'
+        }
+      }
+    },
+    common: {
+      getStarted: 'Mula',
+      backToTools: 'Kembali ke Alat AI'
     }
   }
 }
