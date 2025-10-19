@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * 测验题目实体类
+ * Quiz Question Entity
  */
 @Data
 @Builder
@@ -19,52 +19,52 @@ public class QuizQuestion implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 主键ID
+     * Primary Key ID
      */
     private Integer id;
 
     /**
-     * 来源标题
+     * Source Title
      */
     private String sourceTitle;
 
     /**
-     * 来源URL
+     * Source URL
      */
     private String sourceUrl;
 
     /**
-     * 问题内容
+     * Question Content
      */
     private String question;
 
     /**
-     * 选项A
+     * Option A
      */
     private String optionA;
 
     /**
-     * 选项B
+     * Option B
      */
     private String optionB;
 
     /**
-     * 选项C
+     * Option C
      */
     private String optionC;
 
     /**
-     * 选项D
+     * Option D
      */
     private String optionD;
 
     /**
-     * 正确答案
+     * Correct Option
      */
     private String correctOption;
 
     /**
-     * 解释说明
+     * Explanation
      */
     private String explanation;
 }

@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 测验得分VO
+ * Quiz Score VO
  */
 @Data
 @Builder
@@ -15,37 +15,37 @@ import lombok.NoArgsConstructor;
 public class QuizScoreVO {
 
     /**
-     * 用户ID
+     * User ID
      */
     private Integer userId;
 
     /**
-     * 用户名称
+     * Username
      */
     private String userName;
 
     /**
-     * 用户等级
+     * User Level
      */
     private String level;
 
     /**
-     * 用户经验值
+     * User Experience
      */
     private Integer experience;
 
     /**
-     * 用户积分
+     * User Points
      */
     private Integer points;
 
     /**
-     * 获得的经验值
+     * Earned Experience
      */
     private Integer earnedExperience;
 
     /**
-     * 获得的积分
+     * Earned Points
      */
     private Integer earnedPoints;
 

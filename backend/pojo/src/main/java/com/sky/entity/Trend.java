@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 /**
- * 趋势数据实体类
+ * Trend Data Entity
  */
 @Data
 @Builder
@@ -17,47 +17,47 @@ import java.time.LocalDate;
 public class Trend {
     
     /**
-     * 主键ID
+     * Primary Key ID
      */
     private Long id;
     
     /**
-     * 岛屿名称
+     * Island Name
      */
     private String island;
     
     /**
-     * 日期
+     * Date
      */
     private LocalDate date;
     
     /**
-     * LCC值
+     * LCC Value
      */
     private Double lcc;
     
     /**
-     * OT值
+     * OT Value
      */
     private Double ot;
     
     /**
-     * AS值
+     * AS Value
      */
     private Double as;
     
     /**
-     * SD值
+     * SD Value
      */
     private Double sd;
     
     /**
-     * DI值
+     * DI Value
      */
     private Double di;
     
     /**
-     * PI值
+     * PI Value
      */
     private Double pi;
 }

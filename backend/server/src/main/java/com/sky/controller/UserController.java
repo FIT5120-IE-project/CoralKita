@@ -25,7 +25,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/user")
 @Slf4j
-@Api(tags = "用户相关接口")
+@Api(tags = "User Related APIs")
 public class UserController {
 
     @Autowired
@@ -35,13 +35,13 @@ public class UserController {
 
 
     @PostMapping("/login")
-    @ApiOperation(value = "用户登录")
+    @ApiOperation(value = "User login")
     public Result<UserLoginVO> login(@RequestBody UserLoginDTO userDTO) {
-        log.info("用户登录：{}", userDTO);
+        log.info("User login: {}", userDTO);
 
         UserLoginVO userLoginVO = userService.login(userDTO);
 
-        //登录成功后，生成jwt令牌
+        // After successful login, generate JWT token
         Map<String, Object> claims = new HashMap<>();
         claims.put(JwtClaimsConstant.EMP_ID, userLoginVO.getId());
         String token = JwtUtil.createJWT(
@@ -49,7 +49,7 @@ public class UserController {
                 jwtProperties.getAdminTtl(),
                 claims);
 
-        //设置token到返回对象中
+        // Set token to return object
         userLoginVO.setToken(token);
         
 
@@ -58,19 +58,19 @@ public class UserController {
     }
 
     /**
-     * 用户注册
+     * User registration
      *
-     * @param userRegisterDTO
-     * @return
+     * @param userRegisterDTO User registration data
+     * @return Registration result
      */
     @PostMapping("/register")
-    @ApiOperation(value = "用户注册")
+    @ApiOperation(value = "User registration")
     public Result<UserRegisterVO> register(@RequestBody UserRegisterDTO userRegisterDTO) {
-        log.info("用户注册：{}", userRegisterDTO);
+        log.info("User registration: {}", userRegisterDTO);
 
         UserRegisterVO userRegisterVO = userService.register(userRegisterDTO);
 
-        //注册成功后，生成jwt令牌
+        // After successful registration, generate JWT token
         Map<String, Object> claims = new HashMap<>();
         claims.put(JwtClaimsConstant.EMP_ID, userRegisterVO.getId());
         String token = JwtUtil.createJWT(
@@ -78,14 +78,14 @@ public class UserController {
                 jwtProperties.getAdminTtl(),
                 claims);
 
-        //设置token到返回对象中
+        // Set token to return object
         userRegisterVO.setToken(token);
 
         return Result.success(userRegisterVO);
     }
 
     @PostMapping("/logout")
-    @ApiOperation(value = "用户退出")
+    @ApiOperation(value = "User logout")
     public Result<String> logout() {
         return Result.success();
     }

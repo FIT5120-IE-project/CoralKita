@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * 趋势分析元数据实体类
+ * Trend Analysis Metadata Entity
  */
 @Data
 @Builder
@@ -19,52 +19,52 @@ public class TrendAnalysisMetadata implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 岛屿名称
+     * Island Name
      */
     private String island;
 
     /**
-     * 州/省
+     * State/Province
      */
     private String state;
 
     /**
-     * 日期
+     * Date
      */
     private String date;
 
     /**
-     * LCC值（Live Coral Cover）
+     * LCC Value (Live Coral Cover)
      */
     private String lcc;
 
     /**
-     * OT值（Other）
+     * OT Value (Other)
      */
     private String ot;
 
     /**
-     * AS值（Algae/Sand）
+     * AS Value (Algae/Sand)
      */
     private String as;
 
     /**
-     * SD值（Sand）
+     * SD Value (Sand)
      */
     private String sd;
 
     /**
-     * DI值（Disease）
+     * DI Value (Disease)
      */
     private String di;
 
     /**
-     * PI值（Physical Impact）
+     * PI Value (Physical Impact)
      */
     private String pi;
 
     /**
-     * 未知列
+     * Unknown Column
      */
     private String myUnknownColumn;
 }

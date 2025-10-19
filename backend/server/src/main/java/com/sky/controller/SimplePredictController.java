@@ -15,32 +15,32 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Map;
 
 /**
- * 简化的珊瑚分类预测控制器
+ * Simplified Coral Classification Prediction Controller
  */
 @RestController
 @RequestMapping("/predict")
 @Slf4j
-@Api(tags = "珊瑚分类预测接口")
+@Api(tags = "Coral Classification Prediction APIs")
 public class SimplePredictController {
     
     private final RestTemplate restTemplate = new RestTemplate();
     private final String pythonApiUrl = "http://localhost:5000";
     
     /**
-     * 上传图片进行珊瑚分类预测
-     * @param imageFile 图片文件
-     * @return 预测结果
+     * Upload image for coral classification prediction
+     * @param imageFile Image file
+     * @return Prediction result
      */
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @ApiOperation(value = "上传图片进行珊瑚分类预测")
-    public Result<String> predictCoral(
-            @ApiParam(value = "珊瑚图片文件", required = true) 
+    @ApiOperation(value = "Upload image for coral classification prediction")
+    public Result<Map<String, Object>> predictCoral(
+            @ApiParam(value = "Coral image file", required = true) 
             @RequestPart("image") MultipartFile imageFile) {
-        log.info("收到图片预测请求，文件名: {}, 大小: {} bytes", 
+        log.info("Received image prediction request, filename: {}, size: {} bytes", 
                 imageFile.getOriginalFilename(), imageFile.getSize());
         
         try {
-            // 验证文件
+            // Validate file
             if (imageFile.isEmpty()) {
                 return Result.error("Image file cannot be empty");
             }
@@ -49,7 +49,7 @@ public class SimplePredictController {
                 return Result.error("Image file size cannot exceed 16MB");
             }
             
-            // 调用Python API
+            // Call Python API
             String predictUrl = pythonApiUrl + "/predict";
             
             HttpHeaders headers = new HttpHeaders();
@@ -61,37 +61,53 @@ public class SimplePredictController {
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
             
             try {
+                @SuppressWarnings("rawtypes")
                 ResponseEntity<Map> response = restTemplate.postForEntity(predictUrl, requestEntity, Map.class);
                 
                 if (response.getStatusCode() != HttpStatus.OK) {
                     return Result.error("Prediction service temporarily unavailable");
                 }
                 
+                @SuppressWarnings("unchecked")
                 Map<String, Object> responseBody = response.getBody();
                 if (responseBody == null || !Boolean.TRUE.equals(responseBody.get("success"))) {
                     String errorMessage = responseBody != null ? (String) responseBody.get("message") : "Prediction failed";
                     return Result.error(errorMessage);
                 }
                 
-                // 解析结果
+                // Parse result
                 @SuppressWarnings("unchecked")
                 Map<String, Object> data = (Map<String, Object>) responseBody.get("data");
                 
                 String predictedClass = (String) data.get("predicted_class");
+                Double confidence = (Double) data.get("confidence");
+                @SuppressWarnings("unchecked")
+                Map<String, Double> probabilities = (Map<String, Double>) data.get("probabilities");
                 
-                log.info("预测完成，结果: {}", predictedClass);
-                return Result.success(predictedClass);
+                // Build return result
+                Map<String, Object> result = new java.util.HashMap<>();
+                result.put("predicted_class", predictedClass);
+                if (confidence != null) {
+                    result.put("confidence", confidence);
+                }
+                if (probabilities != null) {
+                    result.put("probabilities", probabilities);
+                }
+                
+                log.info("Prediction completed, result: {} (confidence: {})", predictedClass, confidence);
+                return Result.success(result);
                 
             } catch (org.springframework.web.client.HttpClientErrorException e) {
-                // 处理400错误（图片质量不符合要求）
+                // Handle 400 error (image quality does not meet requirements)
                 if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
                     try {
-                        // 解析错误响应
+                        // Parse error response
                         String responseBody = e.getResponseBodyAsString();
-                        log.warn("图片质量验证失败: {}", responseBody);
+                        log.warn("Image quality validation failed: {}", responseBody);
                         
-                        // 尝试解析JSON错误信息
+                        // Try to parse JSON error message
                         com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+                        @SuppressWarnings("unchecked")
                         Map<String, Object> errorResponse = mapper.readValue(responseBody, Map.class);
                         
                         @SuppressWarnings("unchecked")
@@ -105,13 +121,13 @@ public class SimplePredictController {
                             
                             String errorMessage = "Image quality does not meet the requirements: " + String.join(", ", issues);
                             if (suggestions != null && !suggestions.isEmpty()) {
-                                errorMessage += "。suggestions: " + String.join(", ", suggestions);
+                                errorMessage += ". Suggestions: " + String.join(", ", suggestions);
                             }
                             
                             return Result.error(errorMessage);
                         }
                     } catch (Exception parseException) {
-                        log.error("解析错误响应失败: {}", parseException.getMessage());
+                        log.error("Failed to parse error response: {}", parseException.getMessage());
                     }
                     
                     return Result.error("Image quality does not meet requirements, please upload a clear coral image");

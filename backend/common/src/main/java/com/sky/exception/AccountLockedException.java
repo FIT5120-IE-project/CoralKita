@@ -1,7 +1,7 @@
 package com.sky.exception;
 
 /**
- * 账号被锁定异常
+ * Account Locked Exception
  */
 public class AccountLockedException extends BaseException {
 

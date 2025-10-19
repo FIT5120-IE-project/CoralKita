@@ -1,0 +1,31 @@
+# 使用绝对路径的Dockerfile版本
+FROM maven:3.9.6-eclipse-temurin-21 AS build
+WORKDIR /build
+
+# 复制整个项目结构
+COPY . .
+
+# 验证文件复制
+RUN echo "=== 验证文件复制 ==="
+RUN ls -la
+RUN echo "=== 检查pom.xml ==="
+RUN cat pom.xml | head -10
+
+# 构建应用
+RUN mvn -B -q -DskipTests clean package
+
+# 运行阶段
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+
+# 复制构建的jar文件
+COPY --from=build /build/server/target/server-1.0-SNAPSHOT.jar /app/app.jar
+
+# 设置JVM参数
+ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
+
+# 暴露端口
+EXPOSE 8080
+
+# 运行应用
+CMD ["sh", "-c", "java $JAVA_OPTS -jar /app/app.jar"]

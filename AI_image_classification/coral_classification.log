@@ -1,0 +1,394 @@
+2025-09-15 12:13:51,831 - __main__ - INFO - 正在启动珊瑚分类API服务...
+2025-09-15 12:13:51,946 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-09-15 12:13:51,950 - __main__ - INFO - 模型加载成功: mode/model.h5
+2025-09-15 12:13:51,950 - __main__ - INFO - 模型加载成功，服务启动中...
+2025-09-15 12:13:51,975 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.16.46.30:5000
+2025-09-15 12:13:51,975 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-09-15 12:14:01,162 - __main__ - INFO - 收到图片上传: 20250915_121401_189518468_76ff603ccc_b.jpg
+2025-09-15 12:14:01,284 - __main__ - INFO - 预测完成: 20250915_121401_189518468_76ff603ccc_b.jpg -> bleached_corals (置信度: 10.1538)
+2025-09-15 12:14:01,284 - __main__ - INFO - 已清理临时文件: 20250915_121401_189518468_76ff603ccc_b.jpg
+2025-09-15 12:14:01,285 - werkzeug - INFO - 127.0.0.1 - - [15/Sep/2025 12:14:01] "POST /predict HTTP/1.1" 200 -
+2025-09-15 13:47:00,773 - __main__ - INFO - 正在启动珊瑚分类API服务...
+2025-09-15 13:47:00,883 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-09-15 13:47:00,886 - __main__ - INFO - 模型加载成功: mode/model.h5
+2025-09-15 13:47:00,886 - __main__ - INFO - 模型加载成功，服务启动中...
+2025-09-15 13:47:00,893 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.16.46.30:5000
+2025-09-15 13:47:00,893 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-09-15 13:47:06,995 - __main__ - INFO - 收到图片上传: 20250915_134706_226053010_ac0440a0fb_b.jpg
+2025-09-15 13:47:07,123 - __main__ - INFO - 预测完成: 20250915_134706_226053010_ac0440a0fb_b.jpg -> healthy_corals (置信度: 5.8610)
+2025-09-15 13:47:07,125 - __main__ - INFO - 已清理临时文件: 20250915_134706_226053010_ac0440a0fb_b.jpg
+2025-09-15 13:47:07,125 - werkzeug - INFO - 127.0.0.1 - - [15/Sep/2025 13:47:07] "POST /predict HTTP/1.1" 200 -
+2025-09-15 13:47:44,615 - __main__ - INFO - 收到图片上传: 20250915_134744_469499083_0b873706f2_o.jpg
+2025-09-15 13:47:44,673 - __main__ - INFO - 预测完成: 20250915_134744_469499083_0b873706f2_o.jpg -> healthy_corals (置信度: 5.0194)
+2025-09-15 13:47:44,674 - __main__ - INFO - 已清理临时文件: 20250915_134744_469499083_0b873706f2_o.jpg
+2025-09-15 13:47:44,674 - werkzeug - INFO - 127.0.0.1 - - [15/Sep/2025 13:47:44] "POST /predict HTTP/1.1" 200 -
+2025-09-15 13:58:00,403 - __main__ - INFO - 正在启动珊瑚分类API服务...
+2025-09-15 13:58:00,509 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-09-15 13:58:00,514 - __main__ - INFO - 模型加载成功: mode/model.h5
+2025-09-15 13:58:00,514 - __main__ - INFO - 模型加载成功，服务启动中...
+2025-09-15 13:58:00,520 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.16.46.30:5000
+2025-09-15 13:58:00,521 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-09-15 14:00:36,181 - __main__ - INFO - 正在启动珊瑚分类API服务...
+2025-09-15 14:00:36,293 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-09-15 14:00:36,296 - __main__ - INFO - 模型加载成功: mode/model.h5
+2025-09-15 14:00:36,297 - __main__ - INFO - 模型加载成功，服务启动中...
+2025-09-15 14:00:36,303 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.16.46.30:5000
+2025-09-15 14:00:36,303 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-09-15 14:02:14,627 - __main__ - INFO - 正在启动珊瑚分类API服务...
+2025-09-15 14:02:14,759 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-09-15 14:02:14,763 - __main__ - INFO - 模型加载成功: mode/model.h5
+2025-09-15 14:02:14,763 - __main__ - INFO - 模型加载成功，服务启动中...
+2025-09-15 14:02:14,770 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.16.46.30:5000
+2025-09-15 14:02:14,771 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-09-15 16:29:46,103 - __main__ - INFO - 正在启动珊瑚分类API服务...
+2025-09-15 16:29:46,234 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-09-15 16:29:46,238 - __main__ - INFO - 模型加载成功: mode/model.h5
+2025-09-15 16:29:46,238 - __main__ - INFO - 模型加载成功，服务启动中...
+2025-09-15 16:29:46,245 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.16.46.30:5000
+2025-09-15 16:29:46,245 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-09-15 16:30:24,666 - __main__ - INFO - 收到图片上传: 20250915_163024_coral.jpg
+2025-09-15 16:30:24,789 - __main__ - INFO - 预测完成: 20250915_163024_coral.jpg -> healthy_corals (置信度: 1.6190)
+2025-09-15 16:30:24,789 - __main__ - INFO - 已清理临时文件: 20250915_163024_coral.jpg
+2025-09-15 16:30:24,789 - werkzeug - INFO - 127.0.0.1 - - [15/Sep/2025 16:30:24] "POST /predict HTTP/1.1" 200 -
+2025-09-15 18:32:05,090 - __main__ - INFO - 收到图片上传: 20250915_183205_coral.jpg
+2025-09-15 18:32:05,217 - __main__ - INFO - 预测完成: 20250915_183205_coral.jpg -> healthy_corals (置信度: 1.6190)
+2025-09-15 18:32:05,218 - __main__ - INFO - 已清理临时文件: 20250915_183205_coral.jpg
+2025-09-15 18:32:05,218 - werkzeug - INFO - 127.0.0.1 - - [15/Sep/2025 18:32:05] "POST /predict HTTP/1.1" 200 -
+2025-09-15 19:07:58,612 - __main__ - INFO - 收到图片上传: 20250915_190758_coral.jpg
+2025-09-15 19:07:58,682 - __main__ - INFO - 预测完成: 20250915_190758_coral.jpg -> healthy_corals (置信度: 1.6190)
+2025-09-15 19:07:58,682 - __main__ - INFO - 已清理临时文件: 20250915_190758_coral.jpg
+2025-09-15 19:07:58,683 - werkzeug - INFO - 127.0.0.1 - - [15/Sep/2025 19:07:58] "POST /predict HTTP/1.1" 200 -
+2025-09-15 21:26:23,719 - werkzeug - INFO - 127.0.0.1 - - [15/Sep/2025 21:26:23] "[33mPOST /rag/query HTTP/1.1[0m" 404 -
+2025-09-17 18:39:59,444 - __main__ - INFO - 正在启动珊瑚分类API服务...
+2025-09-17 18:39:59,688 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-09-17 18:39:59,694 - __main__ - INFO - 模型加载成功: mode/model.h5
+2025-09-17 18:39:59,694 - __main__ - INFO - 模型加载成功，服务启动中...
+2025-09-17 18:39:59,710 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.192.114.12:5000
+2025-09-17 18:39:59,710 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-09-17 18:40:12,246 - __main__ - INFO - 收到图片上传: 20250917_184012_coral.png
+2025-09-17 18:40:12,860 - __main__ - INFO - 预测完成: 20250917_184012_coral.png -> bleached_corals (置信度: 10.2088)
+2025-09-17 18:40:12,860 - __main__ - INFO - 已清理临时文件: 20250917_184012_coral.png
+2025-09-17 18:40:12,865 - werkzeug - INFO - 127.0.0.1 - - [17/Sep/2025 18:40:12] "POST /predict HTTP/1.1" 200 -
+2025-09-18 18:25:00,704 - __main__ - INFO - 正在启动珊瑚分类API服务...
+2025-09-18 18:25:00,820 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-09-18 18:25:00,826 - __main__ - INFO - 模型加载成功: mode/model.h5
+2025-09-18 18:25:00,826 - __main__ - INFO - 模型加载成功，服务启动中...
+2025-09-18 18:25:00,834 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.16.46.157:5000
+2025-09-18 18:25:00,834 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-09-18 18:25:26,656 - __main__ - INFO - 收到图片上传: 20250918_182526_189518468_76ff603ccc_b.jpg
+2025-09-18 18:25:26,808 - __main__ - INFO - 预测完成: 20250918_182526_189518468_76ff603ccc_b.jpg -> bleached_corals (置信度: 10.1538)
+2025-09-18 18:25:26,809 - __main__ - INFO - 已清理临时文件: 20250918_182526_189518468_76ff603ccc_b.jpg
+2025-09-18 18:25:26,809 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 18:25:26] "POST /predict HTTP/1.1" 200 -
+2025-09-18 18:25:32,822 - __main__ - INFO - 收到图片上传: 20250918_182532_1972126685_51f5d5b825_o.jpg
+2025-09-18 18:25:32,826 - __main__ - WARNING - 图片质量验证失败: 20250918_182532_1972126685_51f5d5b825_o.jpg - 问题: ['未检测到珊瑚特征']
+2025-09-18 18:25:32,826 - __main__ - INFO - 已清理临时文件: 20250918_182532_1972126685_51f5d5b825_o.jpg
+2025-09-18 18:25:32,826 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 18:25:32] "[31m[1mPOST /predict HTTP/1.1[0m" 400 -
+2025-09-18 18:30:03,652 - __main__ - INFO - 收到图片上传: 20250918_183003_226053010_ac0440a0fb_b.jpg
+2025-09-18 18:30:03,655 - __main__ - WARNING - 图片质量验证失败: 20250918_183003_226053010_ac0440a0fb_b.jpg - 问题: ['未检测到珊瑚特征']
+2025-09-18 18:30:03,655 - __main__ - INFO - 已清理临时文件: 20250918_183003_226053010_ac0440a0fb_b.jpg
+2025-09-18 18:30:03,656 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 18:30:03] "[31m[1mPOST /predict HTTP/1.1[0m" 400 -
+2025-09-18 18:34:03,743 - __main__ - INFO - 正在启动珊瑚分类API服务...
+2025-09-18 18:34:03,850 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-09-18 18:34:03,854 - __main__ - INFO - 模型加载成功: mode/model.h5
+2025-09-18 18:34:03,854 - __main__ - INFO - 模型加载成功，服务启动中...
+2025-09-18 18:34:03,863 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.16.46.157:5000
+2025-09-18 18:34:03,863 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-09-18 18:34:12,019 - __main__ - INFO - 收到图片上传: 20250918_183412_226053010_ac0440a0fb_b.jpg
+2025-09-18 18:34:12,142 - __main__ - INFO - 预测完成: 20250918_183412_226053010_ac0440a0fb_b.jpg -> healthy_corals (置信度: 5.8610)
+2025-09-18 18:34:12,142 - __main__ - INFO - 已清理临时文件: 20250918_183412_226053010_ac0440a0fb_b.jpg
+2025-09-18 18:34:12,143 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 18:34:12] "POST /predict HTTP/1.1" 200 -
+2025-09-18 18:34:17,329 - __main__ - INFO - 收到图片上传: 20250918_183417_2361452424_8307b3af8a_b.jpg
+2025-09-18 18:34:17,391 - __main__ - INFO - 预测完成: 20250918_183417_2361452424_8307b3af8a_b.jpg -> healthy_corals (置信度: 5.9290)
+2025-09-18 18:34:17,391 - __main__ - INFO - 已清理临时文件: 20250918_183417_2361452424_8307b3af8a_b.jpg
+2025-09-18 18:34:17,391 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 18:34:17] "POST /predict HTTP/1.1" 200 -
+2025-09-18 18:34:22,664 - __main__ - INFO - 收到图片上传: 20250918_183422_3927261110_ee236bde50_b.jpg
+2025-09-18 18:34:22,737 - __main__ - INFO - 预测完成: 20250918_183422_3927261110_ee236bde50_b.jpg -> healthy_corals (置信度: 10.1969)
+2025-09-18 18:34:22,738 - __main__ - INFO - 已清理临时文件: 20250918_183422_3927261110_ee236bde50_b.jpg
+2025-09-18 18:34:22,738 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 18:34:22] "POST /predict HTTP/1.1" 200 -
+2025-09-18 18:34:34,732 - __main__ - INFO - 收到图片上传: 20250918_183434_20250804002157_8.jpg
+2025-09-18 18:34:34,735 - __main__ - WARNING - 图片质量验证失败: 20250918_183434_20250804002157_8.jpg - 问题: ['图片过于模糊']
+2025-09-18 18:34:34,736 - __main__ - INFO - 已清理临时文件: 20250918_183434_20250804002157_8.jpg
+2025-09-18 18:34:34,736 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 18:34:34] "[31m[1mPOST /predict HTTP/1.1[0m" 400 -
+2025-09-18 18:34:42,523 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 18:34:42] "[31m[1mPOST /predict HTTP/1.1[0m" 400 -
+2025-09-18 19:07:44,873 - __main__ - INFO - Starting coral classification API service...
+2025-09-18 19:07:44,999 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-09-18 19:07:45,003 - __main__ - INFO - 模型加载成功: mode/model.h5
+2025-09-18 19:07:45,003 - __main__ - INFO - Model loaded successfully, starting service...
+2025-09-18 19:07:45,011 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.16.46.157:5000
+2025-09-18 19:07:45,011 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-09-18 19:07:53,592 - __main__ - INFO - 收到图片上传: 20250918_190753_coral.jpg
+2025-09-18 19:07:53,722 - __main__ - INFO - 预测完成: 20250918_190753_coral.jpg -> healthy_corals (置信度: 1.6190)
+2025-09-18 19:07:53,723 - __main__ - INFO - 已清理临时文件: 20250918_190753_coral.jpg
+2025-09-18 19:07:53,723 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 19:07:53] "POST /predict HTTP/1.1" 200 -
+2025-09-18 19:07:57,767 - __main__ - INFO - 收到图片上传: 20250918_190757_coral.png
+2025-09-18 19:07:58,325 - __main__ - INFO - 预测完成: 20250918_190757_coral.png -> bleached_corals (置信度: 10.2088)
+2025-09-18 19:07:58,326 - __main__ - INFO - 已清理临时文件: 20250918_190757_coral.png
+2025-09-18 19:07:58,327 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 19:07:58] "POST /predict HTTP/1.1" 200 -
+2025-09-18 19:08:06,019 - __main__ - INFO - 收到图片上传: 20250918_190806_20250804002157_8.jpg
+2025-09-18 19:08:06,023 - __main__ - WARNING - 图片质量验证失败: 20250918_190806_20250804002157_8.jpg - 问题: ['Image is too blurry']
+2025-09-18 19:08:06,023 - __main__ - INFO - 已清理临时文件: 20250918_190806_20250804002157_8.jpg
+2025-09-18 19:08:06,023 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 19:08:06] "[31m[1mPOST /predict HTTP/1.1[0m" 400 -
+2025-09-18 19:09:58,401 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 19:09:58] "[31m[1mPOST /predict HTTP/1.1[0m" 400 -
+2025-09-18 19:10:10,072 - __main__ - INFO - 收到图片上传: 20250918_191010_20250804002157_8.jpg
+2025-09-18 19:10:10,077 - __main__ - WARNING - 图片质量验证失败: 20250918_191010_20250804002157_8.jpg - 问题: ['Image is too blurry']
+2025-09-18 19:10:10,078 - __main__ - INFO - 已清理临时文件: 20250918_191010_20250804002157_8.jpg
+2025-09-18 19:10:10,078 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 19:10:10] "[31m[1mPOST /predict HTTP/1.1[0m" 400 -
+2025-09-18 19:15:31,264 - __main__ - INFO - 收到图片上传: 20250918_191531_20250804002157_8.jpg
+2025-09-18 19:15:31,267 - __main__ - WARNING - 图片质量验证失败: 20250918_191531_20250804002157_8.jpg - 问题: ['Image is too blurry']
+2025-09-18 19:15:31,268 - __main__ - INFO - 已清理临时文件: 20250918_191531_20250804002157_8.jpg
+2025-09-18 19:15:31,268 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 19:15:31] "[31m[1mPOST /predict HTTP/1.1[0m" 400 -
+2025-09-18 20:36:46,166 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 20:36:46] "[31m[1mPOST /predict HTTP/1.1[0m" 400 -
+2025-09-18 20:37:07,674 - __main__ - INFO - 收到图片上传: 20250918_203707_20250804002157_8.jpg
+2025-09-18 20:37:07,682 - __main__ - WARNING - 图片质量验证失败: 20250918_203707_20250804002157_8.jpg - 问题: ['Image is too blurry']
+2025-09-18 20:37:07,682 - __main__ - INFO - 已清理临时文件: 20250918_203707_20250804002157_8.jpg
+2025-09-18 20:37:07,682 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 20:37:07] "[31m[1mPOST /predict HTTP/1.1[0m" 400 -
+2025-09-18 20:37:14,712 - __main__ - INFO - 收到图片上传: 20250918_203714_20250804002157_8.jpg
+2025-09-18 20:37:14,716 - __main__ - WARNING - 图片质量验证失败: 20250918_203714_20250804002157_8.jpg - 问题: ['Image is too blurry']
+2025-09-18 20:37:14,717 - __main__ - INFO - 已清理临时文件: 20250918_203714_20250804002157_8.jpg
+2025-09-18 20:37:14,717 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 20:37:14] "[31m[1mPOST /predict HTTP/1.1[0m" 400 -
+2025-09-18 20:37:24,395 - __main__ - INFO - 收到图片上传: 20250918_203724_coral.jpg
+2025-09-18 20:37:24,571 - __main__ - INFO - 预测完成: 20250918_203724_coral.jpg -> healthy_corals (置信度: 1.6190)
+2025-09-18 20:37:24,572 - __main__ - INFO - 已清理临时文件: 20250918_203724_coral.jpg
+2025-09-18 20:37:24,572 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 20:37:24] "POST /predict HTTP/1.1" 200 -
+2025-09-18 20:37:28,978 - __main__ - INFO - 收到图片上传: 20250918_203728_coral.png
+2025-09-18 20:37:29,596 - __main__ - INFO - 预测完成: 20250918_203728_coral.png -> bleached_corals (置信度: 10.2088)
+2025-09-18 20:37:29,597 - __main__ - INFO - 已清理临时文件: 20250918_203728_coral.png
+2025-09-18 20:37:29,599 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 20:37:29] "POST /predict HTTP/1.1" 200 -
+2025-09-18 22:51:04,830 - __main__ - INFO - 收到图片上传: 20250918_225104_coral.png
+2025-09-18 22:51:05,440 - __main__ - INFO - 预测完成: 20250918_225104_coral.png -> bleached_corals (置信度: 10.2088)
+2025-09-18 22:51:05,441 - __main__ - INFO - 已清理临时文件: 20250918_225104_coral.png
+2025-09-18 22:51:05,443 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 22:51:05] "POST /predict HTTP/1.1" 200 -
+2025-09-18 22:57:22,703 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 22:57:22] "[31m[1mPOST /predict HTTP/1.1[0m" 400 -
+2025-09-18 22:57:31,189 - __main__ - INFO - 收到图片上传: 20250918_225731_20250804002157_8.jpg
+2025-09-18 22:57:31,193 - __main__ - WARNING - 图片质量验证失败: 20250918_225731_20250804002157_8.jpg - 问题: ['Image is too blurry']
+2025-09-18 22:57:31,193 - __main__ - INFO - 已清理临时文件: 20250918_225731_20250804002157_8.jpg
+2025-09-18 22:57:31,193 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 22:57:31] "[31m[1mPOST /predict HTTP/1.1[0m" 400 -
+2025-09-18 22:57:37,365 - __main__ - INFO - 收到图片上传: 20250918_225737_coral.jpg
+2025-09-18 22:57:37,430 - __main__ - INFO - 预测完成: 20250918_225737_coral.jpg -> healthy_corals (置信度: 1.6190)
+2025-09-18 22:57:37,430 - __main__ - INFO - 已清理临时文件: 20250918_225737_coral.jpg
+2025-09-18 22:57:37,431 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 22:57:37] "POST /predict HTTP/1.1" 200 -
+2025-09-18 22:57:51,862 - __main__ - INFO - 收到图片上传: 20250918_225751_371626233_43ede84287_b.jpg
+2025-09-18 22:57:51,930 - __main__ - INFO - 预测完成: 20250918_225751_371626233_43ede84287_b.jpg -> healthy_corals (置信度: 2.2062)
+2025-09-18 22:57:51,930 - __main__ - INFO - 已清理临时文件: 20250918_225751_371626233_43ede84287_b.jpg
+2025-09-18 22:57:51,931 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 22:57:51] "POST /predict HTTP/1.1" 200 -
+2025-09-18 22:58:00,968 - __main__ - INFO - 收到图片上传: 20250918_225800_2568080532_2bd063709a_o.jpg
+2025-09-18 22:58:01,031 - __main__ - INFO - 预测完成: 20250918_225800_2568080532_2bd063709a_o.jpg -> bleached_corals (置信度: 1.7751)
+2025-09-18 22:58:01,031 - __main__ - INFO - 已清理临时文件: 20250918_225800_2568080532_2bd063709a_o.jpg
+2025-09-18 22:58:01,032 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 22:58:01] "POST /predict HTTP/1.1" 200 -
+2025-09-18 22:58:07,300 - __main__ - INFO - 收到图片上传: 20250918_225807_2306125427_0f0126ee53_b.jpg
+2025-09-18 22:58:07,361 - __main__ - INFO - 预测完成: 20250918_225807_2306125427_0f0126ee53_b.jpg -> healthy_corals (置信度: 9.9406)
+2025-09-18 22:58:07,362 - __main__ - INFO - 已清理临时文件: 20250918_225807_2306125427_0f0126ee53_b.jpg
+2025-09-18 22:58:07,362 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 22:58:07] "POST /predict HTTP/1.1" 200 -
+2025-09-18 22:58:16,951 - __main__ - INFO - 收到图片上传: 20250918_225816_Screenshot_2025-09-14_225404.png
+2025-09-18 22:58:17,043 - __main__ - INFO - 预测完成: 20250918_225816_Screenshot_2025-09-14_225404.png -> bleached_corals (置信度: 2.1196)
+2025-09-18 22:58:17,044 - __main__ - INFO - 已清理临时文件: 20250918_225816_Screenshot_2025-09-14_225404.png
+2025-09-18 22:58:17,044 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 22:58:17] "POST /predict HTTP/1.1" 200 -
+2025-09-18 22:58:21,050 - __main__ - INFO - 收到图片上传: 20250918_225821_Screenshot_2025-08-03_152213.png
+2025-09-18 22:58:21,068 - __main__ - WARNING - 图片质量验证失败: 20250918_225821_Screenshot_2025-08-03_152213.png - 问题: ['Image is too bright']
+2025-09-18 22:58:21,069 - __main__ - INFO - 已清理临时文件: 20250918_225821_Screenshot_2025-08-03_152213.png
+2025-09-18 22:58:21,070 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 22:58:21] "[31m[1mPOST /predict HTTP/1.1[0m" 400 -
+2025-09-18 22:58:28,989 - __main__ - INFO - 收到图片上传: 20250918_225828_Screenshot_2025-08-04_190935.png
+2025-09-18 22:58:29,128 - __main__ - WARNING - 图片质量验证失败: 20250918_225828_Screenshot_2025-08-04_190935.png - 问题: ['Image is too bright']
+2025-09-18 22:58:29,129 - __main__ - INFO - 已清理临时文件: 20250918_225828_Screenshot_2025-08-04_190935.png
+2025-09-18 22:58:29,129 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 22:58:29] "[31m[1mPOST /predict HTTP/1.1[0m" 400 -
+2025-09-18 22:58:34,773 - __main__ - INFO - 收到图片上传: 20250918_225834_Screenshot_2025-08-04_144707.png
+2025-09-18 22:58:34,865 - __main__ - WARNING - 图片质量验证失败: 20250918_225834_Screenshot_2025-08-04_144707.png - 问题: ['Image is too bright']
+2025-09-18 22:58:34,866 - __main__ - INFO - 已清理临时文件: 20250918_225834_Screenshot_2025-08-04_144707.png
+2025-09-18 22:58:34,866 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 22:58:34] "[31m[1mPOST /predict HTTP/1.1[0m" 400 -
+2025-09-18 22:58:44,215 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 22:58:44] "[31m[1mPOST /predict HTTP/1.1[0m" 400 -
+2025-09-18 23:05:09,637 - __main__ - INFO - 收到图片上传: 20250918_230509_20250804002157_8.jpg
+2025-09-18 23:05:09,642 - __main__ - WARNING - 图片质量验证失败: 20250918_230509_20250804002157_8.jpg - 问题: ['Image is too blurry']
+2025-09-18 23:05:09,642 - __main__ - INFO - 已清理临时文件: 20250918_230509_20250804002157_8.jpg
+2025-09-18 23:05:09,643 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 23:05:09] "[31m[1mPOST /predict HTTP/1.1[0m" 400 -
+2025-09-18 23:05:14,301 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 23:05:14] "[31m[1mPOST /predict HTTP/1.1[0m" 400 -
+2025-09-19 14:16:07,183 - __main__ - INFO - Starting coral classification API service...
+2025-09-19 14:16:07,520 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-09-19 14:16:07,529 - __main__ - INFO - 模型加载成功: mode/model.h5
+2025-09-19 14:16:07,530 - __main__ - INFO - Model loaded successfully, starting service...
+2025-09-19 14:16:07,545 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.192.113.167:5000
+2025-09-19 14:16:07,545 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-09-19 14:16:33,507 - __main__ - INFO - 收到图片上传: 20250919_141633_1558786009_097a857b64_b.jpg
+2025-09-19 14:16:33,988 - __main__ - INFO - 预测完成: 20250919_141633_1558786009_097a857b64_b.jpg -> bleached_corals (置信度: 3.0188)
+2025-09-19 14:16:33,988 - __main__ - INFO - 已清理临时文件: 20250919_141633_1558786009_097a857b64_b.jpg
+2025-09-19 14:16:33,988 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 14:16:33] "POST /predict HTTP/1.1" 200 -
+2025-09-19 14:16:41,683 - __main__ - INFO - 收到图片上传: 20250919_141641_coral.jpg
+2025-09-19 14:16:41,853 - __main__ - INFO - 预测完成: 20250919_141641_coral.jpg -> healthy_corals (置信度: 1.6190)
+2025-09-19 14:16:41,853 - __main__ - INFO - 已清理临时文件: 20250919_141641_coral.jpg
+2025-09-19 14:16:41,853 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 14:16:41] "POST /predict HTTP/1.1" 200 -
+2025-09-19 14:16:51,153 - __main__ - INFO - 收到图片上传: 20250919_141651_1558786009_097a857b64_b.jpg
+2025-09-19 14:16:51,283 - __main__ - INFO - 预测完成: 20250919_141651_1558786009_097a857b64_b.jpg -> bleached_corals (置信度: 3.0188)
+2025-09-19 14:16:51,283 - __main__ - INFO - 已清理临时文件: 20250919_141651_1558786009_097a857b64_b.jpg
+2025-09-19 14:16:51,283 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 14:16:51] "POST /predict HTTP/1.1" 200 -
+2025-09-19 14:26:46,386 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 14:26:46] "[31m[1mPOST /predict HTTP/1.1[0m" 400 -
+2025-09-19 14:26:57,168 - __main__ - INFO - 收到图片上传: 20250919_142657_coral.jpg
+2025-09-19 14:26:57,270 - __main__ - INFO - 预测完成: 20250919_142657_coral.jpg -> healthy_corals (置信度: 1.6190)
+2025-09-19 14:26:57,275 - __main__ - INFO - 已清理临时文件: 20250919_142657_coral.jpg
+2025-09-19 14:26:57,275 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 14:26:57] "POST /predict HTTP/1.1" 200 -
+2025-09-19 14:26:57,387 - __main__ - INFO - 收到图片上传: 20250919_142657_coral.jpg
+2025-09-19 14:26:57,536 - __main__ - INFO - 预测完成: 20250919_142657_coral.jpg -> healthy_corals (置信度: 1.6190)
+2025-09-19 14:26:57,536 - __main__ - INFO - 已清理临时文件: 20250919_142657_coral.jpg
+2025-09-19 14:26:57,536 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 14:26:57] "POST /predict HTTP/1.1" 200 -
+2025-09-19 14:27:05,093 - __main__ - INFO - 收到图片上传: 20250919_142705_1558786009_097a857b64_b.jpg
+2025-09-19 14:27:05,197 - __main__ - INFO - 预测完成: 20250919_142705_1558786009_097a857b64_b.jpg -> bleached_corals (置信度: 3.0188)
+2025-09-19 14:27:05,198 - __main__ - INFO - 已清理临时文件: 20250919_142705_1558786009_097a857b64_b.jpg
+2025-09-19 14:27:05,198 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 14:27:05] "POST /predict HTTP/1.1" 200 -
+2025-09-19 15:12:33,921 - __main__ - INFO - 收到图片上传: 20250919_151233_1558786009_097a857b64_b.jpg
+2025-09-19 15:12:33,995 - __main__ - INFO - 预测完成: 20250919_151233_1558786009_097a857b64_b.jpg -> bleached_corals (置信度: 3.0188)
+2025-09-19 15:12:33,995 - __main__ - INFO - 已清理临时文件: 20250919_151233_1558786009_097a857b64_b.jpg
+2025-09-19 15:12:33,996 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 15:12:33] "POST /predict HTTP/1.1" 200 -
+2025-09-19 15:12:39,272 - __main__ - INFO - 收到图片上传: 20250919_151239_coral.jpg
+2025-09-19 15:12:39,344 - __main__ - INFO - 预测完成: 20250919_151239_coral.jpg -> healthy_corals (置信度: 1.6190)
+2025-09-19 15:12:39,344 - __main__ - INFO - 已清理临时文件: 20250919_151239_coral.jpg
+2025-09-19 15:12:39,346 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 15:12:39] "POST /predict HTTP/1.1" 200 -
+2025-09-19 15:12:44,770 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 15:12:44] "[31m[1mPOST /predict HTTP/1.1[0m" 400 -
+2025-09-19 15:26:09,812 - __main__ - INFO - 收到图片上传: 20250919_152609_1558786009_097a857b64_b.jpg
+2025-09-19 15:26:09,879 - __main__ - INFO - 预测完成: 20250919_152609_1558786009_097a857b64_b.jpg -> bleached_corals (置信度: 3.0188)
+2025-09-19 15:26:09,880 - __main__ - INFO - 已清理临时文件: 20250919_152609_1558786009_097a857b64_b.jpg
+2025-09-19 15:26:09,880 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 15:26:09] "POST /predict HTTP/1.1" 200 -
+2025-09-19 15:26:24,911 - __main__ - INFO - 收到图片上传: 20250919_152624_coral.jpg
+2025-09-19 15:26:24,976 - __main__ - INFO - 预测完成: 20250919_152624_coral.jpg -> healthy_corals (置信度: 1.6190)
+2025-09-19 15:26:24,977 - __main__ - INFO - 已清理临时文件: 20250919_152624_coral.jpg
+2025-09-19 15:26:24,977 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 15:26:24] "POST /predict HTTP/1.1" 200 -
+2025-09-19 15:26:31,791 - __main__ - INFO - 收到图片上传: 20250919_152631_coral.jpg
+2025-09-19 15:26:31,857 - __main__ - INFO - 预测完成: 20250919_152631_coral.jpg -> healthy_corals (置信度: 1.6190)
+2025-09-19 15:26:31,858 - __main__ - INFO - 已清理临时文件: 20250919_152631_coral.jpg
+2025-09-19 15:26:31,858 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 15:26:31] "POST /predict HTTP/1.1" 200 -
+2025-09-19 15:26:37,881 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 15:26:37] "[31m[1mPOST /predict HTTP/1.1[0m" 400 -
+2025-09-19 15:53:54,110 - __main__ - INFO - 收到图片上传: 20250919_155354_coral.jpg
+2025-09-19 15:53:54,220 - __main__ - INFO - 预测完成: 20250919_155354_coral.jpg -> healthy_corals (置信度: 1.6190)
+2025-09-19 15:53:54,225 - __main__ - INFO - 已清理临时文件: 20250919_155354_coral.jpg
+2025-09-19 15:53:54,225 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 15:53:54] "POST /predict HTTP/1.1" 200 -
+2025-09-19 15:54:05,419 - __main__ - INFO - 收到图片上传: 20250919_155405_1558786009_097a857b64_b.jpg
+2025-09-19 15:54:05,535 - __main__ - INFO - 预测完成: 20250919_155405_1558786009_097a857b64_b.jpg -> bleached_corals (置信度: 3.0188)
+2025-09-19 15:54:05,535 - __main__ - INFO - 已清理临时文件: 20250919_155405_1558786009_097a857b64_b.jpg
+2025-09-19 15:54:05,535 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 15:54:05] "POST /predict HTTP/1.1" 200 -
+2025-09-23 15:06:22,454 - __main__ - INFO - Starting coral classification API service...
+2025-09-23 15:06:22,653 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-09-23 15:06:22,658 - __main__ - INFO - 模型加载成功: mode/model.h5
+2025-09-23 15:06:22,659 - __main__ - INFO - Model loaded successfully, starting service...
+2025-09-23 15:06:22,668 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.192.114.94:5000
+2025-09-23 15:06:22,668 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-09-23 15:17:08,950 - __main__ - INFO - 收到图片上传: 20250923_151708_1558786009_097a857b64_b.jpg
+2025-09-23 15:17:09,233 - __main__ - INFO - 预测完成: 20250923_151708_1558786009_097a857b64_b.jpg -> bleached_corals (置信度: 3.0188)
+2025-09-23 15:17:09,234 - __main__ - INFO - 已清理临时文件: 20250923_151708_1558786009_097a857b64_b.jpg
+2025-09-23 15:17:09,235 - werkzeug - INFO - 127.0.0.1 - - [23/Sep/2025 15:17:09] "POST /predict HTTP/1.1" 200 -
+2025-09-23 15:20:05,720 - __main__ - INFO - 收到图片上传: 20250923_152005_20250923151939_2925_736.jpg
+2025-09-23 15:20:05,762 - __main__ - WARNING - 图片质量验证失败: 20250923_152005_20250923151939_2925_736.jpg - 问题: ['Image is too blurry']
+2025-09-23 15:20:05,763 - __main__ - INFO - 已清理临时文件: 20250923_152005_20250923151939_2925_736.jpg
+2025-09-23 15:20:05,763 - werkzeug - INFO - 127.0.0.1 - - [23/Sep/2025 15:20:05] "[31m[1mPOST /predict HTTP/1.1[0m" 400 -
+2025-09-23 17:04:11,601 - __main__ - INFO - 收到图片上传: 20250923_170411_1558786009_097a857b64_b.jpg
+2025-09-23 17:04:11,787 - __main__ - INFO - 预测完成: 20250923_170411_1558786009_097a857b64_b.jpg -> bleached_corals (置信度: 3.0188)
+2025-09-23 17:04:11,787 - __main__ - INFO - 已清理临时文件: 20250923_170411_1558786009_097a857b64_b.jpg
+2025-09-23 17:04:11,787 - werkzeug - INFO - 127.0.0.1 - - [23/Sep/2025 17:04:11] "POST /predict HTTP/1.1" 200 -
+2025-09-23 17:05:41,704 - __main__ - INFO - 收到图片上传: 20250923_170541_coral.jpg
+2025-09-23 17:05:41,817 - __main__ - INFO - 预测完成: 20250923_170541_coral.jpg -> healthy_corals (置信度: 1.6190)
+2025-09-23 17:05:41,817 - __main__ - INFO - 已清理临时文件: 20250923_170541_coral.jpg
+2025-09-23 17:05:41,817 - werkzeug - INFO - 127.0.0.1 - - [23/Sep/2025 17:05:41] "POST /predict HTTP/1.1" 200 -
+2025-09-23 17:06:04,104 - __main__ - INFO - 收到图片上传: 20250923_170604_20250923151939_2925_736.jpg
+2025-09-23 17:06:04,178 - __main__ - WARNING - 图片质量验证失败: 20250923_170604_20250923151939_2925_736.jpg - 问题: ['Image is too blurry']
+2025-09-23 17:06:04,178 - __main__ - INFO - 已清理临时文件: 20250923_170604_20250923151939_2925_736.jpg
+2025-09-23 17:06:04,178 - werkzeug - INFO - 127.0.0.1 - - [23/Sep/2025 17:06:04] "[31m[1mPOST /predict HTTP/1.1[0m" 400 -
+2025-10-12 01:05:57,301 - __main__ - INFO - Starting coral classification API service...
+2025-10-12 01:05:57,453 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-10-12 01:05:57,458 - __main__ - INFO - 模型加载成功: mode/model.h5
+2025-10-12 01:05:57,458 - __main__ - INFO - Model loaded successfully, starting service...
+2025-10-12 01:05:57,467 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.16.47.135:5000
+2025-10-12 01:05:57,468 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-10-12 01:06:06,757 - __main__ - INFO - 收到图片上传: 20251012_010606_1558786009_097a857b64_b.jpg
+2025-10-12 01:06:07,028 - __main__ - INFO - 预测完成: 20251012_010606_1558786009_097a857b64_b.jpg -> bleached_corals (置信度: 3.0188)
+2025-10-12 01:06:07,029 - __main__ - INFO - 已清理临时文件: 20251012_010606_1558786009_097a857b64_b.jpg
+2025-10-12 01:06:07,029 - werkzeug - INFO - 127.0.0.1 - - [12/Oct/2025 01:06:07] "POST /predict HTTP/1.1" 200 -
+2025-10-12 01:07:15,523 - werkzeug - INFO - 127.0.0.1 - - [12/Oct/2025 01:07:15] "GET /health HTTP/1.1" 200 -
+2025-10-12 01:07:49,395 - __main__ - INFO - 收到图片上传: 20251012_010749_1558786009_097a857b64_b.jpg
+2025-10-12 01:07:49,458 - __main__ - INFO - 预测完成: 20251012_010749_1558786009_097a857b64_b.jpg -> bleached_corals (置信度: 3.0188)
+2025-10-12 01:07:49,458 - __main__ - INFO - 已清理临时文件: 20251012_010749_1558786009_097a857b64_b.jpg
+2025-10-12 01:07:49,459 - werkzeug - INFO - 127.0.0.1 - - [12/Oct/2025 01:07:49] "POST /predict HTTP/1.1" 200 -
+2025-10-12 01:10:26,501 - __main__ - INFO - Starting coral classification API service...
+2025-10-12 01:10:26,606 - absl - WARNING - Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2025-10-12 01:10:26,610 - __main__ - INFO - 模型加载成功: mode/model.h5
+2025-10-12 01:10:26,610 - __main__ - INFO - Model loaded successfully, starting service...
+2025-10-12 01:10:26,618 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.16.47.135:5000
+2025-10-12 01:10:26,618 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-10-12 01:10:31,144 - __main__ - INFO - 收到图片上传: 20251012_011031_1558786009_097a857b64_b.jpg
+2025-10-12 01:10:31,257 - __main__ - INFO - 预测完成: 20251012_011031_1558786009_097a857b64_b.jpg -> bleached_corals (置信度: 3.0188)
+2025-10-12 01:10:31,258 - __main__ - INFO - 已清理临时文件: 20251012_011031_1558786009_097a857b64_b.jpg
+2025-10-12 01:10:31,258 - werkzeug - INFO - 127.0.0.1 - - [12/Oct/2025 01:10:31] "POST /predict HTTP/1.1" 200 -
+2025-10-12 01:10:39,653 - __main__ - INFO - 收到图片上传: 20251012_011039_1558786009_097a857b64_b.jpg
+2025-10-12 01:10:39,727 - __main__ - INFO - 预测完成: 20251012_011039_1558786009_097a857b64_b.jpg -> bleached_corals (置信度: 3.0188)
+2025-10-12 01:10:39,727 - __main__ - INFO - 已清理临时文件: 20251012_011039_1558786009_097a857b64_b.jpg
+2025-10-12 01:10:39,728 - werkzeug - INFO - 127.0.0.1 - - [12/Oct/2025 01:10:39] "POST /predict HTTP/1.1" 200 -
+2025-10-12 01:11:43,570 - __main__ - INFO - 收到图片上传: 20251012_011143_1558786009_097a857b64_b.jpg
+2025-10-12 01:11:43,651 - __main__ - INFO - 预测完成: 20251012_011143_1558786009_097a857b64_b.jpg -> bleached_corals (置信度: 3.0188)
+2025-10-12 01:11:43,651 - __main__ - INFO - 已清理临时文件: 20251012_011143_1558786009_097a857b64_b.jpg
+2025-10-12 01:11:43,652 - werkzeug - INFO - 127.0.0.1 - - [12/Oct/2025 01:11:43] "POST /predict HTTP/1.1" 200 -
+2025-10-12 01:17:19,149 - __main__ - INFO - 收到图片上传: 20251012_011719_1558786009_097a857b64_b.jpg
+2025-10-12 01:17:19,213 - __main__ - INFO - 预测完成: 20251012_011719_1558786009_097a857b64_b.jpg -> bleached_corals (置信度: 3.0188)
+2025-10-12 01:17:19,214 - __main__ - INFO - 已清理临时文件: 20251012_011719_1558786009_097a857b64_b.jpg
+2025-10-12 01:17:19,214 - werkzeug - INFO - 127.0.0.1 - - [12/Oct/2025 01:17:19] "POST /predict HTTP/1.1" 200 -
+2025-10-12 01:17:43,327 - __main__ - INFO - 收到图片上传: 20251012_011743_1558786009_097a857b64_b.jpg
+2025-10-12 01:17:43,408 - __main__ - INFO - 预测完成: 20251012_011743_1558786009_097a857b64_b.jpg -> bleached_corals (置信度: 3.0188)
+2025-10-12 01:17:43,409 - __main__ - INFO - 已清理临时文件: 20251012_011743_1558786009_097a857b64_b.jpg
+2025-10-12 01:17:43,409 - werkzeug - INFO - 127.0.0.1 - - [12/Oct/2025 01:17:43] "POST /predict HTTP/1.1" 200 -
+2025-10-12 01:17:50,402 - __main__ - INFO - 收到图片上传: 20251012_011750_1558786009_097a857b64_b.jpg
+2025-10-12 01:17:50,464 - __main__ - INFO - 预测完成: 20251012_011750_1558786009_097a857b64_b.jpg -> bleached_corals (置信度: 3.0188)
+2025-10-12 01:17:50,464 - __main__ - INFO - 已清理临时文件: 20251012_011750_1558786009_097a857b64_b.jpg
+2025-10-12 01:17:50,465 - werkzeug - INFO - 127.0.0.1 - - [12/Oct/2025 01:17:50] "POST /predict HTTP/1.1" 200 -
+2025-10-12 01:20:26,844 - __main__ - INFO - 收到图片上传: 20251012_012026_1558786009_097a857b64_b.jpg
+2025-10-12 01:20:26,908 - __main__ - INFO - 预测完成: 20251012_012026_1558786009_097a857b64_b.jpg -> bleached_corals (置信度: 3.0188)
+2025-10-12 01:20:26,909 - __main__ - INFO - 已清理临时文件: 20251012_012026_1558786009_097a857b64_b.jpg
+2025-10-12 01:20:26,909 - werkzeug - INFO - 127.0.0.1 - - [12/Oct/2025 01:20:26] "POST /predict HTTP/1.1" 200 -
+2025-10-12 01:22:37,568 - __main__ - INFO - 收到图片上传: 20251012_012237_1558786009_097a857b64_b.jpg
+2025-10-12 01:22:37,632 - __main__ - INFO - 预测完成: 20251012_012237_1558786009_097a857b64_b.jpg -> bleached_corals (置信度: 3.0188)
+2025-10-12 01:22:37,632 - __main__ - INFO - 已清理临时文件: 20251012_012237_1558786009_097a857b64_b.jpg
+2025-10-12 01:22:37,634 - werkzeug - INFO - 127.0.0.1 - - [12/Oct/2025 01:22:37] "POST /predict HTTP/1.1" 200 -
+2025-10-12 01:22:50,102 - __main__ - INFO - 收到图片上传: 20251012_012250_coral.jpg
+2025-10-12 01:22:50,161 - __main__ - INFO - 预测完成: 20251012_012250_coral.jpg -> healthy_corals (置信度: 1.6190)
+2025-10-12 01:22:50,161 - __main__ - INFO - 已清理临时文件: 20251012_012250_coral.jpg
+2025-10-12 01:22:50,162 - werkzeug - INFO - 127.0.0.1 - - [12/Oct/2025 01:22:50] "POST /predict HTTP/1.1" 200 -
+2025-10-12 01:22:58,951 - __main__ - INFO - 收到图片上传: 20251012_012258_20250923151939_2925_736.jpg
+2025-10-12 01:22:58,994 - __main__ - WARNING - 图片质量验证失败: 20251012_012258_20250923151939_2925_736.jpg - 问题: ['Image is too blurry']
+2025-10-12 01:22:58,995 - __main__ - INFO - 已清理临时文件: 20251012_012258_20250923151939_2925_736.jpg
+2025-10-12 01:22:58,995 - werkzeug - INFO - 127.0.0.1 - - [12/Oct/2025 01:22:58] "[31m[1mPOST /predict HTTP/1.1[0m" 400 -
+2025-10-12 01:23:10,066 - werkzeug - INFO - 127.0.0.1 - - [12/Oct/2025 01:23:10] "[31m[1mPOST /predict HTTP/1.1[0m" 400 -

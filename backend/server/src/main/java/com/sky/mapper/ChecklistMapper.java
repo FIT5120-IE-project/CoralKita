@@ -5,27 +5,27 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 /**
- * 旅行清单数据访问层
+ * Travel Checklist Data Access Layer
  */
 @Mapper
 public interface ChecklistMapper {
 
     /**
-     * 根据用户ID查询清单记录
-     * @param userId 用户ID
-     * @return 清单记录
+     * Query checklist record by user ID
+     * @param userId User ID
+     * @return Checklist record
      */
     Checklist getByUserId(@Param("userId") Integer userId);
 
     /**
-     * 插入新的清单记录
-     * @param checklist 清单记录
+     * Insert new checklist record
+     * @param checklist Checklist record
      */
     void insert(Checklist checklist);
 
     /**
-     * 更新清单记录
-     * @param checklist 清单记录
+     * Update checklist record
+     * @param checklist Checklist record
      */
     void update(Checklist checklist);
 }

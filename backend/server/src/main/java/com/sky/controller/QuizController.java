@@ -21,12 +21,12 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * 测验题目管理接口
+ * Quiz Question Management Controller
  */
 @RestController
 @RequestMapping("/quiz")
 @Slf4j
-@Api(tags = "测验题目相关接口")
+@Api(tags = "Quiz Question Related APIs")
 public class QuizController {
 
     @Autowired
@@ -42,39 +42,39 @@ public class QuizController {
     private OssService ossService;
 
     /**
-     * 根据来源标题随机获取5条测验题目
-     * @param sourceTitle 来源标题
-     * @return 测验题目列表
+     * Randomly get 5 quiz questions by source title
+     * @param sourceTitle Source title
+     * @return List of quiz questions
      */
     @GetMapping("/questions")
-    @ApiOperation(value = "根据来源标题随机获取5条测验题目")
+    @ApiOperation(value = "Randomly get 5 quiz questions by source title")
     public Result<List<QuizQuestion>> getRandomQuestions(@RequestParam String sourceTitle) {
-        log.info("获取随机测验题目，来源标题：{}", sourceTitle);
+        log.info("Getting random quiz questions, source title: {}", sourceTitle);
         
-        // 参数验证
+        // Parameter validation
         if (sourceTitle == null || sourceTitle.trim().isEmpty()) {
-            return Result.error("来源标题不能为空");
+            return Result.error("Source title cannot be empty");
         }
         
-        // 查询随机题目
+        // Query random questions
         List<QuizQuestion> questions = quizService.getRandomQuestionsBySourceTitle(sourceTitle);
         
-        // 检查是否找到数据
+        // Check if data is found
         if (questions.isEmpty()) {
-            return Result.error("未找到该来源的测验题目");
+            return Result.error("No quiz questions found for this source");
         }
 
         return Result.success(questions);
     }
 
     /**
-     * 获取所有可用的来源标题
-     * @return 来源标题列表
+     * Get all available source titles
+     * @return List of source titles
      */
     @GetMapping("/sources")
-    @ApiOperation(value = "获取所有可用的来源标题")
+    @ApiOperation(value = "Get all available source titles")
     public Result<List<String>> getAllSourceTitles() {
-        log.info("获取所有可用的来源标题");
+        log.info("Getting all available source titles");
         
         List<String> sourceTitles = quizService.getAllSourceTitles();
         
@@ -82,67 +82,67 @@ public class QuizController {
     }
 
     /**
-     * 随机获取5道题目
-     * @return 随机题目列表
+     * Randomly get 5 questions
+     * @return List of random questions
      */
     @GetMapping("/random")
-    @ApiOperation(value = "随机获取5道题目")
+    @ApiOperation(value = "Randomly get 5 questions")
     public Result<List<QuizQuestion>> getRandomQuestions() {
-        log.info("随机获取5道题目");
+        log.info("Randomly getting 5 questions");
         
         try {
-            // 从所有来源中随机获取5道题目
+            // Randomly get 5 questions from all sources
             List<QuizQuestion> questions = quizService.getRandomQuestionsFromAllSources(5);
             
-            // 检查是否找到数据
+            // Check if data is found
             if (questions.isEmpty()) {
-                return Result.error("没有可用的题目");
+                return Result.error("No questions available");
             }
 
             return Result.success(questions);
         } catch (Exception e) {
-            log.error("获取随机题目失败：{}", e.getMessage());
-            return Result.error("获取题目失败：" + e.getMessage());
+            log.error("Failed to get random questions: {}", e.getMessage());
+            return Result.error("Failed to get questions: " + e.getMessage());
         }
     }
 
     /**
-     * 提交测验得分
-     * @param quizScoreDTO 测验得分信息
-     * @return 得分结果
+     * Submit quiz score
+     * @param quizScoreDTO Quiz score information
+     * @return Score result
      */
     @PostMapping("/submit-score")
-    @ApiOperation(value = "提交测验得分(已登录)")
+    @ApiOperation(value = "Submit quiz score (logged in)")
     public Result<QuizScoreVO> submitQuizScore(@RequestBody QuizScoreDTO quizScoreDTO) {
-        log.info("提交测验得分：{}", quizScoreDTO);
+        log.info("Submitting quiz score: {}", quizScoreDTO);
         
-        // 参数验证
+        // Parameter validation
         if (quizScoreDTO == null) {
-            return Result.error("得分信息不能为空");
+            return Result.error("Score information cannot be empty");
         }
         
         if (quizScoreDTO.getUserName() == null || quizScoreDTO.getUserName().trim().isEmpty()) {
-            return Result.error("用户名称不能为空");
+            return Result.error("Username cannot be empty");
         }
         
         if (quizScoreDTO.getScore() == null || quizScoreDTO.getScore() < 0) {
-            return Result.error("得分不能为空或负数");
+            return Result.error("Score cannot be empty or negative");
         }
         
 
         
         try {
-            // 查询用户信息
+            // Query user information
             User user = userMapper.getByUsername(quizScoreDTO.getUserName());
             if (user == null) {
-                return Result.error("用户不存在");
+                return Result.error("User does not exist");
             }
 
-            // 计算获得的经验值和积分（基于得分，假设满分5）
+            // Calculate earned experience and points (based on score, assuming max score is 5)
             int earnedExperience = calculateEarnedExperience(quizScoreDTO.getScore());
             int earnedPoints = calculateEarnedPoints(quizScoreDTO.getScore());
 
-            // 更新用户信息
+            // Update user information
             int newExp = user.getExp() + earnedExperience;
             int newPoints = user.getPoints() + earnedPoints;
             String newLevel = calculateLevel(newExp);
@@ -151,10 +151,10 @@ public class QuizController {
             user.setPoints(newPoints);
             user.setLevel(newLevel);
 
-            // 更新数据库
+            // Update database
             userMapper.updateUserScore(user);
 
-            // 构建返回结果
+            // Build return result
             QuizScoreVO quizScoreVO = QuizScoreVO.builder()
                     .userId(user.getId())
                     .userName(user.getName())
@@ -167,45 +167,45 @@ public class QuizController {
 
             return Result.success(quizScoreVO);
         } catch (Exception e) {
-            log.error("处理测验得分失败：{}", e.getMessage());
+            log.error("Failed to process quiz score: {}", e.getMessage());
             return Result.error(e.getMessage());
         }
     }
 
     /**
-     * 计算获得的经验值
-     * @param score 得分
-     * @return 获得的经验值
+     * Calculate earned experience
+     * @param score Score
+     * @return Earned experience
      */
     private int calculateEarnedExperience(int score) {
-        // 基础经验值：得分 * 2
+        // Base experience: score * 2
         int baseExperience = score * 2;
         
-        // 满分奖励：如果得分5，额外奖励
+        // Perfect bonus: if score is 5, additional reward
         int perfectBonus = score >= 5 ? 10 : 0;
         
         return baseExperience + perfectBonus;
     }
 
     /**
-     * 计算获得的积分
-     * @param score 得分
-     * @return 获得的积分
+     * Calculate earned points
+     * @param score Score
+     * @return Earned points
      */
     private int calculateEarnedPoints(int score) {
-        // 基础积分：得分
+        // Base points: score
         int basePoints = score;
         
-        // 满分奖励：如果得分100，额外奖励
+        // Perfect bonus: if score is 100, additional reward
         int perfectBonus = score >= 5 ? 5 : 0;
         
         return basePoints + perfectBonus;
     }
 
     /**
-     * 根据经验值计算等级
-     * @param experience 经验值
-     * @return 等级名称
+     * Calculate level based on experience
+     * @param experience Experience value
+     * @return Level name
      */
     private String calculateLevel(int experience) {
         if (experience < 100) {
@@ -224,42 +224,42 @@ public class QuizController {
     }
 
     /**
-     * 获取随机珊瑚图片用于测验
-     * @param userName 用户名称
-     * @return 随机图片列表
+     * Get random coral pictures for quiz
+     * @param userName Username
+     * @return List of random pictures
      */
     @GetMapping("/coral-pictures")
-    @ApiOperation(value = "获取5张珊瑚图片用于测验")
+    @ApiOperation(value = "Get 5 coral pictures for quiz")
     public Result<List<CoralPictureVO>> getRandomCoralPictures(@RequestParam String userName) {
-        log.info("获取随机珊瑚图片，用户：{}", userName);
+        log.info("Getting random coral pictures, user: {}", userName);
         
-        // 参数验证
+        // Parameter validation
         if (userName == null || userName.trim().isEmpty()) {
-            return Result.error("用户名称不能为空");
+            return Result.error("Username cannot be empty");
         }
         
         try {
-            // 查询用户是否存在
+            // Check if user exists
             User user = userMapper.getByUsername(userName);
             if (user == null) {
-                return Result.error("用户不存在");
+                return Result.error("User does not exist");
             }
             
-            // 从数据库随机获取5张图片
+            // Randomly get 5 pictures from database
             List<CoralPicture> pictures = coralPictureMapper.selectRandomPictures(5);
             
             if (pictures.isEmpty()) {
-                return Result.error("没有可用的图片");
+                return Result.error("No pictures available");
             }
             
-            // 转换为VO并生成签名URL
+            // Convert to VO and generate signed URLs
             List<CoralPictureVO> pictureVOs = new ArrayList<>();
             for (CoralPicture picture : pictures) {
-                // 从原始URL中提取objectKey
+                // Extract objectKey from original URL
                 String originalUrl = picture.getPicture();
                 String objectKey = extractObjectKeyFromUrl(originalUrl);
                 
-                // 生成签名URL
+                // Generate signed URL
                 String signedUrl = ossService.generateSignedUrl(objectKey, 3600);
                 
                 CoralPictureVO vo = CoralPictureVO.builder()
@@ -271,71 +271,71 @@ public class QuizController {
             
             return Result.success(pictureVOs);
         } catch (Exception e) {
-            log.error("获取随机珊瑚图片失败：{}", e.getMessage());
-            return Result.error("获取图片失败：" + e.getMessage());
+            log.error("Failed to get random coral pictures: {}", e.getMessage());
+            return Result.error("Failed to get pictures: " + e.getMessage());
         }
     }
 
     /**
-     * 获取指定数量的健康和白化珊瑚图片用于测验
-     * @param healthCount 健康珊瑚图片数量（默认4张）
-     * @param bleachCount 白化珊瑚图片数量（默认2张）
-     * @return 珊瑚图片列表
+     * Get specified number of healthy and bleached coral pictures for quiz
+     * @param healthCount Number of healthy coral pictures (default 4)
+     * @param bleachCount Number of bleached coral pictures (default 2)
+     * @return List of coral pictures
      */
     @GetMapping("/coral-pictures-balanced")
-    @ApiOperation(value = "获取指定数量的健康和白化珊瑚图片")
+    @ApiOperation(value = "Get specified number of healthy and bleached coral pictures")
     public Result<List<CoralPictureVO>> getBalancedCoralPictures(
             @RequestParam(defaultValue = "4") int healthCount,
             @RequestParam(defaultValue = "2") int bleachCount) {
-        log.info("获取平衡的珊瑚图片组合（{}张健康 + {}张白化）", healthCount, bleachCount);
+        log.info("Getting balanced coral picture combination ({} healthy + {} bleached)", healthCount, bleachCount);
         
-        // 参数验证
+        // Parameter validation
         if (healthCount < 0 || bleachCount < 0) {
-            return Result.error("图片数量不能为负数");
+            return Result.error("Picture count cannot be negative");
         }
         if (healthCount + bleachCount == 0) {
-            return Result.error("至少需要获取1张图片");
+            return Result.error("At least 1 picture is required");
         }
         if (healthCount + bleachCount > 20) {
-            return Result.error("单次最多只能获取20张图片");
+            return Result.error("Maximum 20 pictures can be retrieved at once");
         }
         
         try {
-            // 获取健康珊瑚图片
+            // Get healthy coral pictures
             List<CoralPicture> healthPictures = coralPictureMapper.selectByAnswer("health");
             if (healthPictures.size() < healthCount) {
-                log.warn("健康珊瑚图片数量不足，请求{}张，只有{}张", healthCount, healthPictures.size());
-                healthCount = healthPictures.size(); // 调整数量为实际可用数量
+                log.warn("Insufficient healthy coral pictures, requested {}, only {} available", healthCount, healthPictures.size());
+                healthCount = healthPictures.size(); // Adjust to actual available count
             }
             
-            // 获取白化珊瑚图片
+            // Get bleached coral pictures
             List<CoralPicture> bleachPictures = coralPictureMapper.selectByAnswer("bleach");
             if (bleachPictures.size() < bleachCount) {
-                log.warn("白化珊瑚图片数量不足，请求{}张，只有{}张", bleachCount, bleachPictures.size());
-                bleachCount = bleachPictures.size(); // 调整数量为实际可用数量
+                log.warn("Insufficient bleached coral pictures, requested {}, only {} available", bleachCount, bleachPictures.size());
+                bleachCount = bleachPictures.size(); // Adjust to actual available count
             }
             
-            // 随机选择指定数量的图片
+            // Randomly select specified number of pictures
             List<CoralPicture> selectedHealthPictures = selectRandomFromList(healthPictures, healthCount);
             List<CoralPicture> selectedBleachPictures = selectRandomFromList(bleachPictures, bleachCount);
             
-            // 合并图片列表
+            // Merge picture lists
             List<CoralPicture> allPictures = new ArrayList<>();
             allPictures.addAll(selectedHealthPictures);
             allPictures.addAll(selectedBleachPictures);
             
             if (allPictures.isEmpty()) {
-                return Result.error("没有可用的珊瑚图片");
+                return Result.error("No coral pictures available");
             }
             
-            // 转换为VO并生成签名URL
+            // Convert to VO and generate signed URLs
             List<CoralPictureVO> pictureVOs = new ArrayList<>();
             for (CoralPicture picture : allPictures) {
-                // 从原始URL中提取objectKey
+                // Extract objectKey from original URL
                 String originalUrl = picture.getPicture();
                 String objectKey = extractObjectKeyFromUrl(originalUrl);
                 
-                // 生成签名URL
+                // Generate signed URL
                 String signedUrl = ossService.generateSignedUrl(objectKey, 3600);
                 
                 CoralPictureVO vo = CoralPictureVO.builder()
@@ -345,21 +345,21 @@ public class QuizController {
                 pictureVOs.add(vo);
             }
             
-            log.info("成功获取{}张珊瑚图片（{}张健康，{}张白化）", 
+            log.info("Successfully retrieved {} coral pictures ({} healthy, {} bleached)", 
                     pictureVOs.size(), selectedHealthPictures.size(), selectedBleachPictures.size());
             
             return Result.success(pictureVOs);
         } catch (Exception e) {
-            log.error("获取平衡珊瑚图片失败：{}", e.getMessage());
-            return Result.error("获取图片失败：" + e.getMessage());
+            log.error("Failed to get balanced coral pictures: {}", e.getMessage());
+            return Result.error("Failed to get pictures: " + e.getMessage());
         }
     }
 
     /**
-     * 从列表中随机选择指定数量的元素
-     * @param list 源列表
-     * @param count 需要选择的数量
-     * @return 随机选择的元素列表
+     * Randomly select specified number of elements from list
+     * @param list Source list
+     * @param count Number to select
+     * @return List of randomly selected elements
      */
     private List<CoralPicture> selectRandomFromList(List<CoralPicture> list, int count) {
         if (list == null || list.isEmpty()) {
@@ -370,26 +370,26 @@ public class QuizController {
             return new ArrayList<>(list);
         }
         
-        // 创建副本并随机打乱
+        // Create copy and shuffle randomly
         List<CoralPicture> shuffledList = new ArrayList<>(list);
         java.util.Collections.shuffle(shuffledList);
         
-        // 返回前count个元素
+        // Return first count elements
         return shuffledList.subList(0, count);
     }
 
     /**
-     * 从OSS URL中提取objectKey
+     * Extract objectKey from OSS URL
      * @param url OSS URL
      * @return objectKey
      */
     private String extractObjectKeyFromUrl(String url) {
         try {
-            // 示例URL: https://bucket-name.endpoint.com/image/health/filename.jpg
-            // 需要提取: image/health/filename.jpg
+            // Example URL: https://bucket-name.endpoint.com/image/health/filename.jpg
+            // Need to extract: image/health/filename.jpg
             String[] parts = url.split("/");
             if (parts.length >= 4) {
-                // 从第4个部分开始拼接
+                // Concatenate from 4th part onwards
                 StringBuilder objectKey = new StringBuilder();
                 for (int i = 3; i < parts.length; i++) {
                     if (i > 3) {
@@ -399,9 +399,9 @@ public class QuizController {
                 }
                 return objectKey.toString();
             }
-            return url; // 如果无法解析，返回原URL
+            return url; // If parsing fails, return original URL
         } catch (Exception e) {
-            log.warn("无法从URL提取objectKey: {}", url);
+            log.warn("Unable to extract objectKey from URL: {}", url);
             return url;
         }
     }

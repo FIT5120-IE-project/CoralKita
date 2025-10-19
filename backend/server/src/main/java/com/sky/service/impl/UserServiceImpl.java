@@ -25,32 +25,32 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     /**
-     * 用户登录
+     * User login
      *
-     * @param user1
-     * @return
+     * @param user1 User login DTO
+     * @return User login VO
      */
     public UserLoginVO login(UserLoginDTO user1) {
         String username = user1.getName();
         String password = user1.getPassword();
 
-        //1、根据用户名查询数据库中的数据
+        // 1. Query database by username
         User user = userMapper.getByUsername(username);
 
-        //2、处理各种异常情况（用户名不存在、密码不对、账号被锁定）
+        // 2. Handle various exception cases (username doesn't exist, wrong password, account locked)
         if (user == null) {
-            //账号不存在
+            // Account doesn't exist
             throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
         }
 
-        //密码比对
-        // TODO 后期需要进行md5加密，然后再进行比对
+        // Password comparison
+        // TODO Need to perform MD5 encryption in the future, then compare
         if (!password.equals(user.getPassword())) {
-            //密码错误
+            // Wrong password
             throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
         }
 
-        //3、构建返回对象
+        // 3. Build return object
         UserLoginVO userLoginVO = UserLoginVO.builder()
                 .id(user.getId())
                 .name(user.getName())
@@ -65,47 +65,47 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * 用户注册
+     * User registration
      *
-     * @param userRegisterDTO
-     * @return
+     * @param userRegisterDTO User registration DTO
+     * @return User registration VO
      */
     public UserRegisterVO register(UserRegisterDTO userRegisterDTO) {
         String username = userRegisterDTO.getName();
         String password = userRegisterDTO.getPassword();
 
-        //1、参数校验
+        // 1. Parameter validation
         if (username == null || username.trim().isEmpty()) {
-            throw new RuntimeException("用户名不能为空");
+            throw new RuntimeException("Username cannot be empty");
         }
         if (password == null || password.trim().isEmpty()) {
-            throw new RuntimeException("密码不能为空");
+            throw new RuntimeException("Password cannot be empty");
         }
 
-        //2、检查用户名是否已存在
+        // 2. Check if username already exists
         User existingUser = userMapper.getByUsername(username);
         if (existingUser != null) {
-            throw new RuntimeException("用户名已存在");
+            throw new RuntimeException("Username already exists");
         }
 
-        //3、创建新用户
+        // 3. Create new user
         User user = new User();
         user.setName(username);
-        // 对密码进行MD5加密
+        // Perform MD5 encryption on password
         user.setPassword(password);
         user.setEmail(userRegisterDTO.getEmail());
-        // 设置初始值
+        // Set initial values
         user.setPoints(0);
         user.setLevel("Novice");
         user.setExp(0);
 
-        //4、保存到数据库（只保存name和password，其他字段使用数据库默认值）
+        // 4. Save to database (only save name and password, other fields use database defaults)
         userMapper.insert(user);
 
-        //5、重新查询用户信息（获取数据库生成的ID和默认值）
+        // 5. Re-query user information (get database-generated ID and default values)
         User savedUser = userMapper.getByUsername(username);
 
-        //6、构建返回对象
+        // 6. Build return object
         UserRegisterVO userRegisterVO = UserRegisterVO.builder()
                 .id(savedUser.getId())
                 .name(savedUser.getName())
@@ -120,10 +120,10 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * 更新用户徽章
+     * Update user badge
      *
-     * @param userId 用户ID
-     * @param badge  徽章名称
+     * @param userId User ID
+     * @param badge  Badge name
      */
     @Override
     public void updateUserBadge(Integer userId, String badge) {

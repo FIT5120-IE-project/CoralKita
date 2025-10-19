@@ -5,7 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * RAG问答查询请求DTO
+ * RAG Q&A Query Request DTO
  */
 @Data
 public class RagQueryDTO implements Serializable {
@@ -13,22 +13,22 @@ public class RagQueryDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 用户问题
+     * User Question
      */
     private String question;
 
     /**
-     * 用户ID（可选，用于记录查询历史）
+     * User ID (optional, for recording query history)
      */
     private Integer userId;
 
     /**
-     * 返回结果数量（默认5）
+     * Number of Results to Return (default 5)
      */
     private Integer topK = 5;
 
     /**
-     * 是否包含来源信息（默认true）
+     * Whether to Include Source Information (default true)
      */
     private Boolean includeSources = true;
 }

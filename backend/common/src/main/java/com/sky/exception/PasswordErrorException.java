@@ -1,7 +1,7 @@
 package com.sky.exception;
 
 /**
- * 密码错误异常
+ * Password Error Exception
  */
 public class PasswordErrorException extends BaseException {
 

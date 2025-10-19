@@ -5,12 +5,12 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * 趋势数据比较查询DTO
+ * Trend Data Comparison Query DTO
  */
 @Data
 public class TrendCompareDTO {
     /**
-     * 岛屿名称列表
+     * List of Island Names
      */
     private List<String> islands;
 }

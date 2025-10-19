@@ -5,27 +5,27 @@ import com.sky.entity.QuizQuestion;
 import java.util.List;
 
 /**
- * 测验服务接口
+ * Quiz Service Interface
  */
 public interface QuizService {
 
     /**
-     * 根据来源标题随机获取5条测验题目
-     * @param sourceTitle 来源标题
-     * @return 测验题目列表
+     * Randomly get 5 quiz questions by source title
+     * @param sourceTitle Source title
+     * @return List of quiz questions
      */
     List<QuizQuestion> getRandomQuestionsBySourceTitle(String sourceTitle);
 
     /**
-     * 获取所有可用的来源标题
-     * @return 来源标题列表
+     * Get all available source titles
+     * @return List of source titles
      */
     List<String> getAllSourceTitles();
 
     /**
-     * 从所有来源中随机获取指定数量的题目
-     * @param limit 获取题目数量
-     * @return 随机题目列表
+     * Randomly get specified number of questions from all sources
+     * @param limit Number of questions to get
+     * @return List of random questions
      */
     List<QuizQuestion> getRandomQuestionsFromAllSources(int limit);
 }

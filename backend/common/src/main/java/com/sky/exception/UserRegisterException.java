@@ -1,7 +1,7 @@
 package com.sky.exception;
 
 /**
- * 用户注册业务异常
+ * User Registration Business Exception
  */
 public class UserRegisterException extends BaseException {
 

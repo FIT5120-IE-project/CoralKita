@@ -17,12 +17,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 趋势数据管理接口
+ * Trend Data Management Controller
  */
 @RestController
 @RequestMapping("/trend")
 @Slf4j
-@Api(tags = "趋势数据相关接口")
+@Api(tags = "Trend Data Related APIs")
 public class TrendController {
 
     @Autowired
@@ -30,109 +30,109 @@ public class TrendController {
 
 
     /**
-     * 根据岛屿名称查询趋势数据（GET方式）
-     * @param island 岛屿名称
-     * @return 趋势数据列表
+     * Query trend data by island name (GET method)
+     * @param island Island name
+     * @return List of trend data
      */
     @GetMapping("/query")
-    @ApiOperation(value = "根据岛屿查询趋势数据")
+    @ApiOperation(value = "Query trend data by island")
     public Result<List<TrendVO>> getTrendDataByIslandGet(@RequestParam String island) {
-        log.info("查询趋势数据：{}", island);
+        log.info("Querying trend data: {}", island);
         
         if (island == null || island.trim().isEmpty()) {
-            return Result.error("岛屿名称不能为空");
+            return Result.error("Island name cannot be empty");
         }
         
         List<TrendVO> trendVOList = trendService.getTrendDataByIsland(island);
         
         
-        // 检查是否找到数据
+        // Check if data is found
         if (trendVOList.isEmpty()) {
-            return Result.error("无匹配岛屿");
+            return Result.error("No matching island");
         }
 
         return Result.success(trendVOList);
     }
 
     /**
-     * 比较多个岛屿的指定指标数据
-     * @param trendCompareDTO 比较参数
-     * @return 比较结果列表
+     * Compare specified indicator data of multiple islands
+     * @param trendCompareDTO Comparison parameters
+     * @return List of comparison results
      */
     @PostMapping("/compare")
-    @ApiOperation(value = "比较多个岛屿的指定指标数据")
+    @ApiOperation(value = "Compare specified indicator data of multiple islands")
     public Result<List<TrendCompareVO>> compareTrendData(@RequestBody TrendCompareDTO trendCompareDTO) {
-        log.info("比较趋势数据：{}", trendCompareDTO);
+        log.info("Comparing trend data: {}", trendCompareDTO);
         
-        // 参数验证
+        // Parameter validation
         if (trendCompareDTO.getIslands() == null || trendCompareDTO.getIslands().isEmpty()) {
-            return Result.error("岛屿列表不能为空");
+            return Result.error("Island list cannot be empty");
         }
-        // 执行比较查询
+        // Execute comparison query
         List<TrendCompareVO> compareResult = trendService.compareTrendData(
                 trendCompareDTO.getIslands()
         );
-        // 检查是否找到数据
+        // Check if data is found
         if (compareResult.isEmpty()) {
-            return Result.error("无匹配的岛屿数据");
+            return Result.error("No matching island data");
         }
         return Result.success(compareResult);
     }
 
     /**
-     * 获取所有岛屿列表
-     * @return 岛屿列表
+     * Get all island list
+     * @return Island list
      */
     @GetMapping("/islands")
-    @ApiOperation(value = "获取所有岛屿列表")
+    @ApiOperation(value = "Get all island list")
     public Result<List<String>> getAllIslands() {
-        log.info("获取所有岛屿列表");
+        log.info("Getting all island list");
         
         List<String> islands = trendService.getAllIslands();
         
         if (islands.isEmpty()) {
-            return Result.error("暂无岛屿数据");
+            return Result.error("No island data available");
         }
 
         return Result.success(islands);
     }
 
     /**
-     * 根据岛屿名称查询珊瑚数据（bleach接口）
-     * @param island 岛屿名称
-     * @return 珊瑚数据列表
+     * Query coral data by island name (bleach endpoint)
+     * @param island Island name
+     * @return List of coral data
      */
     @GetMapping("/bleach")
-    @ApiOperation(value = "根据岛屿查询珊瑚所有生数据(随前端需要使用：可供分析白化趋势,岛屿恢复速度，健康分析等等)")
+    @ApiOperation(value = "Query all raw coral data by island (for frontend use: can be used to analyze bleaching trends, island recovery speed, health analysis, etc.)")
     public Result<List<Coral>> getCoralDataByIsland(@RequestParam String island) {
-        log.info("查询珊瑚数据：{}", island);
+        log.info("Querying coral data: {}", island);
         
         if (island == null || island.trim().isEmpty()) {
-            return Result.error("岛屿名称不能为空");
+            return Result.error("Island name cannot be empty");
         }
         
         List<Coral> coralList = trendService.getCoralDataByIsland(island);
         
-        // 检查是否找到数据
+        // Check if data is found
         if (coralList.isEmpty()) {
-            return Result.error("无匹配岛屿的珊瑚数据");
+            return Result.error("No coral data for matching island");
         }
 
         return Result.success(coralList);
     }
 
     /**
-     * 批量获取多个岛屿的坐标信息
-     * @param islands 岛屿名称列表
-     * @return 岛屿坐标信息列表
+     * Batch get coordinates of multiple islands
+     * @param islands List of island names
+     * @return List of island coordinates
      */
     @PostMapping("/bleach/coordinates")
-    @ApiOperation(value = "批量获取多个岛屿的坐标信息")
+    @ApiOperation(value = "Batch get coordinates of multiple islands")
     public Result<Map<String, Object>> getIslandsCoordinates(@RequestBody List<String> islands) {
-        log.info("批量获取岛屿坐标：{}", islands);
+        log.info("Batch getting island coordinates: {}", islands);
         
         if (islands == null || islands.isEmpty()) {
-            return Result.error("岛屿列表不能为空");
+            return Result.error("Island list cannot be empty");
         }
         
         Map<String, Object> coordinatesMap = trendService.getIslandsCoordinates(islands);
@@ -141,57 +141,57 @@ public class TrendController {
     }
 
     /**
-     * 查询每个岛屿最新年份的趋势分析元数据
-     * @return 趋势分析元数据列表
+     * Query trend analysis metadata for latest year of each island
+     * @return List of trend analysis metadata
      */
     @GetMapping("/metadata/latest")
-    @ApiOperation(value = "查询每个岛屿最新年份的趋势分析元数据")
+    @ApiOperation(value = "Query trend analysis metadata for latest year of each island")
     public Result<List<TrendAnalysisMetadata>> getLatestYearAllIslandsMetadata() {
-        log.info("查询每个岛屿最新年份的趋势分析元数据");
+        log.info("Querying trend analysis metadata for latest year of each island");
         
         List<TrendAnalysisMetadata> metadataList = trendService.getLatestYearAllIslandsMetadata();
         
-        // 检查是否找到数据
+        // Check if data is found
         if (metadataList.isEmpty()) {
-            return Result.error("暂无趋势分析元数据");
+            return Result.error("No trend analysis metadata available");
         }
 
         return Result.success(metadataList);
     }
 
     /**
-     * 批量获取所有岛屿的趋势数据
-     * @return 所有岛屿的趋势数据Map，key为岛屿名称，value为趋势数据列表
+     * Batch get trend data for all islands
+     * @return Map of all islands' trend data, where key is island name and value is list of trend data
      */
     @GetMapping("/query/all")
-    @ApiOperation(value = "批量获取所有岛屿的趋势数据")
+    @ApiOperation(value = "Batch get trend data for all islands")
     public Result<Map<String, List<TrendVO>>> getAllIslandsTrendData() {
-        log.info("批量获取所有岛屿的趋势数据");
+        log.info("Batch getting trend data for all islands");
         
         Map<String, List<TrendVO>> allIslandsTrendData = trendService.getAllIslandsTrendData();
         
-        // 检查是否找到数据
+        // Check if data is found
         if (allIslandsTrendData.isEmpty()) {
-            return Result.error("暂无趋势数据");
+            return Result.error("No trend data available");
         }
 
         return Result.success(allIslandsTrendData);
     }
 
     /**
-     * 批量获取所有岛屿的珊瑚数据（bleach数据）
-     * @return 所有岛屿的珊瑚数据Map，key为岛屿名称，value为珊瑚数据列表
+     * Batch get coral data for all islands (bleach data)
+     * @return Map of all islands' coral data, where key is island name and value is list of coral data
      */
     @GetMapping("/bleach/all")
-    @ApiOperation(value = "批量获取所有岛屿的珊瑚数据")
+    @ApiOperation(value = "Batch get coral data for all islands")
     public Result<Map<String, List<Coral>>> getAllIslandsCoralData() {
-        log.info("批量获取所有岛屿的珊瑚数据");
+        log.info("Batch getting coral data for all islands");
         
         Map<String, List<Coral>> allIslandsCoralData = trendService.getAllIslandsCoralData();
         
-        // 检查是否找到数据
+        // Check if data is found
         if (allIslandsCoralData.isEmpty()) {
-            return Result.error("暂无珊瑚数据");
+            return Result.error("No coral data available");
         }
 
         return Result.success(allIslandsCoralData);

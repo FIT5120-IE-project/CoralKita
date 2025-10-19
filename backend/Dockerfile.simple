@@ -1,0 +1,28 @@
+# 简化版Dockerfile - 用于解决构建上下文问题
+FROM maven:3.9.6-eclipse-temurin-21 AS build
+WORKDIR /build
+
+# 复制整个项目
+COPY . .
+
+# 切换到backend目录并构建
+WORKDIR /build/backend
+
+# 构建应用
+RUN mvn -B -q -DskipTests clean package
+
+# 运行阶段
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+
+# 复制构建的jar文件
+COPY --from=build /build/backend/server/target/server-1.0-SNAPSHOT.jar /app/app.jar
+
+# 设置JVM参数
+ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
+
+# 暴露端口
+EXPOSE 8080
+
+# 运行应用
+CMD ["sh", "-c", "java $JAVA_OPTS -jar /app/app.jar"]

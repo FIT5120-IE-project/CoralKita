@@ -1,7 +1,7 @@
 package com.sky.exception;
 
 /**
- * 登录失败
+ * Login Failed Exception
  */
 public class LoginFailedException extends BaseException{
     public LoginFailedException(String msg){

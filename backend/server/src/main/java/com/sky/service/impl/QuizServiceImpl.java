@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * 测验服务实现类
+ * Quiz Service Implementation
  */
 @Service
 @Slf4j
@@ -20,34 +20,34 @@ public class QuizServiceImpl implements QuizService {
     private QuizMapper quizMapper;
 
     /**
-     * 根据来源标题随机获取5条测验题目
-     * @param sourceTitle 来源标题
-     * @return 测验题目列表
+     * Randomly get 5 quiz questions by source title
+     * @param sourceTitle Source title
+     * @return List of quiz questions
      */
     @Override
     public List<QuizQuestion> getRandomQuestionsBySourceTitle(String sourceTitle) {
-        log.info("根据来源标题随机查询测验题目：{}", sourceTitle);
+        log.info("Randomly querying quiz questions by source title: {}", sourceTitle);
         return quizMapper.getRandomQuestionsBySourceTitle(sourceTitle);
     }
 
     /**
-     * 获取所有可用的来源标题
-     * @return 来源标题列表
+     * Get all available source titles
+     * @return List of source titles
      */
     @Override
     public List<String> getAllSourceTitles() {
-        log.info("查询所有可用的来源标题");
+        log.info("Querying all available source titles");
         return quizMapper.getAllSourceTitles();
     }
 
     /**
-     * 从所有来源中随机获取指定数量的题目
-     * @param limit 获取题目数量
-     * @return 随机题目列表
+     * Randomly get specified number of questions from all sources
+     * @param limit Number of questions to get
+     * @return List of random questions
      */
     @Override
     public List<QuizQuestion> getRandomQuestionsFromAllSources(int limit) {
-        log.info("从所有来源中随机获取{}道题目", limit);
+        log.info("Randomly getting {} questions from all sources", limit);
         return quizMapper.getRandomQuestionsFromAllSources(limit);
     }
 }

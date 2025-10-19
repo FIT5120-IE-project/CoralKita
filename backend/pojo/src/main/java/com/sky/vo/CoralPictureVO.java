@@ -6,13 +6,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 珊瑚图片VO类
+ * Coral Picture VO
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class CoralPictureVO {
-    private String pictureUrl;  // 签名URL
-    private String answer;      // 答案/分类
+    private String pictureUrl;  // Signed URL
+    private String answer;      // Answer/Classification
 }

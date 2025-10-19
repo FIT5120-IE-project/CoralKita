@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * RAG问答响应VO
+ * RAG Q&A Response VO
  */
 @Data
 @Builder
@@ -20,32 +20,32 @@ public class RagAnswerVO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 用户问题
+     * User Question
      */
     private String question;
 
     /**
-     * AI生成的答案
+     * AI Generated Answer
      */
     private String answer;
 
     /**
-     * 参考来源信息
+     * Reference Source Information
      */
     private List<SourceInfo> sources;
 
     /**
-     * 处理时间（毫秒）
+     * Processing Time (milliseconds)
      */
     private Long processingTime;
 
     /**
-     * 是否与珊瑚相关
+     * Whether Related to Coral
      */
     private Boolean isCoralRelated;
 
     /**
-     * 来源信息内部类
+     * Source Information Inner Class
      */
     @Data
     @Builder
@@ -56,22 +56,22 @@ public class RagAnswerVO implements Serializable {
         private static final long serialVersionUID = 1L;
 
         /**
-         * 来源文件名
+         * Source File Name
          */
         private String sourceFile;
 
         /**
-         * 年份
+         * Year
          */
         private String year;
 
         /**
-         * 相似度分数
+         * Similarity Score
          */
         private Double score;
 
         /**
-         * 文档片段内容（截取前200字符）
+         * Document Fragment Content (first 200 characters)
          */
         private String content;
     }

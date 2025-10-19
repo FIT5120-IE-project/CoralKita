@@ -17,7 +17,7 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 
 /**
- * 配置类，注册web层相关组件
+ * Configuration class for registering web layer components
  */
 @Configuration
 @Slf4j
@@ -27,7 +27,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     private JwtTokenAdminInterceptor jwtTokenAdminInterceptor;
 
     /**
-     * 跨域配置
+     * CORS configuration
      * @param registry
      */
     @Override
@@ -41,28 +41,28 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     }
 
     /**
-     * 注册自定义拦截器
+     * Register custom interceptors
      *
      * @param registry
      */
     protected void addInterceptors(InterceptorRegistry registry) {
-        log.info("开始注册自定义拦截器...");
-        // 暂时注释掉JWT拦截器，放行所有请求
+        log.info("Starting to register custom interceptors...");
+        // JWT interceptor temporarily commented out, allow all requests
         // registry.addInterceptor(jwtTokenAdminInterceptor)
-        //         .addPathPatterns("/admin/**", "/user/**")  // 只拦截需要认证的路径
-        //         .excludePathPatterns("/admin/employee/login", "/user/login", "/user/register", "/oss/**", "/trend/**", "/quiz/**");  // 排除公开接口
+        //         .addPathPatterns("/admin/**", "/user/**")  // Only intercept paths that need authentication
+        //         .excludePathPatterns("/admin/employee/login", "/user/login", "/user/register", "/oss/**", "/trend/**", "/quiz/**");  // Exclude public interfaces
     }
 
     /**
-     * 通过knife4j生成接口文档
+     * Generate API documentation via knife4j
      * @return
      */
     @Bean
     public Docket docket() {
         ApiInfo apiInfo = new ApiInfoBuilder()
-                .title("CoralKita项目接口文档")
+                .title("CoralKita Project API Documentation")
                 .version("2.0")
-                .description("CoralKita项目接口文档")
+                .description("CoralKita Project API Documentation")
                 .build();
         Docket docket = new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo)
@@ -74,7 +74,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     }
 
     /**
-     * 设置静态资源映射
+     * Configure static resource mapping
      * @param registry
      */
     protected void addResourceHandlers(ResourceHandlerRegistry registry) {

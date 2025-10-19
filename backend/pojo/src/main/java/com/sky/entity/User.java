@@ -21,25 +21,25 @@ public class User implements Serializable {
 
     private Long id;
 
-    //微信用户唯一标识
+    // WeChat user unique identifier
     private String openid;
 
-    //姓名
+    // Name
     private String name;
 
-    //手机号
+    // Phone number
     private String phone;
 
-    //性别 0 女 1 男
+    // Gender: 0 female, 1 male
     private String sex;
 
-    //身份证号
+    // ID number
     private String idNumber;
 
-    //头像
+    // Avatar
     private String avatar;
 
-    //注册时间
+    // Registration time
     private LocalDateTime createTime;
 }
 **/
@@ -50,27 +50,27 @@ public class User implements Serializable {
 @AllArgsConstructor
 public class User{
 
-    //用户 id
+    // User ID
     private int id;
 
-    //昵称
+    // Nickname
     private String name;
 
-    //密码
+    // Password
     private String password;
 
-    //积分
+    // Points
     private int points;
 
-    //勋章
+    // Badges
     private String badges;
 
-    //等级 (数据库中是text类型)
+    // Level (text type in database)
     private String level;
 
-    //经验
+    // Experience
     private int exp;
 
-    //邮箱
+    // Email
     private String email;
 }
