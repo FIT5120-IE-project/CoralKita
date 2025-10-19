@@ -1,7 +1,6 @@
 <template>
   <div class="language-switcher" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
     <div class="current-language">
-      <span class="current-lang-code">{{ currentLanguageCode }}</span>
       <span class="language-text">{{ currentLanguageName }}</span>
       <span class="dropdown-arrow">▼</span>
     </div>
@@ -14,7 +13,6 @@
         :class="{ active: $i18n.locale === lang.code }"
         @click="changeLanguage(lang.code)"
       >
-        <span class="lang-flag">{{ lang.flag }}</span>
         <span class="lang-name">{{ lang.name }}</span>
         <span class="lang-check" v-if="$i18n.locale === lang.code">✓</span>
       </div>
@@ -31,8 +29,8 @@ export default {
       hoverTimeout: null,
       languages: [
         { code: 'en', name: 'English', flag: 'EN' },
-        { code: 'zh', name: '中文', flag: 'ZH' },
-        { code: 'ms', name: 'Bahasa Melayu', flag: 'MS' }
+        { code: 'ms', name: 'Bahasa Melayu', flag: 'MS' },
+        { code: 'zh', name: 'Chinese', flag: 'ZH' }
       ]
     }
   },
@@ -48,7 +46,7 @@ export default {
   },
   methods: {
     handleMouseEnter() {
-      // 清除任何待执行的隐藏操作
+      // Clear any pending hide operations
       if (this.hoverTimeout) {
         clearTimeout(this.hoverTimeout)
         this.hoverTimeout = null
@@ -57,14 +55,14 @@ export default {
     },
     
     handleMouseLeave() {
-      // 延迟隐藏，给用户时间移动到下拉菜单
+      // Delay hide to give user time to move to dropdown menu
       this.hoverTimeout = setTimeout(() => {
         this.showDropdown = false
-      }, 150) // 150ms 延迟
+      }, 150) // 150ms delay
     },
     
     handleDropdownEnter() {
-      // 鼠标进入下拉菜单，确保显示
+      // Mouse enters dropdown menu, ensure display
       if (this.hoverTimeout) {
         clearTimeout(this.hoverTimeout)
         this.hoverTimeout = null
@@ -73,32 +71,32 @@ export default {
     },
     
     handleDropdownLeave() {
-      // 鼠标离开下拉菜单，隐藏
+      // Mouse leaves dropdown menu, hide
       this.showDropdown = false
     },
     
     changeLanguage(locale) {
       this.$i18n.locale = locale
-      // 保存到 localStorage
+      // Save to localStorage
       localStorage.setItem('userLanguage', locale)
       this.showDropdown = false
       
-      // 清除任何待执行的隐藏操作
+      // Clear any pending hide operations
       if (this.hoverTimeout) {
         clearTimeout(this.hoverTimeout)
         this.hoverTimeout = null
       }
       
-      // 触发全局事件通知其他组件
+      // Trigger global event to notify other components
       this.$root.$emit('languageChanged', locale)
       
-      // 显示切换成功提示（可选）
+      // Show switch success prompt (optional)
       console.log(`Language changed to: ${locale}`)
     }
   },
   
   beforeDestroy() {
-    // 组件销毁前清理定时器
+    // Clean up timer before component destruction
     if (this.hoverTimeout) {
       clearTimeout(this.hoverTimeout)
     }
@@ -129,20 +127,10 @@ export default {
   background: rgba(255, 255, 255, 0.1);
 }
 
-.current-lang-code {
-  font-size: 0.7rem;
-  font-weight: bold;
-  background: linear-gradient(135deg, #3b82f6, #10b981);
-  color: white;
-  padding: 3px 6px;
-  border-radius: 4px;
-  min-width: 24px;
-  text-align: center;
-  letter-spacing: 0.5px;
-}
 
 .language-text {
-  font-size: 0.95rem;
+  font-size: 1rem;
+  font-weight: 500;
 }
 
 .dropdown-arrow {
@@ -164,7 +152,7 @@ export default {
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 16px;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1);
-  min-width: 180px;
+  min-width: 160px;
   z-index: 1001;
   overflow: hidden;
   animation: dropdownSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -184,7 +172,7 @@ export default {
 .language-option {
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
   padding: 14px 20px;
   color: #1f2937;
   cursor: pointer;
@@ -221,20 +209,10 @@ export default {
   border-radius: 16px;
 }
 
-.lang-flag {
-  font-size: 0.8rem;
-  font-weight: bold;
-  background: linear-gradient(135deg, #3b82f6, #10b981);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 6px;
-  min-width: 32px;
-  text-align: center;
-  letter-spacing: 0.5px;
-}
 
 .lang-name {
   flex: 1;
+  font-size: 1rem;
 }
 
 .lang-check {
@@ -243,18 +221,18 @@ export default {
   font-size: 1.2rem;
 }
 
-/* 响应式设计 */
+/* Responsive design */
 @media (max-width: 768px) {
   .current-language {
     padding: 6px 12px;
   }
   
   .language-text {
-    display: none;
+    font-size: 0.9rem;
   }
   
   .language-dropdown {
-    min-width: 160px;
+    min-width: 140px;
   }
   
   .language-option {

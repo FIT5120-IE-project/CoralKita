@@ -10,13 +10,9 @@
       </div>
       <div class="nav-right">
         <div class="nav-items">
+          <span class="nav-item" @click="goToMap">{{ $t('nav.mapRecommendation.line1') }}</span>
           <div class="nav-item-dropdown" @mouseenter="showTravelDropdown = true" @mouseleave="showTravelDropdown = false">
-            <div class="nav-item-wrapper">
-              <span class="nav-item map-rec-item" @click="goToMap">
-                <span class="nav-text-line">{{ $t('nav.mapRecommendation.line1') }}</span>
-                <span class="nav-text-line">{{ $t('nav.mapRecommendation.line2') }}</span>
-              </span>
-            </div>
+            <span class="nav-item">{{ $t('nav.topIsland') }}</span>
             <div class="dropdown-menu" v-show="showTravelDropdown">
               <div 
                 v-for="island in travelIslands" 
@@ -47,13 +43,33 @@
       </div>
     </div>
 
-    <!-- 滚动内容区域 -->
+    <!-- Scrollable content area -->
     <div class="scroll-content">
       
+      <!-- Top content area - only keep text description -->
+      <div class="top-content">
+        <!-- Brand area (with white glass container) -->
+        <div class="brand-glass">
+          <div class="brand-section">
+            <h1 class="brand-title">CoralKita</h1>
+          </div>
+        </div>
+        
+        <!-- Main title -->
+        <h2 class="main-title">{{ $t('home.intro.title') }}</h2>
+      </div>
       
-      <!-- 珊瑚礁状态展示区域 -->
-      <div class="coral-status-sections">
-        <!-- 顶部区域：彩色珊瑚礁 -->
+      <!-- Scroll down arrow -->
+      <div class="scroll-arrow top-scroll-arrow" 
+           @click="scrollToBottomContent" 
+           @dblclick="quickJumpToBottomContent"
+           :title="$t('home.scrollHint')">
+        <img :src="imageUrls.arrowIcon" alt="Scroll Down" class="arrow-icon" />
+      </div>
+      
+      <!-- Coral reef status display area -->
+      <div id="coral-section" class="coral-status-sections">
+        <!-- Top area: Colorful coral reef -->
         <div class="status-section top-section">
           <div class="section-content">
             <div class="image-container">
@@ -65,12 +81,12 @@
           </div>
       </div>
       
-      <!-- 第一个箭头：跳转到中部区域 -->
+      <!-- First arrow: Jump to middle area -->
       <div class="scroll-arrow arrow-1" @click="scrollToSection('middle-section')">
         <img :src="imageUrls.arrowIcon" alt="Scroll Down" class="arrow-icon" />
       </div>
       
-        <!-- 中部区域：白化过程 -->
+        <!-- Middle area: Bleaching process -->
         <div id="middle-section" class="status-section middle-section">
           <div class="section-content">
             <div class="text-container">
@@ -82,12 +98,12 @@
           </div>
         </div>
         
-        <!-- 第二个箭头：跳转到底部区域 -->
+        <!-- Second arrow: Jump to bottom area -->
         <div class="scroll-arrow arrow-2" @click="scrollToSection('bottom-section')">
           <img :src="imageUrls.arrowIcon" alt="Scroll Down" class="arrow-icon" />
           </div>
         
-        <!-- 底部区域：完全白化 -->
+        <!-- Bottom area: Completely bleached -->
         <div id="bottom-section" class="status-section bottom-section">
           <div class="section-content">
             <div class="image-container">
@@ -98,17 +114,21 @@
             </div>
           </div>
         </div>
+        
+        <!-- Third arrow: Jump to website introduction section -->
+        <div class="scroll-arrow arrow-3" @click="scrollToSection('bottom-content-section')">
+          <img :src="imageUrls.arrowIcon" alt="Scroll Down" class="arrow-icon" />
+        </div>
       </div>
       
-      <!-- 底部内容区域 -->
-      <div class="bottom-content">
-        <!-- 主标题 -->
-        <div class="intro-section">
-          <h2>{{ $t('home.intro.title') }}</h2>
+      <!-- Bottom content area - feature tags and buttons -->
+      <div id="bottom-content-section" class="bottom-content">
+        <!-- Description text -->
+        <div class="description-section">
           <p>{{ $t('home.intro.description') }}</p>
         </div>
         
-        <!-- 特点标签 -->
+        <!-- Feature tags -->
         <div class="features-section">
           <div class="feature-tag">
             <span class="feature-icon">📊</span>
@@ -124,13 +144,14 @@
           </div>
         </div>
         
-        <!-- 探索按钮 -->
+        <!-- Explore button -->
         <div class="explore-section">
           <button class="explore-btn" @click="goToMap">
             {{ $t('home.exploreButton') }}
           </button>
         </div>
-       </div>
+      </div>
+      
     </div>
     
     </div>
@@ -140,7 +161,16 @@
       <div class="footer-content">
         {{ $t('home.footer.copyright') }}
         <span class="footer-links">
-          <a href="mailto:coralkita.service@gmail.com">{{ $t('home.footer.contact') }}</a>
+          <div class="contact-info">
+            <div class="contact-item">
+              <span class="contact-icon">🌐</span>
+              <span class="contact-text">{{ $t('footer.website') }}</span>
+            </div>
+            <div class="contact-item">
+              <span class="contact-icon">✉️</span>
+              <span class="contact-text">{{ $t('footer.email') }}</span>
+            </div>
+          </div>
         </span>
       </div>
     </footer>
@@ -168,7 +198,7 @@ export default {
       showTravelDropdown: false,
       showEducationDropdown: false,
       travelIslands: ['Mertang', 'P Singa', 'Sipadan', 'Pulau Lima', 'Seri Buat'],
-      // OSS图片URL
+      // OSS image URLs
       imageUrls: {
         background: '',
         colorfulCoral: '',
@@ -180,18 +210,18 @@ export default {
     }
   },
   mounted() {
-    // 加载OSS图片
+    // Load OSS images
     this.loadOssImages();
   },
   methods: {
     /**
-     * 加载所有OSS图片URL
+     * Load all OSS image URLs
      */
     async loadOssImages() {
       try {
-        console.log('开始加载OSS图片...')
+        console.log('Starting to load OSS images...')
         
-        // 并行加载所有图片URL
+        // Load all image URLs in parallel
         const [
           background,
           colorfulCoral,
@@ -208,7 +238,7 @@ export default {
           ossService.getAppIconUrl()
         ])
 
-        // 更新图片URL
+        // Update image URLs
         this.imageUrls = {
           background,
           colorfulCoral,
@@ -218,48 +248,48 @@ export default {
           appIcon
         }
 
-        // 动态设置背景图片
+        // Dynamically set background image
         this.setBackgroundImage(background)
 
-        console.log('OSS图片加载完成:', this.imageUrls)
+        console.log('OSS images loaded successfully:', this.imageUrls)
       } catch (error) {
-        console.error('加载OSS图片失败:', error)
-        // 如果OSS加载失败，使用本地图片作为备用
+        console.error('Failed to load OSS images:', error)
+        // If OSS loading fails, use local images as fallback
         this.loadFallbackImages()
       }
     },
 
     /**
-     * 加载备用本地图片 - 已移除，完全使用CDN
+     * Load fallback local images - removed, completely use CDN
      */
     loadFallbackImages() {
-      console.log('CDN加载失败，但不使用本地图片备用')
-      // 不再使用require()，完全依赖CDN
-      // 如果CDN失败，图片将显示为空或加载失败状态
+      console.log('CDN loading failed, but not using local image fallback')
+      // No longer use require(), completely rely on CDN
+      // If CDN fails, images will show as empty or loading failed state
     },
 
     /**
-     * 动态设置背景图片
-     * @param {string} imageUrl - 图片URL
+     * Dynamically set background image
+     * @param {string} imageUrl - Image URL
      */
     setBackgroundImage(imageUrl) {
       if (imageUrl) {
-        // 通过JavaScript动态设置CSS变量
+        // Dynamically set CSS variables through JavaScript
         document.documentElement.style.setProperty('--main-bg-image', `url('${imageUrl}')`)
       }
     },
 
     navigateToTrends() {
-      // 预加载trends组件
+      // Preload trends component
       this.preloadTrends();
-      // 延迟导航，给预加载一些时间
+      // Delay navigation to give preloading some time
       setTimeout(() => {
         this.$router.push('/trends');
       }, 100);
     },
     
     preloadTrends() {
-      // 预加载trends组件
+      // Preload trends component
       const trendsComponent = () => import('@/component/TrendsVisualization.vue');
       trendsComponent();
     },
@@ -267,7 +297,7 @@ export default {
     goToMap() {
       console.log('Navigating to Map page');
       this.$router.push('/map').then(() => {
-        // 跳转后直接定位到页面顶部
+        // Directly position to top of page after navigation
         this.$nextTick(() => {
           window.scrollTo(0, 0);
         });
@@ -351,8 +381,53 @@ export default {
       }
     },
 
+    scrollToCoralSection() {
+      const element = document.getElementById('coral-section');
+      if (element) {
+        element.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    },
+
+    // Scroll to colorful coral reef area
+    scrollToBottomContent() {
+      const element = document.getElementById('coral-section');
+      if (element) {
+        element.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    },
+
+    // Quick jump method (double-click triggered)
+    quickJumpToCoralSection() {
+      const element = document.getElementById('coral-section');
+      if (element) {
+        // Immediate jump, no animation
+        element.scrollIntoView({ 
+          behavior: 'auto',
+          block: 'start'
+        });
+      }
+    },
+
+    // Quick jump to colorful coral reef area (double-click triggered)
+    quickJumpToBottomContent() {
+      const element = document.getElementById('coral-section');
+      if (element) {
+        // Immediate jump, no animation
+        element.scrollIntoView({ 
+          behavior: 'auto',
+          block: 'start'
+        });
+      }
+    },
+
     goToIslandDetail(islandName) {
-      console.log('导航到岛屿详情页面:', islandName);
+      console.log('Navigate to island detail page:', islandName);
       this.showTravelDropdown = false;
       
       this.$nextTick(() => {
@@ -367,18 +442,18 @@ export default {
     toggleLanguage() {
       this.currentLanguage = this.currentLanguage === 'en' ? 'zh' : 'en';
       console.log('Language switched to:', this.currentLanguage);
-      // 这里可以添加语言切换的逻辑
+      // Language switching logic can be added here
     },
 
 
   },
   mounted() {
-    console.log('VideoBackgroundSimple 组件已挂载');
+    console.log('VideoBackgroundSimple component mounted');
     
     // Set global refresh detection timestamp for verification system
     localStorage.setItem('lastPageRefresh', Date.now().toString());
     
-    // 加载OSS图片
+    // Load OSS images
     this.loadOssImages();
   }
 }
@@ -399,10 +474,10 @@ export default {
   overflow: visible;   /* ✅ 允许内容自然溢出，由 body 滚动 */
 }
 
-/* 用伪元素承载背景图 */
+/* Use pseudo-element to carry background image */
 .main-container::after {
-  content: "";                        /* 必须加 */
-  position: fixed;                    /* 固定在屏幕，不随滚动动 */
+  content: "";                        /* Must add */
+  position: fixed;                    /* Fixed on screen, not moving with scroll */
   top: 0;
   left: 0;
   width: 100vw;
@@ -410,14 +485,14 @@ export default {
 
   background-image: var(--main-bg-image, url('@/assets/bg_mainpage.webp'));
   background-repeat: no-repeat;
-  background-position: center;        /* 居中显示 */
-  background-size: cover;              /* 覆盖整个容器，保持比例 */
+  background-position: center;        /* Center display */
+  background-size: cover;              /* Cover entire container, maintain aspect ratio */
   
-  z-index: -1;                        /* 放在内容后面 */
-  pointer-events: none;               /* 不影响点击操作 */
+  z-index: -1;                        /* Place behind content */
+  pointer-events: none;               /* Don't affect click operations */
 }
 
-/* 自定义滚动条样式 */
+/* Custom scrollbar styles */
 .main-container::-webkit-scrollbar {
   width: 12px;
 }
@@ -439,15 +514,15 @@ export default {
   background-clip: content-box;
 }
 
-/* 创建一个滚动内容区域 */
+/* Create a scrollable content area */
 .scroll-content {
   position: relative;
-  min-height: 100vh;   /* ✅ 至少一屏高 */
-  height: auto;        /* ✅ 内容自己决定高度 */
+  min-height: 100vh;   /* ✅ At least one screen height */
+  height: auto;        /* ✅ Content determines height itself */
   z-index: 1;
 }
 
-/* 创建渐变遮罩层，增强珊瑚礁健康到白化的视觉效果 */
+/* Create gradient mask layer to enhance visual effect from healthy to bleached coral reef */
 .scroll-content::before {
   content: '';
   position: absolute;
@@ -616,7 +691,7 @@ export default {
   animation: dropdownSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 移除小箭头，使用图二样式 */
+/* Remove small arrow, use figure 2 style */
 
 @keyframes dropdownSlideIn {
   from {
@@ -669,12 +744,12 @@ export default {
 
 
 
-/* 珊瑚礁状态展示区域样式 */
+/* Coral reef status display area styles */
 .coral-status-sections {
   position: relative;
   width: 100%;
   z-index: 10;
-  margin: 100px 0;
+  margin: 60px 0 100px 0;         /* Adjust top margin to leave space for scroll arrows */
   transform-origin: center center;
   will-change: transform;
 }
@@ -733,7 +808,7 @@ export default {
   min-width: 250px;
   padding: 40px;
   margin-right: -40px;
-  min-height: 2.4em; /* 最小高度为两行 */
+  min-height: 2.4em; /* Minimum height for two lines */
   flex-shrink: 0;
   transform-origin: center center;
   will-change: transform;
@@ -753,22 +828,22 @@ export default {
   word-break: break-word;
 }
 
-/* 顶部区域：图片在左，文字在右 */
+/* Top area: Image on left, text on right */
 .top-section .section-content {
   flex-direction: row;
 }
 
-/* 中部区域：文字在左，图片在右 */
+/* Middle area: Text on left, image on right */
 .middle-section .section-content {
   flex-direction: row;
 }
 
-/* 底部区域：图片在左，文字在右 */
+/* Bottom area: Image on left, text on right */
 .bottom-section .section-content {
   flex-direction: row;
 }
 
-/* 防止缩放时布局破坏 */
+/* Prevent layout breaking during scaling */
 @media (max-width: 1200px) {
   .section-content {
     gap: 8px;
@@ -784,7 +859,7 @@ export default {
   }
 }
 
-/* 响应式设计 */
+/* Responsive design */
 @media (max-width: 1024px) {
   .section-content {
     gap: 15px;
@@ -851,9 +926,24 @@ export default {
   }
 }
 
-/* 底部内容区域样式 */
+/* Top content area styles */
+.top-content {
+  margin: 260px auto 60px;       /* Further shorten distance from navigation bar */
+  width: fit-content;
+  max-width: 900px;
+  min-width: 600px;
+  padding: 40px 50px 35px;
+  z-index: 10;
+  height: auto;
+  min-height: 150px;              /* Reduce minimum height since only contains text */
+  text-align: center;
+}
+
+
+
+/* Bottom content area styles */
 .bottom-content {
-  margin: 120px auto 200px;       /* 增加底部边距，防止截断 */
+  margin: 60px auto 200px;       /* Adjust margins */
   width: fit-content;
   max-width: 900px;
   min-width: 600px;
@@ -864,38 +954,78 @@ export default {
   border-radius: 25px;
   border: 10px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  height: auto;              /* 不写死高度，让内容决定 */
-  min-height: 480px;         /* 如果你想保持大概高度，用 min-height */
+  height: auto;
+  min-height: 200px;
 }
 
-/* CoralKita简介样式 */
-.intro-section {
+/* Brand area styles */
+.brand-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.brand-title {
+  font-size: 6.0rem;
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0;
   text-align: center;
-  margin-bottom: 30px;
+  display: inline-block;
+  word-wrap: break-word;
+  word-break: break-word;
  
+  /* Blue to dark blue gradient text */
+  background: linear-gradient(90deg, rgba(38, 68, 77, 0.95) 0%, rgba(63, 155, 198, 0.95) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+ 
+  /* Key: use drop-shadow for "outer glow" (unaffected by transparent fill) */
+  filter:
+
+    drop-shadow(0 0 4px rgba(255, 255, 255, 0.75));
+ 
+
+ 
+  /* Optional small optimization to reduce rendering artifacts */
+  will-change: filter;
+  transform: translateZ(0);
 }
 
-.intro-section h2 {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: rgba(21, 48, 71, 0.8);
-  background: linear-gradient(90deg, rgba(26, 29, 37, 0.95) 0%, rgba(43, 135, 179, 0.95) 100%);
-  margin-bottom: 20px;
-  text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.1);
-  -webkit-background-clip: text;   /* 关键：裁剪背景到文字 */
-  -webkit-text-fill-color: transparent; /* 透明文字，显示背景 */
+/* Main title styles */
+.main-title {
+  font-size: 2.4rem;
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0;
+  text-align: center;
+  display: inline-block;      /* Ensure filter is calculated based on text outline */
+  word-wrap: break-word;
+  word-break: break-word;
+ 
+  /* Blue to dark blue gradient text */
+  background: linear-gradient(135deg, rgb(51, 102, 116) 0%, #224f68 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent; /* Gradient only shows on text */
+  color: transparent;
+ 
+  /* Key: use drop-shadow for "outer glow" (unaffected by transparent fill) */
+  filter:
+
+    drop-shadow(0 0 5px rgba(255, 255, 255, 0.75));
+ 
+
+ 
+  /* Optional small optimization to reduce rendering artifacts */
+  will-change: filter;
+  transform: translateZ(0);
 }
 
-.intro-section p {
-  font-size: 1.2rem;
-  color: rgba(17, 39, 58, 0.8);
-  line-height: 1.6;
-  max-width: 800px;
-  margin: 0 auto;
-  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.1);
-}
-
-/* 目标介绍样式 */
+/* Target introduction styles */
 .goals-section {
   text-align: center;
   margin-bottom: 50px;
@@ -919,7 +1049,22 @@ export default {
   font-weight: bold;
 }
 
-/* 特点标签样式 */
+/* Description text styles */
+.description-section {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.description-section p {
+  font-size: 1.2rem;
+  color: rgba(17, 39, 58, 0.8);
+  line-height: 1.6;
+  max-width: 800px;
+  margin: 0 auto;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.1);
+}
+
+/* Feature tag styles */
 .features-section {
   display: flex;
   justify-content: center;
@@ -949,12 +1094,13 @@ export default {
   text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.1);
 }
 
-/* 探索按钮样式 */
+/* Explore button styles */
 .explore-section {
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
+  margin-top: 20px;              /* Add spacing between feature tags and button */
 }
 
 .explore-btn {
@@ -982,7 +1128,7 @@ export default {
   box-shadow: 0 0 20px rgba(0, 114, 255, 0.8);
 }
 
-/* 悬停时的光晕效果 */
+/* Hover glow effect */
 .explore-btn::after {
   content: "";
   position: absolute;
@@ -1009,9 +1155,9 @@ export default {
   }
 }
 
-/* 移除了不再需要的按钮和动画样式 */
+/* Removed no longer needed button and animation styles */
 
-/* 响应式 */
+/* Responsive */
 @media (max-width: 1024px) {
   .nav-items {
     gap: 20px;
@@ -1061,7 +1207,7 @@ export default {
     padding: 10px 20px;
   }
   
-  /* 分界线箭头响应式 */
+  /* Divider arrow responsive */
   .section-arrow {
     width: 55px;
     height: 55px;
@@ -1072,19 +1218,35 @@ export default {
     font-size: 1.6rem;
   }
   
-  /* 底部内容响应式 */
-  .bottom-content {
+  /* Top content responsive */
+  .top-content {
     padding: 35px 40px 30px;
-    margin: 120px auto 150px; /* 调整响应式边距 */
+    margin: 100px auto 60px;
     min-width: 500px;
     max-width: 700px;
+    min-height: 120px;              /* Adjust minimum height */
+    text-align: center;
   }
   
-  .intro-section h2 {
+  /* Bottom content responsive */
+  .bottom-content {
+    padding: 35px 40px 30px;
+    margin: 60px auto 150px;
+    min-width: 500px;
+    max-width: 700px;
+    min-height: 180px;
+  }
+  
+  .brand-title {
     font-size: 2rem;
   }
   
-  .intro-section p {
+  
+  .main-title {
+    font-size: 2rem;
+  }
+  
+  .description-section p {
     font-size: 1.1rem;
   }
   
@@ -1116,7 +1278,7 @@ export default {
     font-size: 14px;
   }
   
-  /* 移动端滚动条样式调整 */
+  /* Mobile scrollbar style adjustments */
   .main-container::-webkit-scrollbar {
     width: 8px;
   }
@@ -1132,7 +1294,7 @@ export default {
     padding: 4px 6px;
   }
   
-  /* Map & Recommendation换行显示 */
+  /* Map & Recommendation line break display */
   .nav-item-wrapper .nav-item {
     font-size: 0.7rem;
     text-align: center;
@@ -1149,7 +1311,7 @@ export default {
     padding: 8px 16px;
   }
   
-  /* 小屏幕分界线箭头 */
+  /* Small screen divider arrows */
   .section-arrow {
     width: 50px;
     height: 50px;
@@ -1160,19 +1322,38 @@ export default {
     font-size: 1.4rem;
   }
   
-  /* 小屏幕底部内容 */
-  .bottom-content {
+  /* Small screen top content */
+  .top-content {
     padding: 25px 30px 20px;
-    margin: 80px auto 120px; /* 调整移动端边距 */
+    margin: 60px auto 40px;
     min-width: 350px;
     max-width: 600px;
+    min-height: 100px;              /* Adjust minimum height */
+    text-align: center;
   }
   
-  .intro-section h2 {
+  /* Small screen bottom content */
+  .bottom-content {
+    padding: 25px 30px 20px;
+    margin: 40px auto 120px;
+    min-width: 350px;
+    max-width: 600px;
+    min-height: 150px;
+  }
+  
+  .brand-title {
     font-size: 1.8rem;
   }
   
-  .intro-section p {
+  .brand-section {
+    margin-bottom: 80px;
+  }
+  
+  .main-title {
+    font-size: 1.8rem;
+  }
+  
+  .description-section p {
     font-size: 1rem;
   }
   
@@ -1208,7 +1389,7 @@ export default {
     font-size: 12px;
   }
 
-  /* 移动端箭头样式调整 */
+  /* Mobile arrow style adjustments */
   .arrow-icon {
     width: 30px;
     height: 30px;
@@ -1259,7 +1440,34 @@ export default {
   text-decoration: underline;
 }
 
-/* 滚动箭头样式 */
+/* Contact info styles */
+.contact-info {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+  font-size: 14px;
+}
+
+.contact-icon {
+  font-size: 16px;
+  opacity: 0.8;
+}
+
+.contact-text {
+  user-select: all;
+  cursor: text;
+}
+
+/* Scroll arrow styles */
 .scroll-arrow {
   display: flex;
   justify-content: center;
@@ -1268,6 +1476,23 @@ export default {
   cursor: pointer;
   transition: all 0.3s ease;
   z-index: 20;
+}
+
+/* Top scroll arrow styles */
+.top-scroll-arrow {
+  margin: 20px 0 40px 0;          /* Adjust margins to maintain appropriate distance from top content area */
+  animation: bounce 2s infinite;  /* Add bounce animation to prompt user click */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+
+/* Visual feedback during quick jump */
+.top-scroll-arrow:active {
+  transform: translateY(2px) scale(0.95);
+  transition: all 0.1s ease;
 }
 
 .scroll-arrow:hover {
@@ -1286,7 +1511,7 @@ export default {
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 }
 
-/* 箭头动画效果 */
+/* Arrow animation effects */
 .scroll-arrow {
   animation: bounce 2s infinite;
 }

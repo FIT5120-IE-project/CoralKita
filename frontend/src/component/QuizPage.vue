@@ -1,6 +1,6 @@
 <template>
   <div class="quiz-page">
-    <!-- 背景图片加载占位符 -->
+    <!-- Background image loading placeholder -->
     <div class="bg-placeholder" v-if="!backgroundLoaded">
       <div class="progress-container">
         <div class="progress-bar">
@@ -261,7 +261,7 @@
               </div>
             </div>
                       <div v-else class="question-display">
-            <!-- 题目显示 -->
+            <!-- Question display -->
             <div>
               <h3 class="question-text">{{ currentQuestion.question }}</h3>
             </div>
@@ -364,9 +364,9 @@ export default {
   name: 'QuizPage',
   data() {
     return {
-      backgroundLoaded: false, // 背景图片加载状态
-      loadingProgress: 0, // 加载进度
-      loadingText: 'Loading quiz interface...', // 加载文本
+      backgroundLoaded: false, // Background image loading status
+      loadingProgress: 0, // Loading progress
+      loadingText: 'Loading quiz interface...', // Loading text
       // Video related
       videoSources: [],
       loadingVideo: false,
@@ -393,13 +393,13 @@ export default {
       // Medal system
       medalInfo: null,
       
-      // 分享图标URL
+      // Share icon URLs
       twitterIconUrl: null,
       facebookIconUrl: null,
       linkIconUrl: null,
       downloadIconUrl: null,
       
-      // 背景图片URL
+      // Background image URL
       backgroundImageUrl: null,
       showMedal: false,
 
@@ -434,13 +434,13 @@ export default {
     }
   },
   async mounted() {
-    // 立即开始预加载背景图片
+    // Immediately start preloading background image
     this.preloadBackgroundImage();
     
-    // 加载分享图标
+    // Load share icons
     this.loadShareIcons();
     
-    // 加载背景图片
+    // Load background image
     this.loadBackgroundImage();
     
     // Set global refresh detection timestamp for verification system
@@ -454,11 +454,11 @@ export default {
   },
   methods: {
     /**
-     * 加载分享图标
+     * Load share icons
      */
     async loadShareIcons() {
       try {
-        // 并行加载所有分享图标
+        // Load all share icons in parallel
         const [twitterIconUrl, facebookIconUrl, linkIconUrl, downloadIconUrl] = await Promise.all([
           ossService.getFileUrl('assets/icons/icon_twiter.png'),
           ossService.getFileUrl('assets/icons/icon_facebook.png'),
@@ -471,28 +471,28 @@ export default {
         this.linkIconUrl = linkIconUrl
         this.downloadIconUrl = downloadIconUrl
       } catch (error) {
-        console.warn('加载分享图标失败，使用默认图标:', error)
-        // 保持为null，使用默认图标
+        console.warn('Failed to load share icons, using default icons:', error)
+        // Keep as null, use default icons
       }
     },
 
     /**
-     * 加载背景图片
+     * Load background image
      */
     async loadBackgroundImage() {
       try {
-        this.backgroundImageUrl = await ossService.getFileUrl('bg_login5.webp')
-        // 设置CSS变量
+        this.backgroundImageUrl = await ossService.getFileUrl('bg_edu.webp')
+        // Set CSS variable
         document.documentElement.style.setProperty('--bg-image', `url(${this.backgroundImageUrl})`)
       } catch (error) {
-        console.warn('加载背景图片失败，使用默认图片:', error)
+        console.warn('Failed to load background image, using default image:', error)
         this.backgroundImageUrl = null
       }
     },
 
     // Go back to previous page
     goBack() {
-      // 设置功能导航标记，表示这是从功能页面返回
+      // Set functional navigation flag, indicating this is returning from functional page
       localStorage.setItem('functionalNavigation', 'true');
       this.$router.push('/education').catch(err => {
         // Ignore navigation duplicated error
@@ -673,15 +673,15 @@ export default {
       this.loadingQuestions = true
       this.errorMessage = ''
       try {
-        // 首先获取所有可用的来源标题
+        // First get all available source titles
         const sourcesResponse = await axios.get('/quiz/sources')
         console.log('Sources response:', sourcesResponse.data)
         
         if (sourcesResponse.data.code === 1 && sourcesResponse.data.data && sourcesResponse.data.data.length > 0) {
-          // 从所有来源中随机选择题目
+          // Randomly select questions from all sources
           const allQuestions = []
           
-          // 从每个来源获取题目
+          // Get questions from each source
           for (const sourceTitle of sourcesResponse.data.data) {
             try {
               const response = await axios.get(`/quiz/questions?sourceTitle=${encodeURIComponent(sourceTitle)}`)
@@ -707,7 +707,7 @@ export default {
           }
           
           if (allQuestions.length > 0) {
-            // 随机选择10道题
+            // Randomly select 10 questions
             this.questions = this.getRandomQuestions(allQuestions, 10)
             console.log('Final questions array (10 random):', this.questions)
             this.resetQuiz()
@@ -719,10 +719,10 @@ export default {
           throw new Error('No sources available or sources API failed')
         }
       } catch (error) {
-        console.error('加载题目失败:', error)
+        console.error('Failed to load questions:', error)
         console.error('Error details:', error.response?.data)
         
-        // 使用备用题目数据，确保功能可用（10道题）
+        // Use fallback question data to ensure functionality (10 questions)
         const fallbackQuestions = [
           {
             id: 1,
@@ -905,13 +905,13 @@ export default {
       }
     },
     
-    // 随机选择指定数量的题目
+    // Randomly select specified number of questions
     getRandomQuestions(questions, count) {
       const shuffled = [...questions].sort(() => 0.5 - Math.random())
       return shuffled.slice(0, count)
     },
 
-    // 重置测验
+    // Reset quiz
     resetQuiz() {
       this.currentQuestionIndex = 0
       this.selectedOption = null
@@ -927,12 +927,12 @@ export default {
       this.showCopyNotification = false
     },
 
-    // 选择选项
+    // Select option
     selectOption(optionId) {
       this.selectedOption = optionId
     },
 
-    // 提交答案
+    // Submit answer
     submitAnswer() {
       if (this.selectedOption === null) return
 
@@ -940,7 +940,7 @@ export default {
       
       let isCorrect = false
       
-        // 普通选择题：比较选项ID与正确答案
+        // Regular multiple choice: compare option ID with correct answer
         const selectedAnswer = String(this.selectedOption).trim().toUpperCase()
         const correctAnswer = String(currentQ.correctOption || currentQ.correctAnswer).trim().toUpperCase()
         isCorrect = selectedAnswer === correctAnswer
@@ -957,7 +957,7 @@ export default {
       this.showAnswerResult = true
     },
 
-    // 下一题
+    // Next question
     nextQuestion() {
       console.log('nextQuestion: currentIndex=', this.currentQuestionIndex, 'totalQuestions=', this.questions.length)
       if (this.currentQuestionIndex < this.questions.length - 1) {
@@ -971,19 +971,19 @@ export default {
       }
     },
 
-    // 完成测验
+    // Complete quiz
     async completeQuiz() {
       this.quizEndTime = new Date()
       this.showAnswerResult = false
       this.quizCompleted = true
       this.totalQuestions = this.questions.length
 
-      // 计算奖章
+      // Calculate medals
       this.medalInfo = this.calculateMedal(this.correctAnswers, this.totalQuestions)
       this.showMedal = true
     },
 
-    // 计算奖章
+    // Calculate medals
     calculateMedal(correctCount, totalCount) {
       if (correctCount < 3) {
         return {
@@ -1023,12 +1023,12 @@ export default {
       }
     },
 
-    // 重新开始测验
+    // Restart quiz
     restartQuiz() {
       this.loadRandomQuestions()
     },
 
-    // 分享功能方法
+    // Share functionality methods
     shareToTwitter() {
       const shareText = `🎉 I just earned a ${this.medalInfo.title} on CoralKita Quiz! 🐠\n\nScore: ${this.correctAnswers}/${this.totalQuestions} (${Math.round((this.correctAnswers / this.totalQuestions) * 100)}%)\n\nTest your coral reef knowledge too! 🌊`;
       const shareUrl = this.generateShareUrl();
@@ -1135,11 +1135,11 @@ export default {
       return `${baseUrl}/quiz?${params.toString()}`;
     },
 
-    // 获取正确答案文本
+    // Get correct answer text
     getCorrectAnswerText() {
       if (!this.currentQuestion) return ''
       
-        // 普通选择题：通过选项ID查找选项文本
+        // Regular multiple choice: find option text by option ID
         const correctAnswer = this.currentQuestion.correctOption || this.currentQuestion.correctAnswer
         const correctOption = this.currentQuestion.options.find(opt => opt.id === correctAnswer)
         return correctOption ? correctOption.text : ''
@@ -1151,25 +1151,25 @@ export default {
     },
 
     /**
-     * 预加载背景图片
+     * Preload background image
      */
     preloadBackgroundImage() {
-      // 创建高优先级预加载链接元素
+      // Create high priority preload link element
       const preloadLink = document.createElement('link');
       preloadLink.rel = 'preload';
       preloadLink.as = 'image';
-      preloadLink.href = this.backgroundImageUrl || require('@/assets/bg_login5.webp');
-      preloadLink.fetchPriority = 'high'; // 高优先级
+      preloadLink.href = this.backgroundImageUrl || require('@/assets/bg_edu.webp');
+      preloadLink.fetchPriority = 'high'; // High priority
       
-      // 添加到head中
+      // Add to head
       document.head.appendChild(preloadLink);
       
-      // 模拟加载进度
+      // Simulate loading progress
       this.simulateLoadingProgress();
       
-      // 预加载图片到浏览器缓存
+      // Preload images to browser cache
       const img = new Image();
-      img.src = this.backgroundImageUrl || require('@/assets/bg_login5.webp');
+      img.src = this.backgroundImageUrl || require('@/assets/bg_edu.webp');
       img.onload = () => {
         console.log('Quiz background image preloaded to cache');
         this.loadingProgress = 100;
@@ -1183,7 +1183,7 @@ export default {
         this.loadingProgress = 100;
         this.loadingText = 'Using backup interface...';
         setTimeout(() => {
-          this.backgroundLoaded = true; // 即使失败也隐藏占位符
+          this.backgroundLoaded = true; // Hide placeholder even if failed
         }, 500);
       };
       
@@ -1191,7 +1191,7 @@ export default {
     },
 
     /**
-     * 模拟加载进度
+     * Simulate loading progress
      */
     simulateLoadingProgress() {
       const progressSteps = [
@@ -1225,19 +1225,19 @@ export default {
   min-height: 100vh;
   background-image: var(--bg-image, url('@/assets/ed_interface.webp'));
   background-repeat: no-repeat;
-  background-attachment: fixed;   /* 页面滚动时固定 */
-  background-position: center;    /* 居中显示 */
-  background-size: cover;         /* 覆盖整个容器，保持比例 */
+  background-attachment: fixed;   /* Fixed when page scrolls */
+  background-position: center;    /* Center display */
+  background-size: cover;         /* Cover entire container, maintain aspect ratio */
   font-family: 'Arial', sans-serif;
   position: relative;
   display: flex;
   flex-direction: column;
-  /* 优化背景图片加载 */
-  will-change: transform;      /* 提示浏览器优化 */
-  transform: translateZ(0);     /* 启用硬件加速 */
+  /* Optimize background image loading */
+  will-change: transform;      /* Hint browser optimization */
+  transform: translateZ(0);     /* Enable hardware acceleration */
 }
 
-/* 海洋主题背景加载占位符样式 */
+/* Ocean theme background loading placeholder styles */
 .bg-placeholder {
   position: fixed;
   top: 0;
@@ -1278,7 +1278,7 @@ export default {
   50% { transform: translateY(-10px) rotate(1deg); }
 }
 
-/* 海洋主题进度条样式 */
+/* Ocean theme progress bar styles */
 .progress-container {
   position: absolute;
   top: 50%;
@@ -1405,7 +1405,7 @@ export default {
   gap: 40px;
 }
 
-/* 视频区域样式 */
+/* Video area styles */
 .video-section {
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(20px);
@@ -1558,7 +1558,7 @@ export default {
   background: #667eea;
 }
 
-/* 测验区域样式 */
+/* Quiz area styles */
 .quiz-section {
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(20px);
@@ -1737,7 +1737,7 @@ export default {
   margin: 0 auto;
 }
 
-/* 图片分类题目样式 */
+/* Image classification question styles */
 .image-question {
   text-align: center;
   margin-bottom: 30px;
@@ -1789,7 +1789,7 @@ export default {
   margin-bottom: 30px;
 }
 
-/* 图片分类题目只有两个选项时的特殊样式 */
+/* Special styles for image classification questions with only two options */
 .image-question .options {
   flex-direction: row;
   justify-content: center;
@@ -1889,7 +1889,7 @@ export default {
   text-decoration: underline;
 }
 
-/* 答案结果样式 */
+/* Answer result styles */
 .answer-result {
   text-align: center;
   padding: 40px 20px;
@@ -1988,7 +1988,7 @@ export default {
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
-/* 测验完成样式 */
+/* Quiz completion styles */
 .quiz-completed {
   text-align: center;
   padding: 40px 20px;
@@ -2005,7 +2005,7 @@ export default {
   margin-bottom: 30px;
 }
 
-/* 奖章显示样式 */
+/* Medal display styles */
 .medal-display {
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(20px);
@@ -2066,7 +2066,7 @@ export default {
   }
 }
 
-/* 统计信息样式 */
+/* Statistics styles */
 .quiz-statistics {
   margin-bottom: 30px;
 }
@@ -2182,7 +2182,7 @@ export default {
   font-size: 20px;
 }
 
-/* 奖励信息样式 */
+/* Reward information styles */
 .reward-info {
   background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
   border-radius: 20px;
@@ -2286,7 +2286,7 @@ export default {
   font-size: 14px;
 }
 
-/* 登录提示样式 */
+/* Login prompt styles */
 .login-prompt {
   background: rgba(255, 193, 7, 0.1);
   border-radius: 15px;
@@ -2354,7 +2354,7 @@ export default {
   transform: translateY(-2px);
 }
 
-/* 分享功能样式 */
+/* Share functionality styles */
 .share-section {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
   border-radius: 20px;
@@ -2479,7 +2479,7 @@ export default {
   }
 }
 
-/* 响应式设计 */
+/* Responsive design */
 @media (max-width: 768px) {
   .share-options {
     grid-template-columns: repeat(2, 1fr);
@@ -2507,7 +2507,7 @@ export default {
   }
 }
 
-/* 视频模态框样式 */
+/* Video modal styles */
 .video-modal-overlay {
   position: fixed;
   top: 0;
@@ -2707,7 +2707,7 @@ export default {
   transform: translateY(-2px);
 }
 
-/* 加载和错误状态 */
+/* Loading and error states */
 .loading-placeholder {
   display: flex;
   flex-direction: column;
@@ -2753,7 +2753,7 @@ export default {
   max-width: 400px;
 }
 
-/* 响应式设计 */
+/* Responsive design */
 @media (max-width: 768px) {
   .quiz-header {
     padding: 15px 20px;

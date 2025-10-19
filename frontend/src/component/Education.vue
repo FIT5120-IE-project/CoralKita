@@ -1,6 +1,6 @@
 <template>
   <div class="education-container">
-    <!-- 背景图片加载占位符 -->
+    <!-- Background image loading placeholder -->
     <div class="bg-placeholder" v-if="!backgroundLoaded">
       <div class="progress-container">
         <div class="progress-bar">
@@ -19,13 +19,9 @@
       </div>
       <div class="nav-right">
         <div class="nav-items">
+          <span class="nav-item" @click="goToMap">{{ $t('nav.mapRecommendation.line1') }}</span>
           <div class="nav-item-dropdown" @mouseenter="showTravelDropdown = true" @mouseleave="showTravelDropdown = false">
-            <div class="nav-item-wrapper">
-              <span class="nav-item map-rec-item" @click="goToMap">
-                <span class="nav-text-line">{{ $t('nav.mapRecommendation.line1') }}</span>
-                <span class="nav-text-line">{{ $t('nav.mapRecommendation.line2') }}</span>
-              </span>
-            </div>
+            <span class="nav-item">{{ $t('nav.topIsland') }}</span>
             <div class="dropdown-menu" v-show="showTravelDropdown">
               <div 
                 v-for="island in travelIslands" 
@@ -61,11 +57,11 @@
       <h1>{{ $t('education.title') }}</h1>
       <p>{{ $t('education.subtitle') }}</p>
       <div class="header-buttons">
-        <button class="verification-game-btn" @click="startVerificationGame">
-          {{ $t('education.gameButton') }}
-        </button>
         <button class="tips-guides-btn" @click="goToTravelChecklist">
           {{ $t('education.tipsGuidesButton') }}
+        </button>
+        <button class="verification-game-btn" @click="startVerificationGame">
+          {{ $t('education.gameButton') }}
         </button>
       </div>
     </div>
@@ -116,7 +112,7 @@
 
         <div class="numbers-row">
           <article class="numbers-card">
-            <div class="numbers-stat"><span class="numbers-fraction"><sup>1</sup>/<sub>4</sub></span></div>
+            <div class="numbers-stat"><span class="numbers-percentage">25%</span></div>
             <div class="numbers-headline">{{ $t('education.numbers.marineSpecies.title') }}</div>
             <p class="numbers-desc">{{ $t('education.numbers.marineSpecies.description') }}</p>
             <a class="numbers-cta" href="https://www.youtube.com/watch?v=bHO-z-1xJDY" target="_blank">{{ $t('education.numbers.marineSpecies.learnMore') }}</a>
@@ -238,7 +234,16 @@
       <div class="footer-content">
         {{ $t('footer.copyright') }}
         <span class="footer-links">
-          <a href="mailto:coralkita.service@gmail.com">{{ $t('footer.contact') }}</a>
+          <div class="contact-info">
+            <div class="contact-item">
+              <span class="contact-icon">🌐</span>
+              <span class="contact-text">{{ $t('footer.website') }}</span>
+            </div>
+            <div class="contact-item">
+              <span class="contact-icon">✉️</span>
+              <span class="contact-text">{{ $t('footer.email') }}</span>
+            </div>
+          </div>
         </span>
       </div>
     </footer>
@@ -259,9 +264,9 @@ export default {
   },
   data() {
     return {
-      backgroundLoaded: false, // 背景图片加载状态
-      loadingProgress: 0, // 加载进度
-      loadingText: 'Loading map data...', // 加载文本
+      backgroundLoaded: false, // Background image loading status
+      loadingProgress: 0, // Loading progress
+      loadingText: 'Loading map data...', // Loading text
       // Travel dropdown related
       showTravelDropdown: false,
       showEducationDropdown: false,
@@ -277,8 +282,8 @@ export default {
       verificationCompleted: false, // Whether verification is completed
       verificationResult: null, // Verification result
       
-      // OSS图片URL
-      backgroundImageUrl: null, // 背景图片URL
+      // OSS image URLs
+      backgroundImageUrl: null, // Background image URL
       imageUrls: {
         appIcon: '',
         video1Thumbnail: '',
@@ -322,37 +327,37 @@ export default {
   },
   methods: {
     /**
-     * 加载背景图片
+     * Load background image
      */
     async loadBackgroundImage() {
       try {
-        this.backgroundImageUrl = await ossService.getFileUrl('bg_login5.webp')
-        // 设置CSS变量
+        this.backgroundImageUrl = await ossService.getFileUrl('bg_edu.webp')
+        // Set CSS variable
         document.documentElement.style.setProperty('--bg-image', `url(${this.backgroundImageUrl})`)
       } catch (error) {
-        console.warn('加载背景图片失败，使用默认图片:', error)
+        console.warn('Failed to load background image, using default image:', error)
         this.backgroundImageUrl = null
       }
     },
 
     /**
-     * 预加载背景图片
+     * Preload background image
      */
     preloadBackgroundImage() {
-      // 创建高优先级预加载链接元素
+      // Create high priority preload link element
       const preloadLink = document.createElement('link');
       preloadLink.rel = 'preload';
       preloadLink.as = 'image';
       preloadLink.href = this.backgroundImageUrl;
-      preloadLink.fetchPriority = 'high'; // 高优先级
+      preloadLink.fetchPriority = 'high'; // High priority
       
-      // 添加到head中
+      // Add to head
       document.head.appendChild(preloadLink);
       
-      // 模拟加载进度
+      // Simulate loading progress
       this.simulateLoadingProgress();
       
-      // 预加载图片到浏览器缓存
+      // Preload image to browser cache
       const img = new Image();
       img.src = this.backgroundImageUrl;
       img.onload = () => {
@@ -368,7 +373,7 @@ export default {
         this.loadingProgress = 100;
         this.loadingText = 'Using backup data...';
         setTimeout(() => {
-          this.backgroundLoaded = true; // 即使失败也隐藏占位符
+          this.backgroundLoaded = true; // Hide placeholder even if failed
         }, 500);
       };
       
@@ -376,7 +381,7 @@ export default {
     },
 
     /**
-     * 模拟加载进度
+     * Simulate loading progress
      */
     simulateLoadingProgress() {
       const progressSteps = [
@@ -402,13 +407,13 @@ export default {
     },
 
     /**
-     * 加载所有OSS图片URL
+     * Load all OSS image URLs
      */
     async loadOssImages() {
       try {
-        console.log('开始加载OSS图片...')
+        console.log('Starting to load OSS images...')
         
-        // 并行加载所有图片URL（只加载缩略图，视频使用YouTube链接）
+        // Load all image URLs in parallel (only thumbnails, videos use YouTube links)
         const [
           appIcon,
           video1Thumbnail,
@@ -423,7 +428,7 @@ export default {
           ossService.getSignedUrl('assets/Coral Bleaching Explained The Story of Frank the Coral.jpg')
         ])
 
-        // 更新图片URL（只更新缩略图）
+        // Update image URLs (only thumbnails)
         this.imageUrls = {
           appIcon,
           video1Thumbnail,
@@ -432,19 +437,19 @@ export default {
           video4Thumbnail
         }
 
-        // 更新视频数据
+        // Update video data
         this.updateVideoData()
 
-        console.log('OSS图片加载完成:', this.imageUrls)
+        console.log('OSS images loaded successfully:', this.imageUrls)
       } catch (error) {
-        console.error('加载OSS图片失败:', error)
-        // 如果OSS加载失败，使用本地图片作为备用
+        console.error('Failed to load OSS images:', error)
+        // If OSS loading fails, use local images as fallback
         this.loadFallbackImages()
       }
     },
 
     /**
-     * 更新视频数据 - 只更新缩略图，保留YouTube链接
+     * Update video data - only update thumbnails, keep YouTube links
      */
     updateVideoData() {
       this.localVideos = [
@@ -472,10 +477,10 @@ export default {
     },
 
     /**
-     * 加载备用本地图片
+     * Load fallback local images
      */
     loadFallbackImages() {
-      console.log('使用本地图片作为备用...')
+      console.log('Using local images as fallback...')
       this.imageUrls = {
         appIcon: 'http://static.coralkita.site/assets/icon.png',
         video1Thumbnail: 'http://static.coralkita.site/assets/Why are coral reefs so important.jpg',
@@ -484,13 +489,13 @@ export default {
         video4Thumbnail: 'http://static.coralkita.site/assets/Coral Bleaching Explained The Story of Frank the Coral.jpg'
       }
       
-      // 更新视频数据
+      // Update video data
       this.updateVideoData()
     },
 
     // Travel navigation methods
     goToIslandDetail(islandName) {
-      console.log('导航到岛屿详情页面:', islandName);
+      console.log('Navigate to island detail page:', islandName);
       this.showTravelDropdown = false;
       
       this.$nextTick(() => {
@@ -636,18 +641,18 @@ export default {
             options: [
               { id: 1, text: 'Touching corals', isCorrect: false },
               { id: 2, text: 'Using sunscreen', isCorrect: true },
-              { id: 3, text: '观察鱼类', isCorrect: false },
-              { id: 4, text: '拍照留念', isCorrect: false }
+              { id: 3, text: 'Observe fish', isCorrect: false },
+              { id: 4, text: 'Take photos', isCorrect: false }
             ]
           },
           {
             id: 3,
-            question: '珊瑚礁被称为海洋中的什么？',
+            question: 'What are coral reefs called in the ocean?',
             options: [
-              { id: 1, text: '沙漠', isCorrect: false },
-              { id: 2, text: '雨林', isCorrect: true },
-              { id: 3, text: '草原', isCorrect: false },
-              { id: 4, text: '山脉', isCorrect: false }
+              { id: 1, text: 'Desert', isCorrect: false },
+              { id: 2, text: 'Rainforest', isCorrect: true },
+              { id: 3, text: 'Grassland', isCorrect: false },
+              { id: 4, text: 'Mountains', isCorrect: false }
             ]
           },
           {
@@ -664,10 +669,10 @@ export default {
             id: 5,
             question: 'What is the most effective way to protect coral reefs?',
             options: [
-              { id: 1, text: '减少碳排放', isCorrect: true },
-              { id: 2, text: '增加旅游', isCorrect: false },
-              { id: 3, text: '捕捞更多鱼类', isCorrect: false },
-              { id: 4, text: '建设更多港口', isCorrect: false }
+              { id: 1, text: 'Reduce carbon emissions', isCorrect: true },
+              { id: 2, text: 'Increase tourism', isCorrect: false },
+              { id: 3, text: 'Catch more fish', isCorrect: false },
+              { id: 4, text: 'Build more ports', isCorrect: false }
             ]
           }
         ];
@@ -728,28 +733,28 @@ export default {
         const response = await axios.get('/quiz/coral-pictures-balanced');
         console.log('API Response:', response.data);
         
-        // 记录从后端获取的图片信息
+        // Record image information from backend
         if (response.data.code === 1 && response.data.data) {
-          console.log('从后端获取的图片顺序:');
+          console.log('Image order from backend:');
           response.data.data.forEach((item, index) => {
-            console.log(`位置${index + 1}: ${item.answer} - ${item.pictureUrl.substring(item.pictureUrl.lastIndexOf('/') + 1, item.pictureUrl.indexOf('?'))}`);
+            console.log(`Position ${index + 1}: ${item.answer} - ${item.pictureUrl.substring(item.pictureUrl.lastIndexOf('/') + 1, item.pictureUrl.indexOf('?'))}`);
           });
         }
         
         if (response.data.code === 1 && response.data.data) {
-          // 先创建图片数组
+          // First create image array
           let imageArray = response.data.data.map((item, index) => ({
             id: index + 1,
             imageUrl: item.pictureUrl,
-            correctAnswer: item.answer, // 'health' 或 'bleach'
-            isSelected: false, // 是否被用户选择
-            isCorrect: null // null=未判断, true=选择正确, false=选择错误
+            correctAnswer: item.answer, // 'health' or 'bleach'
+            isSelected: false, // Whether selected by user
+            isCorrect: null // null=not judged, true=correct selection, false=incorrect selection
           }));
           
-          // 打乱图片顺序
+          // Shuffle image order
           imageArray = this.shuffleArray(imageArray);
           
-          // 重新分配ID（保持1-6的顺序显示）
+          // Reassign IDs (maintain 1-6 display order)
           this.verificationImages = imageArray.map((item, index) => ({
             ...item,
             id: index + 1
@@ -757,26 +762,26 @@ export default {
           
           this.selectedImages = [];
           
-          console.log('图片顺序已打乱，健康图片位置:', 
+          console.log('Image order shuffled, healthy image positions:', 
             this.verificationImages.map((img, idx) => 
               img.correctAnswer === 'health' ? (idx + 1) : null
             ).filter(pos => pos !== null)
           );
         } else {
           console.error('Failed to load verification images:', response.data.msg);
-          // 添加测试数据，以防API失败
+          // Add test data in case API fails
           let fallbackImageArray = Array.from({length: 6}, (_, index) => ({
             id: index + 1,
             imageUrl: `https://via.placeholder.com/300x200/4facfe/ffffff?text=Coral${index + 1}`,
-            correctAnswer: index < 4 ? 'health' : 'bleach', // 前4个健康，后2个不健康
+            correctAnswer: index < 4 ? 'health' : 'bleach', // First 4 healthy, last 2 unhealthy
             isSelected: false,
             isCorrect: null
           }));
           
-          // 打乱fallback数据顺序
+          // Shuffle fallback data order
           fallbackImageArray = this.shuffleArray(fallbackImageArray);
           
-          // 重新分配ID
+          // Reassign IDs
           this.verificationImages = fallbackImageArray.map((item, index) => ({
             ...item,
             id: index + 1
@@ -784,19 +789,19 @@ export default {
         }
       } catch (error) {
         console.error('Error loading verification images:', error);
-        // 添加测试数据，以防API失败
+        // Add test data in case API fails
         let testImageArray = Array.from({length: 6}, (_, index) => ({
           id: index + 1,
           imageUrl: `https://via.placeholder.com/300x200/4facfe/ffffff?text=Coral${index + 1}`,
-          correctAnswer: index < 4 ? 'health' : 'bleach', // 前4个健康，后2个不健康
+          correctAnswer: index < 4 ? 'health' : 'bleach', // First 4 healthy, last 2 unhealthy
           isSelected: false,
           isCorrect: null
         }));
         
-        // 打乱测试数据顺序
+        // Shuffle test data order
         testImageArray = this.shuffleArray(testImageArray);
         
-        // 重新分配ID
+        // Reassign IDs
         this.verificationImages = testImageArray.map((item, index) => ({
           ...item,
           id: index + 1
@@ -810,10 +815,10 @@ export default {
       const image = this.verificationImages.find(img => img.id === imageId);
       if (!image) return;
 
-      // 如果已经验证完成，不允许继续选择
+      // If verification is completed, do not allow further selection
       if (this.verificationCompleted) return;
 
-      // 如果图片已经被选择，取消选择
+      // If image is already selected, deselect it
       if (image.isSelected) {
         image.isSelected = false;
         image.isCorrect = null;
@@ -821,38 +826,38 @@ export default {
         return;
       }
 
-      // 如果已经选择了4张图片，不允许继续选择
+      // If 4 images are already selected, do not allow further selection
       if (this.selectedImages.length >= this.maxSelections) {
         alert(`You can only select ${this.maxSelections} images maximum!`);
         return;
       }
 
-      // 选择图片并立即判断正确性
+      // Select image and immediately judge correctness
       image.isSelected = true;
       image.isCorrect = (image.correctAnswer === 'health');
       this.selectedImages.push(imageId);
 
-      console.log(`选择图片${imageId}, 正确答案: ${image.correctAnswer}, 选择结果: ${image.isCorrect ? '正确' : '错误'}`);
+      console.log(`Selected image ${imageId}, correct answer: ${image.correctAnswer}, selection result: ${image.isCorrect ? 'correct' : 'incorrect'}`);
 
-      // 播放选择动画
+      // Play selection animation
       this.playSelectionAnimation(imageId, image.isCorrect);
 
-      // 如果选择了4张图片，自动提交验证
+      // If 4 images are selected, automatically submit verification
       if (this.selectedImages.length === this.maxSelections) {
         setTimeout(() => {
           this.submitVerification();
-        }, 1000); // 延迟1秒让用户看到最后的选择结果
+        }, 1000); // Delay 1 second to let user see final selection result
       }
     },
 
     playSelectionAnimation(imageId, isCorrect) {
-      // 简化版本：只打印日志，不进行DOM操作
-      console.log(`播放${isCorrect ? '正确' : '错误'}选择动画 - 图片${imageId}`);
+      // Simplified version: only log, no DOM operations
+      console.log(`Playing ${isCorrect ? 'correct' : 'incorrect'} selection animation - image ${imageId}`);
     },
 
-    // 数组打乱方法（Fisher-Yates洗牌算法）
+    // Array shuffle method (Fisher-Yates shuffle algorithm)
     shuffleArray(array) {
-      const shuffled = [...array]; // 创建副本，不修改原数组
+      const shuffled = [...array]; // Create copy, do not modify original array
       for (let i = shuffled.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
@@ -861,15 +866,15 @@ export default {
     },
 
     submitVerification() {
-      console.log('开始验证结果...');
+      console.log('Starting verification result...');
       
-      // 检查是否已选择4张图片
+      // Check if 4 images have been selected
       if (this.selectedImages.length < this.maxSelections) {
         alert(`Please select ${this.maxSelections} healthy coral reef images!`);
         return;
       }
 
-      // 计算选择的正确数量（选中的图片中有多少是真正健康的）
+      // Calculate number of correct selections (how many of selected images are actually healthy)
       let correctSelections = 0;
       const selectedImages = this.verificationImages.filter(img => img.isSelected);
       
@@ -879,13 +884,13 @@ export default {
         }
       });
 
-      // 还需要检查是否漏选了健康的图片
+      // Also need to check if any healthy images were missed
       const totalHealthyImages = this.verificationImages.filter(img => img.correctAnswer === 'health').length;
       
-      console.log(`选择了${this.selectedImages.length}张图片，其中${correctSelections}张是健康的`);
-      console.log(`总共有${totalHealthyImages}张健康图片`);
+      console.log(`Selected ${this.selectedImages.length} images, ${correctSelections} of which are healthy`);
+      console.log(`Total of ${totalHealthyImages} healthy images`);
 
-      // 只有选择的4张图片全部是健康的，并且没有漏选健康图片才算成功
+      // Only succeed if all 4 selected images are healthy and no healthy images are missed
       const allCorrect = (correctSelections === this.maxSelections) && (correctSelections === totalHealthyImages);
 
       if (allCorrect) {
@@ -924,26 +929,26 @@ export default {
     },
 
     handleImageError(event) {
-      console.warn('图片加载失败:', event.target.src);
+      console.warn('Image loading failed:', event.target.src);
       event.target.src = '/api/placeholder/300/200?text=Image+Load+Failed';
     },
 
-    // 手动启动验证游戏
+    // Manually start verification game
     async startVerificationGame() {
-      console.log('手动启动验证游戏');
+      console.log('Manually starting verification game');
       
-      // 重置验证状态
+      // Reset verification state
       this.verificationCompleted = false;
       this.verificationResult = null;
       this.verificationImages = [];
       this.selectedImages = [];
       
-      // 显示验证界面并加载图片
+      // Show verification interface and load images
       this.showVerification = true;
       await this.loadVerificationImages();
     },
 
-    // 初始化数字动画功能
+    // Initialize number animation functionality
     initNumbersAnimation() {
       // IntersectionObserver to reveal rows/title and trigger count ups
       const io = new IntersectionObserver((entries) => {
@@ -960,7 +965,7 @@ export default {
       document.querySelectorAll('.numbers-card, .numbers-title').forEach(el => io.observe(el));
     },
 
-    // 数字计数动画
+    // Number counting animation
     startNumbersCount(el) {
       if (el.dataset.done) return; // prevent double
       const to = parseFloat(el.dataset.to || '0');
@@ -988,11 +993,24 @@ export default {
     }
   },
 
+  // Navigation guard - ensure scrolling to top every time entering Education page
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      // Ensure window scrolls to top
+      window.scrollTo(0, 0);
+      // If page has scroll container, also scroll to top
+      const scrollContainer = document.querySelector('.education-container');
+      if (scrollContainer) {
+        scrollContainer.scrollTop = 0;
+      }
+    });
+  },
+
   async mounted() {
-    // 立即开始预加载背景图片
+    // Immediately start preloading background image
     this.preloadBackgroundImage();
     
-    // 加载背景图片
+    // Load background image
     this.loadBackgroundImage();
     
     // Set global refresh detection timestamp for verification system
@@ -1019,16 +1037,25 @@ export default {
       localStorage.removeItem('functionalNavigation');
     }
     
-    // 禁用自动验证 - 只有点击按钮时才触发验证游戏
-    console.log('Education组件已挂载，验证游戏已禁用自动触发');
-    console.log('用户需要点击按钮手动启动验证游戏');
+    // Disable automatic verification - only trigger verification game when button is clicked
+    console.log('Education component mounted, verification game auto-trigger disabled');
+    console.log('User needs to click button to manually start verification game');
     
-    // 确保验证界面不会自动显示
+    // Ensure verification interface does not show automatically
     this.showVerification = false;
     
-    // 初始化数字动画功能
+    // Initialize number animation functionality
     this.$nextTick(() => {
       this.initNumbersAnimation();
+    });
+    
+    // Ensure page scrolls to top after loading is complete
+    this.$nextTick(() => {
+      window.scrollTo(0, 0);
+      const scrollContainer = document.querySelector('.education-container');
+      if (scrollContainer) {
+        scrollContainer.scrollTop = 0;
+      }
     });
   }
 }
@@ -1043,14 +1070,14 @@ export default {
   display: flex;
   flex-direction: column;
   padding: 0;
-  /* 删除 background 相关 */
+  /* Remove background related */
   background: none;
-  /* 删除 transform、will-change */
+  /* Remove transform, will-change */
 }
 
 
 
-/* 海洋主题背景加载占位符样式 */
+/* Ocean theme background loading placeholder styles */
 .bg-placeholder {
   position: fixed;
   top: 0;
@@ -1099,7 +1126,7 @@ export default {
 }
 
 
-/* 海洋主题进度条样式 */
+/* Ocean theme progress bar styles */
 .progress-container {
   position: absolute;
   top: 50%;
@@ -1166,12 +1193,12 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background: url('@/assets/bg_login5.webp') no-repeat center center;
+  background: url('@/assets/bg_edu.webp') no-repeat center center;
   background-size: cover;
   z-index: -1;
-  /* 优化背景图片加载 */
-  will-change: transform;      /* 提示浏览器优化 */
-  transform: translateZ(0);     /* 启用硬件加速 */
+  /* Optimize background image loading */
+  will-change: transform;      /* Hint browser optimization */
+  transform: translateZ(0);     /* Enable hardware acceleration */
 }
 
 .education-header {
@@ -1206,7 +1233,7 @@ export default {
   flex-wrap: wrap;
 }
 
-/* 验证游戏按钮样式 */
+/* Verification game button styles */
 .verification-game-btn {
   background: linear-gradient(135deg, #72c4f0ff, #6c98d6ff);
   color: white;
@@ -1234,7 +1261,7 @@ export default {
   box-shadow: 0 3px 10px rgba(102, 126, 234, 0.5);
 }
 
-/* Tips and Guides按钮样式 */
+/* Tips and Guides button styles */
 .tips-guides-btn {
   background: linear-gradient(135deg, #28a745, #20c997);
   color: white;
@@ -1420,7 +1447,14 @@ export default {
   transform: translateY(2px);
 }
 
-/* 进入视口时数字弹跳轻微缩放 */
+.numbers-percentage {
+  display: inline-block;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+}
+
+/* Number bounce slight scaling when entering viewport */
 .numbers-pop {
   animation: numbersPop 0.5s ease-out both;
 }
@@ -1430,7 +1464,7 @@ export default {
   100% { transform: scale(1); }
 }
 
-/* 无障碍：尊重"减少动效"设置 */
+/* Accessibility: respect "reduce motion" setting */
 @media (prefers-reduced-motion: reduce) {
   .numbers-title, .numbers-card {
     opacity: 1 !important;
@@ -1442,7 +1476,7 @@ export default {
   }
 }
 
-/* 未登录状态样式 */
+/* Not logged in state styles */
 .login-section {
   display: flex;
   justify-content: center;
@@ -1450,7 +1484,7 @@ export default {
   min-height: 60vh;
 }
 
-/* 登录表单容器 */
+/* Login form container */
 .login-form-container {
   display: flex;
   justify-content: center;
@@ -1483,7 +1517,7 @@ export default {
   line-height: 1.6;
 }
 
-/* 注册表单容器 */
+/* Registration form container */
 .register-form-container {
   display: flex;
   justify-content: center;
@@ -1616,12 +1650,12 @@ export default {
   color: white;
 }
 
-/* 学习界面样式 */
+/* Learning interface styles */
 .learning-interface {
   color: white;
 }
 
-/* 移除了登录认证相关样式 */
+/* Removed login authentication related styles */
 
 .user-info-card {
   background: rgba(255, 255, 255, 0.15);
@@ -1703,11 +1737,11 @@ export default {
   transform: translateY(-2px);
 }
 
-/* 移除了更多登录相关样式 */
+/* Removed more login related styles */
 
 
 
-/* 功能网格 */
+/* Feature grid */
 .features-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -1747,7 +1781,7 @@ export default {
   width: 60px;
   height: 60px;
   object-fit: contain;
-  filter: brightness(0) invert(1); /* 将图标转换为白色 */
+  filter: brightness(0) invert(1); /* Convert icon to white */
   transition: transform 0.3s ease;
 }
 
@@ -1880,7 +1914,7 @@ export default {
   border-bottom-color: #63b3ed;
 }
 
-/* Map & Recommendation 下拉菜单样式 */
+/* Map & Recommendation dropdown menu styles */
 .nav-item-dropdown {
   position: relative;
   display: flex;
@@ -1920,7 +1954,7 @@ export default {
   animation: dropdownSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 移除小箭头，使用图二样式 */
+/* Remove small arrow, use figure 2 style */
 
 @keyframes dropdownSlideIn {
   from {
@@ -2018,7 +2052,7 @@ export default {
   }
 }
 
-/* 响应式设计 */
+/* Responsive design */
 @media (max-width: 768px) {
   .education-header h1 {
     font-size: 2rem;
@@ -2204,7 +2238,7 @@ export default {
   height: 15px;
 }
 
-/* 测验界面样式 */
+/* Quiz interface styles */
 .quiz-overlay {
   position: fixed;
   top: 0;
@@ -2706,7 +2740,7 @@ export default {
   text-align: center;
 }
 
-/* 验证界面样式 */
+/* Verification interface styles */
 .verification-overlay {
   position: fixed;
   top: 0;
@@ -2878,7 +2912,7 @@ export default {
   background: rgba(244, 67, 54, 0.15);
 }
 
-/* 只在刚选择时播放动画 */
+/* Only play animation when just selected */
 .image-item.just-selected-correct {
   animation: correctSelection 0.5s ease forwards;
 }
@@ -2936,7 +2970,7 @@ export default {
 
 
 
-/* 选择状态指示器 */
+/* Selection state indicator */
 .selection-indicator {
   position: absolute;
   top: 10px;
@@ -2959,7 +2993,7 @@ export default {
   color: white;
 }
 
-/* 点击提示 */
+/* Click hint */
 .click-hint {
   margin-top: 10px;
   font-size: 14px;
@@ -3068,7 +3102,7 @@ export default {
   }
 }
 
-/* 响应式设计 */
+/* Responsive design */
 @media (max-width: 768px) {
   .verification-modal {
     width: 95%;
@@ -3140,5 +3174,32 @@ export default {
 .footer-links a:hover {
   color: #fff;
   text-decoration: underline;
+}
+
+/* Contact info styles */
+.contact-info {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+  font-size: 14px;
+}
+
+.contact-icon {
+  font-size: 16px;
+  opacity: 0.8;
+}
+
+.contact-text {
+  user-select: all;
+  cursor: text;
 }
 </style>

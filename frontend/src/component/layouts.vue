@@ -1,8 +1,8 @@
 <template>
-  <section class="container" > <!--最外层容器-->
-    <section class="menu"> <!--左边的容器-->
+  <section class="container" > <!--Outermost container-->
+    <section class="menu"> <!--Left container-->
     </section>
-    <section class="content-container"><!--右边的容器-->
+    <section class="content-container"><!--Right container-->
     </section>
   </section>
 </template>

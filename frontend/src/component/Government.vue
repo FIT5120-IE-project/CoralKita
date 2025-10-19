@@ -1,6 +1,6 @@
 <template>
   <div class="government-container">
-    <!-- 背景图片加载占位符 -->
+    <!-- Background image loading placeholder -->
     <div class="bg-placeholder" v-if="!backgroundLoaded">
       <div class="progress-container">
         <div class="progress-bar">
@@ -18,13 +18,9 @@
       </div>
       <div class="nav-right">
         <div class="nav-items">
+          <span class="nav-item" @click="goToMap">{{ $t('nav.mapRecommendation.line1') }}</span>
           <div class="nav-item-dropdown" @mouseenter="showTravelDropdown = true" @mouseleave="showTravelDropdown = false">
-            <div class="nav-item-wrapper">
-              <span class="nav-item map-rec-item" @click="goToMap">
-                <span class="nav-text-line">{{ $t('nav.mapRecommendation.line1') }}</span>
-                <span class="nav-text-line">{{ $t('nav.mapRecommendation.line2') }}</span>
-              </span>
-            </div>
+            <span class="nav-item">{{ $t('nav.topIsland') }}</span>
             <div class="dropdown-menu" v-show="showTravelDropdown">
               <div 
                 v-for="island in travelIslands" 
@@ -72,18 +68,7 @@
         </div>
 
         <div class="updates-timeline">
-          <!-- Update 1 -->
-          <div class="timeline-card">
-            <div class="timeline-date">{{ $t('government.policyUpdates.updates.sunscreen.date') }}</div>
-            <h4>{{ $t('government.policyUpdates.updates.sunscreen.title') }}</h4>
-            <p>{{ $t('government.policyUpdates.updates.sunscreen.description') }}</p>
-            <a href="https://marinepark.dof.gov.my/en/" target="_blank" class="source-link">
-              <span class="source-icon">🔗</span>
-              {{ $t('government.policyUpdates.updates.sunscreen.source') }}
-            </a>
-          </div>
-
-          <!-- Update 2 -->
+          <!-- Update 1 - August 2025 (should be first) -->
           <div class="timeline-card">
             <div class="timeline-date">{{ $t('government.policyUpdates.updates.fishing.date') }}</div>
             <h4>{{ $t('government.policyUpdates.updates.fishing.title') }}</h4>
@@ -91,6 +76,17 @@
             <a href="https://marinepark.dof.gov.my/en/" target="_blank" class="source-link">
               <span class="source-icon">🔗</span>
               {{ $t('government.policyUpdates.updates.fishing.source') }}
+            </a>
+          </div>
+
+          <!-- Update 2 - June 2025 (should be second) -->
+          <div class="timeline-card">
+            <div class="timeline-date">{{ $t('government.policyUpdates.updates.sunscreen.date') }}</div>
+            <h4>{{ $t('government.policyUpdates.updates.sunscreen.title') }}</h4>
+            <p>{{ $t('government.policyUpdates.updates.sunscreen.description') }}</p>
+            <a href="https://marinepark.dof.gov.my/en/" target="_blank" class="source-link">
+              <span class="source-icon">🔗</span>
+              {{ $t('government.policyUpdates.updates.sunscreen.source') }}
             </a>
           </div>
 
@@ -121,63 +117,119 @@
       <!-- Support Reef Conservation Section -->
       <section class="conservation-section">
         <div class="section-header">
-          <h2>💙 {{ $t('government.conservation.title') }}</h2>
+          <h2><img src="@/assets/icons/logo_gov2.png" alt="Conservation" class="section-icon" /> {{ $t('government.conservation.title') }}</h2>
           <p>{{ $t('government.conservation.subtitle') }}</p>
         </div>
 
-        <div class="donation-grid">
-          <!-- Reef Check Malaysia -->
+        <!-- Volunteer Programs Section -->
+        <div class="volunteer-section">
+          <div class="donation-grid">
+          <!-- International Coastal Cleanup -->
           <div class="donation-card">
             <div class="card-header">
-              <h3>{{ $t('government.conservation.ngos.reefCheck.name') }}</h3>
-              <span class="badge verified">{{ $t('government.conservation.ngos.reefCheck.verified') }}</span>
+              <h3>International Coastal Cleanup Volunteer Program</h3>
+              <img src="@/assets/icons/logo_gov.png" alt="Verified" class="badge-icon" />
             </div>
             <p class="card-description">
-              {{ $t('government.conservation.ngos.reefCheck.description') }}
+              Join Reef Check Malaysia's International Coastal Cleanup program to help remove marine debris and protect coral reef ecosystems. This volunteer program focuses on beach cleanups, data collection, and community engagement.
             </p>
             <div class="ngo-info">
-              <p><strong>{{ $t('government.conservation.ngos.reefCheck.focusAreas') }}</strong> {{ $t('government.conservation.ngos.reefCheck.focusAreasText') }}</p>
-              <p><strong>{{ $t('government.conservation.ngos.reefCheck.coverage') }}</strong> {{ $t('government.conservation.ngos.reefCheck.coverageText') }}</p>
+              <p><strong>Focus Areas:</strong> Beach cleanup, marine debris removal, community education</p>
+              <p><strong>Coverage:</strong> Coastal areas throughout Malaysia</p>
             </div>
-            <a href="https://reefcheck.org.my/donate/" target="_blank" class="donate-btn">
-              {{ $t('government.conservation.ngos.reefCheck.button') }}
+            <a href="https://reefcheck.org.my/international-coastal-cleanup/" target="_blank" class="donate-btn">
+              Volunteer via Official Site >
             </a>
           </div>
 
-          <!-- WWF Malaysia -->
+          <!-- Marine & Coral Restoration Volunteer Program -->
           <div class="donation-card">
             <div class="card-header">
-              <h3>{{ $t('government.conservation.ngos.wwf.name') }}</h3>
-              <span class="badge verified">{{ $t('government.conservation.ngos.wwf.verified') }}</span>
+              <h3>Marine & Coral Restoration Volunteer Program</h3>
+              <img src="@/assets/icons/logo_gov3.webp" alt="Verified" class="badge-icon" />
             </div>
             <p class="card-description">
-              {{ $t('government.conservation.ngos.wwf.description') }}
+              TRACC offers hands-on marine conservation volunteer programs where participants can directly contribute to coral reef restoration, marine research, and conservation education in Sabah, Malaysia.
             </p>
             <div class="ngo-info">
-              <p><strong>{{ $t('government.conservation.ngos.wwf.focusAreas') }}</strong> {{ $t('government.conservation.ngos.wwf.focusAreasText') }}</p>
-              <p><strong>{{ $t('government.conservation.ngos.wwf.coverage') }}</strong> {{ $t('government.conservation.ngos.wwf.coverageText') }}</p>
+              <p><strong>Focus Areas:</strong> Coral restoration, marine research, conservation training</p>
+              <p><strong>Coverage:</strong> Semporna and surrounding waters in Sabah</p>
             </div>
-            <a href="https://www.wwf.org.my/how_you_can_help/donate_now/conserve_our_coral_reefs/" target="_blank" class="donate-btn">
-              {{ $t('government.conservation.ngos.wwf.button') }}
+            <a href="https://tracc.org/prices/p/volunteer-at-tracc" target="_blank" class="donate-btn">
+              Volunteer via Official Site >
             </a>
           </div>
 
-          <!-- TRACC -->
+          <!-- Tengah Island Conservation Volunteer Programme -->
           <div class="donation-card">
             <div class="card-header">
-              <h3>{{ $t('government.conservation.ngos.tracc.name') }}</h3>
-              <span class="badge verified">{{ $t('government.conservation.ngos.tracc.verified') }}</span>
+              <h3>Tengah Island Conservation Volunteer Programme</h3>
+              <img src="@/assets/icons/logo_gov4.png" alt="Verified" class="badge-icon" />
             </div>
             <p class="card-description">
-              {{ $t('government.conservation.ngos.tracc.description') }}
+              TIC offers comprehensive volunteer programs focused on marine conservation, turtle conservation, and coral reef monitoring. Volunteers participate in research activities and conservation initiatives on Tengah Island.
             </p>
             <div class="ngo-info">
-              <p><strong>{{ $t('government.conservation.ngos.tracc.focusAreas') }}</strong> {{ $t('government.conservation.ngos.tracc.focusAreasText') }}</p>
-              <p><strong>{{ $t('government.conservation.ngos.tracc.coverage') }}</strong> {{ $t('government.conservation.ngos.tracc.coverageText') }}</p>
+              <p><strong>Focus Areas:</strong> Turtle conservation, coral monitoring, marine research</p>
+              <p><strong>Coverage:</strong> Tengah Island and surrounding marine areas</p>
             </div>
-            <a href="https://tracc.org/donate" target="_blank" class="donate-btn">
-              {{ $t('government.conservation.ngos.tracc.button') }}
+            <a href="https://www.tengahislandconservation.org/volunteer" target="_blank" class="donate-btn">
+              Volunteer via Official Site >
             </a>
+          </div>
+            <!-- Reef Check Malaysia -->
+            <div class="donation-card">
+              <div class="card-header">
+                <h3>{{ $t('government.conservation.ngos.reefCheck.name') }}</h3>
+                <img src="@/assets/icons/logo_gov.png" alt="Verified" class="badge-icon" />
+              </div>
+              <p class="card-description">
+                {{ $t('government.conservation.ngos.reefCheck.description') }}
+              </p>
+              <div class="ngo-info">
+                <p><strong>{{ $t('government.conservation.ngos.reefCheck.focusAreas') }}</strong> {{ $t('government.conservation.ngos.reefCheck.focusAreasText') }}</p>
+                <p><strong>{{ $t('government.conservation.ngos.reefCheck.coverage') }}</strong> {{ $t('government.conservation.ngos.reefCheck.coverageText') }}</p>
+              </div>
+              <a href="https://reefcheck.org.my/donate/" target="_blank" class="donate-btn">
+                {{ $t('government.conservation.ngos.reefCheck.button') }}
+              </a>
+            </div>
+
+            <!-- WWF Malaysia -->
+            <div class="donation-card">
+              <div class="card-header">
+                <h3>{{ $t('government.conservation.ngos.wwf.name') }}</h3>
+                <img src="@/assets/icons/logo_gov1.png" alt="Verified" class="badge-icon" />
+              </div>
+              <p class="card-description">
+                {{ $t('government.conservation.ngos.wwf.description') }}
+              </p>
+              <div class="ngo-info">
+                <p><strong>{{ $t('government.conservation.ngos.wwf.focusAreas') }}</strong> {{ $t('government.conservation.ngos.wwf.focusAreasText') }}</p>
+                <p><strong>{{ $t('government.conservation.ngos.wwf.coverage') }}</strong> {{ $t('government.conservation.ngos.wwf.coverageText') }}</p>
+              </div>
+              <a href="https://www.wwf.org.my/how_you_can_help/donate_now/conserve_our_coral_reefs/" target="_blank" class="donate-btn">
+                {{ $t('government.conservation.ngos.wwf.button') }}
+              </a>
+            </div>
+
+            <!-- TRACC -->
+            <div class="donation-card">
+              <div class="card-header">
+                <h3>{{ $t('government.conservation.ngos.tracc.name') }}</h3>
+                <img src="@/assets/icons/logo_gov3.webp" alt="Verified" class="badge-icon" />
+              </div>
+              <p class="card-description">
+                {{ $t('government.conservation.ngos.tracc.description') }}
+              </p>
+              <div class="ngo-info">
+                <p><strong>{{ $t('government.conservation.ngos.tracc.focusAreas') }}</strong> {{ $t('government.conservation.ngos.tracc.focusAreasText') }}</p>
+                <p><strong>{{ $t('government.conservation.ngos.tracc.coverage') }}</strong> {{ $t('government.conservation.ngos.tracc.coverageText') }}</p>
+              </div>
+              <a href="https://tracc.org/donate" target="_blank" class="donate-btn">
+                {{ $t('government.conservation.ngos.tracc.button') }}
+              </a>
+            </div>
           </div>
         </div>
       </section>
@@ -189,7 +241,16 @@
       <div class="footer-content">
         {{ $t('footer.copyright') }}
         <span class="footer-links">
-          <a href="mailto:coralkita.service@gmail.com">{{ $t('footer.contact') }}</a>
+          <div class="contact-info">
+            <div class="contact-item">
+              <span class="contact-icon">🌐</span>
+              <span class="contact-text">{{ $t('footer.website') }}</span>
+            </div>
+            <div class="contact-item">
+              <span class="contact-icon">✉️</span>
+              <span class="contact-text">{{ $t('footer.email') }}</span>
+            </div>
+          </div>
         </span>
       </div>
     </footer>
@@ -229,7 +290,7 @@ export default {
       try {
         this.appIconUrl = await ossService.getFileUrl('assets/icon.png')
       } catch (error) {
-        console.warn('加载应用图标失败，使用默认图标:', error)
+        console.warn('Failed to load app icon, using default icon:', error)
         this.appIconUrl = null
       }
     },
@@ -239,7 +300,7 @@ export default {
         this.backgroundImageUrl = await ossService.getFileUrl('assets/bg_mainpage.webp')
         document.documentElement.style.setProperty('--gov-bg-image', `url('${this.backgroundImageUrl}')`)
       } catch (error) {
-        console.warn('加载背景图片失败，使用默认图片:', error)
+        console.warn('Failed to load background image, using default image:', error)
         this.backgroundImageUrl = null
       }
     },
@@ -248,11 +309,11 @@ export default {
       const img = new Image()
       img.onload = () => {
         this.backgroundLoaded = true
-        this.loadingProgress = 100
+        this.loadingProgress = 25
       }
       img.onerror = () => {
         this.backgroundLoaded = true
-        this.loadingProgress = 100
+        this.loadingProgress = 25
       }
       
       ossService.getFileUrl('assets/bg_mainpage.webp').then(url => {
@@ -264,7 +325,7 @@ export default {
 
       const progressInterval = setInterval(() => {
         if (this.loadingProgress < 90) {
-          this.loadingProgress += Math.random() * 15
+          this.loadingProgress += Math.random() * 5
         } else {
           clearInterval(progressInterval)
         }
@@ -331,7 +392,7 @@ export default {
 
     goToIslandDetail(islandName) {
       localStorage.setItem('functionalNavigation', 'true')
-      this.$router.push(`/island/${islandName}`).catch(err => {
+      this.$router.push(`/travel/${encodeURIComponent(islandName)}`).catch(err => {
         if (err.name !== 'NavigationDuplicated') {
           console.error('Navigation error:', err);
         }
@@ -350,7 +411,7 @@ export default {
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
-  background: linear-gradient(135deg, rgba(10, 77, 104, 0.7) 0%, rgba(5, 191, 219, 0.7) 100%);
+  background: linear-gradient(135deg, rgba(10, 77, 104, 0.7) 0%, rgba(19, 52, 57, 0.7) 100%);
 }
 
 .bg-placeholder {
@@ -586,12 +647,13 @@ export default {
 /* Page Header */
 .page-header {
   text-align: center;
-  margin-bottom: 60px;
   padding: 40px 20px;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.815);
   backdrop-filter: blur(20px);
   border-radius: 25px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  max-width: 1050px;
+  margin: 0 auto 60px auto;
 }
 
 .page-header h1 {
@@ -620,13 +682,23 @@ export default {
 .section-header h2 {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #1A1D25;
+  color: #ffffff;
   margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.section-icon {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
 }
 
 .section-header p {
   font-size: 1.1rem;
-  color: #666;
+  color: #ffffff;
 }
 
 /* Policy Updates Section - Timeline Style */
@@ -642,16 +714,16 @@ export default {
 .updates-timeline::before {
   content: '';
   position: absolute;
-  left: 15px;
+  left: 22px;
   top: 0;
   bottom: 0;
   width: 3px;
-  background: linear-gradient(180deg, #01A2EB, #1A1D25);
+  background: linear-gradient(180deg, #01A2EB, #6dc9d9);
 }
 
 .timeline-card {
   position: relative;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.771);
   backdrop-filter: blur(20px);
   border-radius: 20px;
   padding: 30px;
@@ -664,7 +736,7 @@ export default {
 .timeline-card::before {
   content: '';
   position: absolute;
-  left: -43px;
+  left: -35px;
   top: 30px;
   width: 15px;
   height: 15px;
@@ -675,6 +747,7 @@ export default {
 }
 
 .timeline-card:hover {
+  background: rgb(255, 255, 255);
   transform: translateX(10px);
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
 }
@@ -737,19 +810,22 @@ export default {
 }
 
 .donation-card {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(222, 202, 124, 0.15);
   backdrop-filter: blur(20px);
   border-radius: 20px;
   padding: 30px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  border: 2px solid rgba(1, 162, 235, 0.2);
+  border: 10px solid rgba(255, 255, 255, 0.536);
   transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .donation-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-  border-color: #01A2EB;
+  border-color: rgba(255, 255, 255, 1);
 }
 
 .card-header {
@@ -763,7 +839,7 @@ export default {
 .card-header h3 {
   font-size: 1.4rem;
   font-weight: 600;
-  color: #1A1D25;
+  color: #ffffff;
   flex: 1;
 }
 
@@ -780,21 +856,34 @@ export default {
   color: white;
 }
 
+.badge-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.badge-icon:hover {
+  transform: scale(1.1);
+}
+
 .card-description {
-  color: #555;
+  color: #ffffff;
   line-height: 1.7;
   margin-bottom: 15px;
 }
 
 .ngo-info {
-  background: rgba(1, 162, 235, 0.05);
+  background: rgba(255, 232, 140, 0.305);
   padding: 15px;
   border-radius: 10px;
   margin-bottom: 20px;
 }
 
 .ngo-info p {
-  color: #555;
+  color: #ffffff;
   line-height: 1.6;
   margin-bottom: 8px;
 }
@@ -804,7 +893,7 @@ export default {
 }
 
 .donate-btn {
-  display: inline-block;
+  display: block;
   background: linear-gradient(135deg, #01A2EB, #0077BE);
   color: white;
   padding: 12px 25px;
@@ -813,6 +902,11 @@ export default {
   font-weight: 600;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(1, 162, 235, 0.3);
+  margin-top: auto;
+  text-align: center;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .donate-btn:hover {
@@ -858,6 +952,33 @@ export default {
   color: #00D4FF;
 }
 
+/* Contact info styles */
+.contact-info {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+  font-size: 14px;
+}
+
+.contact-icon {
+  font-size: 16px;
+  opacity: 0.8;
+}
+
+.contact-text {
+  user-select: all;
+  cursor: text;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
   .donation-grid {
@@ -869,7 +990,7 @@ export default {
   }
 
   .timeline-card::before {
-    left: -35px;
+    left: -27px;
   }
 }
 
@@ -899,7 +1020,7 @@ export default {
   }
 
   .timeline-card::before {
-    left: -28px;
+    left: -20px;
   }
 
   .nav-items {

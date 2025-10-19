@@ -1,6 +1,6 @@
 <template>
   <div class="chat-widget" style="display: none;">
-    <!-- 聊天按钮 -->
+    <!-- Chat button -->
     <div 
       v-if="!isOpen" 
       class="chat-button" 
@@ -13,9 +13,9 @@
       </svg>
     </div>
 
-    <!-- 聊天窗口 -->
+    <!-- Chat window -->
     <div v-if="isOpen" class="chat-window">
-      <!-- 聊天头部 -->
+      <!-- Chat header -->
       <div class="chat-header">
         <div class="chat-title">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -30,7 +30,7 @@
         </button>
       </div>
 
-      <!-- 聊天消息区域 -->
+      <!-- Chat messages area -->
       <div class="chat-messages" ref="messagesContainer">
         <div v-if="messages.length === 0" class="welcome-message">
           <p>👋 Hello! I'm your CoralKita Assistant</p>
@@ -43,7 +43,7 @@
           :key="index" 
           :class="['message', message.type]"
         >
-          <!-- 机器人消息布局 -->
+          <!-- Bot message layout -->
           <div v-if="message.type === 'bot'" class="message-content">
             <div class="bot-avatar">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -54,7 +54,7 @@
           </div>
           <div v-if="message.type === 'bot'" class="message-time">{{ formatTime(message.timestamp) }}</div>
 
-          <!-- 用户消息布局 -->
+          <!-- User message layout -->
           <div v-if="message.type === 'user'" class="user-message-container">
             <div class="user-message-bubble-group">
               <div class="message-text">{{ message.text }}</div>
@@ -68,7 +68,7 @@
           </div>
         </div>
 
-        <!-- 加载指示器 -->
+        <!-- Loading indicator -->
         <div v-if="isLoading" class="message bot">
           <div class="message-content">
             <div class="bot-avatar">
@@ -87,7 +87,7 @@
         </div>
       </div>
 
-      <!-- 输入区域 -->
+      <!-- Input area -->
       <div class="chat-input">
         <div class="input-container">
           <input 
@@ -129,20 +129,20 @@ export default {
     }
   },
   mounted() {
-    // 页面加载后立即显示欢迎提醒 - 已禁用
+    // Show welcome reminder immediately after page load - disabled
     // this.showWelcomeNotification()
   },
   beforeDestroy() {
-    // 组件销毁时重置状态，确保下次进入页面时能再次显示
+    // Reset state when component is destroyed to ensure it can be shown again next time
     this.hasShownWelcome = false
   },
   methods: {
     showWelcomeNotification() {
-      // 每次进入页面都显示欢迎提醒
+      // Show welcome reminder every time entering the page
       if (!this.hasShownWelcome) {
         this.hasShownWelcome = true
         
-        // 创建欢迎提醒元素
+        // Create welcome reminder element
         const notification = document.createElement('div')
         notification.className = 'welcome-notification'
         notification.innerHTML = `
@@ -156,7 +156,7 @@ export default {
           </div>
         `
         
-        // 添加样式
+        // Add styles
         const style = document.createElement('style')
         style.textContent = `
           .welcome-notification {
@@ -247,7 +247,7 @@ export default {
         document.head.appendChild(style)
         document.body.appendChild(notification)
         
-        // 5秒后自动消失
+        // Auto disappear after 5 seconds
         setTimeout(() => {
           if (notification.parentElement) {
             notification.style.animation = 'slideOutDown 0.3s ease-in'
@@ -259,7 +259,7 @@ export default {
           }
         }, 5000)
         
-        // 添加滑出动画
+        // Add slide out animation
         const slideOutStyle = document.createElement('style')
         slideOutStyle.textContent = `
           @keyframes slideOutDown {
@@ -330,7 +330,7 @@ export default {
           this.messages.push(errorMessage)
         }
       } catch (error) {
-        console.error('发送消息失败:', error)
+        console.error('Failed to send message:', error)
         const errorMessage = {
           type: 'bot',
           text: 'Network connection failed. Please check your connection and try again.',
@@ -362,19 +362,19 @@ export default {
     formatMessageText(text) {
       if (!text) return ''
       
-      // 处理 **文本** 格式，转换为换行加粗
+      // Handle **text** format, convert to line break and bold
       let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<br><strong>$1</strong>')
       
-      // 处理 * 文本 格式（单个*后面跟空格和内容），转换为斜体
+      // Handle * text format (single * followed by space and content), convert to italic
       formattedText = formattedText.replace(/\*\s+([^*\n]+)/g, '<em>$1</em>')
       
-      // 处理 *文本* 格式（成对的*），转换为斜体
+      // Handle *text* format (paired *), convert to italic
       formattedText = formattedText.replace(/\*([^*\n]+)\*/g, '<em>$1</em>')
       
-      // 将 "Main source files referenced:" 加粗
+      // Bold "Main source files referenced:"
       formattedText = formattedText.replace(/Main source files referenced:/g, '<strong>Main source files referenced:</strong>')
       
-      // 将换行符转换为HTML换行
+      // Convert line breaks to HTML line breaks
       formattedText = formattedText.replace(/\n/g, '<br>')
       
       return formattedText
@@ -651,7 +651,7 @@ export default {
 }
 
 
-/* 响应式设计 */
+/* Responsive design */
 @media (max-width: 480px) {
   .chat-window {
     width: calc(100vw - 40px);

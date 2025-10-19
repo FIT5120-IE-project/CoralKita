@@ -1,6 +1,6 @@
 <template>
   <div class="background-container">
-    <!-- 主要内容 -->
+    <!-- Main content -->
     <div class="main-content">
       <div class="hero-section">
         <h1 class="main-title">CoralKita</h1>
@@ -22,11 +22,11 @@ export default {
   name: 'VideoBackground',
   data() {
     return {
-      // 移除视频背景，不再需要videoSrc
+      // Remove video background, no longer need videoSrc
     }
   },
   mounted() {
-    console.log('VideoBackground 组件已挂载');
+    console.log('VideoBackground component mounted');
   }
 }
 </script>
@@ -150,7 +150,7 @@ export default {
   }
 }
 
-/* 响应式设计 */
+/* Responsive design */
 @media (max-width: 768px) {
   .main-title {
     font-size: 2.5rem;

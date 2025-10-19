@@ -11,13 +11,9 @@
       </div>
       <div class="nav-right">
         <div class="nav-items">
+          <span class="nav-item" @click="goToMap">{{ $t('nav.mapRecommendation.line1') }}</span>
           <div class="nav-item-dropdown" @mouseenter="showIslandDropdown = true" @mouseleave="showIslandDropdown = false">
-            <div class="nav-item-wrapper">
-              <span class="nav-item map-rec-item" @click="goToMap">
-                <span class="nav-text-line">{{ $t('nav.mapRecommendation.line1') }}</span>
-                <span class="nav-text-line">{{ $t('nav.mapRecommendation.line2') }}</span>
-              </span>
-            </div>
+            <span class="nav-item">{{ $t('nav.topIsland') }}</span>
             <div class="dropdown-menu" v-show="showIslandDropdown">
               <div 
                 v-for="island in islands" 
@@ -147,7 +143,16 @@
       <div class="footer-content">
         {{ $t('footer.copyright') }}
         <span class="footer-links">
-          <a href="mailto:coralkita.service@gmail.com">{{ $t('footer.contact') }}</a>
+          <div class="contact-info">
+            <div class="contact-item">
+              <span class="contact-icon">🌐</span>
+              <span class="contact-text">{{ $t('footer.website') }}</span>
+            </div>
+            <div class="contact-item">
+              <span class="contact-icon">✉️</span>
+              <span class="contact-text">{{ $t('footer.email') }}</span>
+            </div>
+          </div>
         </span>
       </div>
     </footer>
@@ -170,7 +175,7 @@ export default {
       showEducationDropdown: false,
       islands: ['Mertang', 'P Singa', 'Sipadan', 'Pulau Lima', 'Seri Buat'],
       activeItem: null,
-      // 背景图片URL
+      // Background image URL
       backgroundImageUrl: null
     }
   },
@@ -200,6 +205,10 @@ export default {
         {
           question: this.$t('faq.dataAndSources.q3.question'),
           answer: this.$t('faq.dataAndSources.q3.answer')
+        },
+        {
+          question: this.$t('faq.dataAndSources.q4.question'),
+          answer: this.$t('faq.dataAndSources.q4.answer')
         }
       ]
     },
@@ -218,15 +227,15 @@ export default {
   },
   methods: {
     /**
-     * 加载背景图片
+     * Load background image
      */
     async loadBackgroundImage() {
       try {
         this.backgroundImageUrl = await ossService.getFileUrl('ai_interface.webp')
-        // 设置CSS变量
+        // Set CSS variable
         document.documentElement.style.setProperty('--bg-image', `url(${this.backgroundImageUrl})`)
       } catch (error) {
-        console.warn('加载背景图片失败，使用默认图片:', error)
+        console.warn('Failed to load background image, using default image:', error)
         this.backgroundImageUrl = null
       }
     },
@@ -264,6 +273,13 @@ export default {
         }
       })
     },
+    goToGovernment() {
+      this.$router.push('/government').catch(err => {
+        if (err.name !== 'NavigationDuplicated') {
+          console.error('Navigation error:', err)
+        }
+      })
+    },
     goToActionHub() {
       this.$router.push('/action-hub').catch(err => {
         if (err.name !== 'NavigationDuplicated') {
@@ -293,7 +309,7 @@ export default {
   mounted() {
     console.log('FAQ page loaded')
     
-    // 加载背景图片
+    // Load background image
     this.loadBackgroundImage()
   }
 }
@@ -674,6 +690,33 @@ export default {
 .footer-links a:hover {
   color: #fff;
   text-decoration: underline;
+}
+
+/* Contact info styles */
+.contact-info {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+  font-size: 14px;
+}
+
+.contact-icon {
+  font-size: 16px;
+  opacity: 0.8;
+}
+
+.contact-text {
+  user-select: all;
+  cursor: text;
 }
 
 /* Responsive Design */

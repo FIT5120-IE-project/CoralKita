@@ -1,6 +1,6 @@
 <template>
   <div class="map-container">
-    <!-- 背景图片加载占位符 -->
+    <!-- Background image loading placeholder -->
     <div class="bg-placeholder" v-if="!backgroundLoaded">
       <div class="progress-container">
         <div class="progress-bar">
@@ -10,7 +10,7 @@
       </div>
     </div>
     
-    <!-- 独立的进度条容器 -->
+    <!-- Independent progress bar container -->
     <div class="top-progress-container" v-if="!backgroundLoaded">
       <div class="progress-bar">
         <div class="progress-fill" :style="{ width: loadingProgress + '%' }"></div>
@@ -27,13 +27,9 @@
       </div>
       <div class="nav-right">
         <div class="nav-items">
+          <span class="nav-item active">{{ $t('nav.mapRecommendation.line1') }}</span>
           <div class="nav-item-dropdown" @mouseenter="showTravelDropdown = true" @mouseleave="showTravelDropdown = false">
-            <div class="nav-item-wrapper">
-              <span class="nav-item map-rec-item active">
-                <span class="nav-text-line">{{ $t('nav.mapRecommendation.line1') }}</span>
-                <span class="nav-text-line">{{ $t('nav.mapRecommendation.line2') }}</span>
-              </span>
-            </div>
+            <span class="nav-item">{{ $t('nav.topIsland') }}</span>
             <div class="dropdown-menu" v-show="showTravelDropdown">
               <div 
                 v-for="island in travelIslands" 
@@ -132,25 +128,25 @@ export default {
   },
   data() {
     return {
-      backgroundLoaded: false, // 背景图片加载状态
-      loadingProgress: 0, // 加载进度
-      loadingText: this.$t('map.loading.loading'), // 加载文本
-      showGame: true, // 默认显示游戏
-      appIconUrl: null, // 应用图标URL
-      backgroundImageUrl: null, // 背景图片URL
+      backgroundLoaded: false, // Background image loading status
+      loadingProgress: 0, // Loading progress
+      loadingText: this.$t('map.loading.loading'), // Loading text
+      showGame: true, // Default show game
+      appIconUrl: null, // App icon URL
+      backgroundImageUrl: null, // Background image URL
       showTravelDropdown: false,
       showEducationDropdown: false,
       travelIslands: ['Mertang', 'P Singa', 'Sipadan', 'Pulau Lima', 'Seri Buat']
     }
   },
   mounted() {
-    // 立即开始预加载背景图片
+    // Immediately start preloading background image
     this.preloadBackgroundImage();
     
-    // 加载应用图标
+    // Load app icon
     this.loadAppIcon();
     
-    // 加载背景图片
+    // Load background image
     this.loadBackgroundImage();
     
     // Set global refresh detection timestamp for verification system
@@ -174,8 +170,8 @@ export default {
      */
     async loadBackgroundImage() {
       try {
-        this.backgroundImageUrl = await ossService.getFileUrl('bg_login5.webp')
-        // 设置CSS变量
+        this.backgroundImageUrl = await ossService.getFileUrl('bg_edu.webp')
+        // Set CSS variable
         document.documentElement.style.setProperty('--bg-image', `url(${this.backgroundImageUrl})`)
       } catch (error) {
         console.warn('加载背景图片失败，使用默认图片:', error)
@@ -187,20 +183,20 @@ export default {
      * 预加载背景图片
      */
     preloadBackgroundImage() {
-      // 创建高优先级预加载链接元素
+      // Create high priority preload link element
       const preloadLink = document.createElement('link');
       preloadLink.rel = 'preload';
       preloadLink.as = 'image';
       preloadLink.href = this.backgroundImageUrl;
-      preloadLink.fetchPriority = 'high'; // 高优先级
+      preloadLink.fetchPriority = 'high'; // High priority
       
-      // 添加到head中
+      // Add to head
       document.head.appendChild(preloadLink);
       
-      // 模拟加载进度
+      // Simulate loading progress
       this.simulateLoadingProgress();
       
-      // 预加载图片到浏览器缓存
+      // Preload images to browser cache
       const img = new Image();
       img.src = this.backgroundImageUrl;
       img.onload = () => {
@@ -216,7 +212,7 @@ export default {
         this.loadingProgress = 100;
         this.loadingText = this.$t('map.loading.backup');
         setTimeout(() => {
-          this.backgroundLoaded = true; // 即使失败也隐藏占位符
+          this.backgroundLoaded = true; // Hide placeholder even if failed
         }, 500);
       };
       
@@ -254,7 +250,7 @@ export default {
     },
 
     goToEducation() {
-      // 主页面导航，不设置标记，应该显示验证
+      // Main page navigation, no flag set, should show verification
       this.$router.push('/education');
     },
 
@@ -319,12 +315,12 @@ export default {
   position: relative;
   overflow-x: hidden;
   padding-top: 80px;
-  /* 优化背景图片加载 */
-  will-change: transform;      /* 提示浏览器优化 */
-  transform: translateZ(0);     /* 启用硬件加速 */
+  /* Optimize background image loading */
+  will-change: transform;      /* Hint browser optimization */
+  transform: translateZ(0);     /* Enable hardware acceleration */
 }
 
-/* 海洋主题背景加载占位符样式 */
+/* Ocean theme background loading placeholder styles */
 .bg-placeholder {
   position: fixed;
   top: 0;
@@ -373,7 +369,7 @@ export default {
 }
 
 
-/* 海洋主题进度条样式 */
+/* Ocean theme progress bar styles */
 .progress-container {
   position: absolute;
   top: -40px;
@@ -384,7 +380,7 @@ export default {
   text-align: center;
 }
 
-/* 顶部独立进度条样式 */
+/* Top independent progress bar styles */
 .top-progress-container {
   position: fixed;
   top: 20px;
@@ -455,11 +451,11 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: var(--bg-image, url('@/assets/bg_login5.webp'));
+  background-image: var(--bg-image, url('@/assets/bg_edu.webp'));
   background-repeat: no-repeat;
-  background-attachment: fixed;   /* 页面滚动时固定 */
-  background-position: center;   /* 居中显示 */
-  background-size: cover;         /* 覆盖整个容器，保持比例 */
+  background-attachment: fixed;   /* Fixed when page scrolls */
+  background-position: center;   /* Center display */
+  background-size: cover;         /* Cover entire container, maintain aspect ratio */
   opacity: 0.3;
   z-index: 1;
 }
